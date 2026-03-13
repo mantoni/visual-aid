@@ -49,6 +49,7 @@ The baseline document set is:
 - [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
+- [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
 
 ## Documentation Rules
 

@@ -19,6 +19,36 @@ The application is expected to:
 - determine how to render the payload based on its declared format
 - present a user-readable visual representation
 
+## Initial MCP Contract
+
+The initial MCP surface should stay intentionally small:
+
+- `visual-aid.open`: launch the app or focus an existing instance
+- `visual-aid.show`: send a structured payload to the app and render it
+- `visual-aid.clear`: clear the current rendered view
+
+`visual-aid.show` may launch the app implicitly if it is not already running, but `visual-aid.open` remains useful for explicit control and debugging.
+
+## Initial Payload Envelope
+
+The first payload contract is a versioned envelope shared across supported formats.
+
+Required fields:
+
+- `version`: payload schema version, starting at `1`
+- `format`: one of `markdown`, `diff`, `mermaid`, `excalidraw`, or `html`
+- `content`: string payload to render
+
+Optional fields:
+
+- `id`: stable identifier for updates or replacement
+- `title`: short user-facing label
+- `summary`: short human-readable description
+- `mode`: render intent, initially `replace` or `append`
+- `metadata`: format-specific or workflow-specific structured metadata
+
+This keeps transport consistent while allowing renderers to branch on `format`.
+
 ## Initial Supported Payload Types
 
 The first target payload families are:
@@ -42,8 +72,6 @@ These should be treated as render targets, not as implementation commitments to 
 
 The following are still intentionally undecided:
 
-- exact MCP tool surface exposed by the app
-- payload schema and versioning model
 - single-document versus multi-pane rendering model
 - persistence of rendered sessions
 - plugin model for additional formats
