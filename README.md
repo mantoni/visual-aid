@@ -46,6 +46,7 @@ The baseline document set is:
 
 - [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md): operating rules for agent-driven work in this repository
 - [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): current system shape and technical boundaries
+- [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md): canonical local dogfood flow centered on `npm start`
 - [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
 - [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md): behavior-spec convention and test mapping rules
 - [docs/specs/0001-mcp-session-flow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
@@ -55,6 +56,7 @@ The baseline document set is:
 - [docs/specs/0005-interactive-ui-behavior.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0005-interactive-ui-behavior.md): live DOM updates from UI events and polling
 - [docs/specs/0006-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0006-format-aware-renderers.md): first-pass renderer semantics for each supported format
 - [docs/specs/0007-mcp-diagnostics.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0007-mcp-diagnostics.md): diagnostic tool and resource behavior for host integration
+- [docs/specs/0008-dogfooding-start-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
@@ -62,6 +64,7 @@ The baseline document set is:
 - [docs/decisions/0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
 - [docs/decisions/0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
 - [docs/decisions/0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
+- [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
 
 ## Documentation Rules
 
@@ -69,27 +72,32 @@ The baseline document set is:
 - When a decision changes prior direction, the relevant decision record and affected documents must be updated in the same change.
 - The markdown documents are the primary project memory for future agent work.
 
-## Current Development Loop
+## Default Development Path
 
-The current scaffold supports a simple local workflow:
+The canonical local dogfood flow is:
 
-1. Build or run the Tauri app.
-2. Write session state through the MCP server or a local helper script.
-3. Let the desktop app poll and render the latest session file.
+1. Run `npm start` to create or reuse `.visual-aid/dev-session.json` and launch the Tauri app in dev mode.
+2. Point Codex `config.toml` at that same session file. Run `npm start -- --print-codex-config` to print the exact MCP config block for the current checkout.
+3. Use `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` through Codex against that shared session.
+
+See [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md) for the concise setup and quick test sequence.
 
 Useful commands:
 
+- `npm start`: canonical local dogfood entrypoint for the app
+- `npm start -- --print-codex-config`: print the exact Codex MCP config block for the current checkout
 - `npm run check`: type-check the project
 - `npm test`: run the automated test suite
 - `npm run verify`: run type checks, tests, and frontend build together
 - `npm run build`: build the frontend bundle
+- `npm run tauri:dev`: lower-level Tauri app dev command used by the supervisor
 - `npm run tauri:build`: build the desktop app bundle
-- `npm run mcp`: run the MCP server over stdio
+- `npm run mcp`: package-script wrapper for the stdio MCP server; Codex config should use `npx tsx mcp/server.ts` directly to avoid npm banner output
 - `npm run demo:payload`: write a sample session payload to `.visual-aid/session.json`
 
 Environment variables:
 
-- `VISUAL_AID_SESSION_PATH`: override the JSON session file path
+- `VISUAL_AID_SESSION_PATH`: override the JSON session file path for manual MCP or app runs; `npm start` uses `.visual-aid/dev-session.json`
 - `VISUAL_AID_OPEN_COMMAND`: explicit command used by `visual-aid.open`
 - `VISUAL_AID_APP_PATH`: explicit app bundle path used by `visual-aid.open`
 
