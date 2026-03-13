@@ -37,3 +37,21 @@ This project starts as the foundation for an agent-facing visualization tool:
 - The Tauri app is the renderer for the user-facing visual representation.
 
 The goal is a simple, reliable path from agent output to a visual experience that helps users understand code, changes, diagrams, and other structured artifacts more clearly.
+
+## Documentation Framework
+
+This project is intended to be built and maintained primarily by a coding agent. To support that workflow, project knowledge should live in markdown files that are easy to inspect, update, and review.
+
+The baseline document set is:
+
+- [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md): operating rules for agent-driven work in this repository
+- [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): current system shape and technical boundaries
+- [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
+- [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
+- [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
+
+## Documentation Rules
+
+- Significant product, architecture, and process decisions must be captured as markdown before or alongside implementation.
+- When a decision changes prior direction, the relevant decision record and affected documents must be updated in the same change.
+- The markdown documents are the primary project memory for future agent work.
