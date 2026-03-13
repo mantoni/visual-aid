@@ -13,6 +13,15 @@ import {
 } from "./view-model";
 import { renderInto } from "./render";
 
+type BootstrapOptions = {
+  bootstrapPayload?: VisualAidPayload;
+  isTauriEnvironment?: () => boolean;
+  now?: () => string;
+  startSessionPolling?: (
+    onSession: (session: VisualAidSession) => void,
+  ) => Promise<() => void> | (() => void);
+};
+
 declare global {
   interface Window {
     __VISUAL_AID_BOOTSTRAP__?: VisualAidPayload;
@@ -36,15 +45,21 @@ const isPayload = (value: unknown): value is VisualAidPayload => {
   );
 };
 
-export const bootstrapApp = async (target: Element | null) => {
+export const bootstrapApp = async (
+  target: Element | null,
+  options?: BootstrapOptions,
+) => {
   if (!(target instanceof HTMLElement)) {
     throw new Error("Expected #app root element to exist.");
   }
 
-  const useTauriBridge = isTauriEnvironment();
+  const detectTauri = options?.isTauriEnvironment ?? isTauriEnvironment;
+  const now = options?.now ?? (() => new Date().toISOString());
+  const pollSession = options?.startSessionPolling ?? startSessionPolling;
+  const useTauriBridge = detectTauri();
   const state: VisualAidState = createInitialState(
     useTauriBridge,
-    window.__VISUAL_AID_BOOTSTRAP__,
+    options?.bootstrapPayload ?? window.__VISUAL_AID_BOOTSTRAP__,
   );
 
   const setSession = (session: VisualAidSession) => {
@@ -54,34 +69,44 @@ export const bootstrapApp = async (target: Element | null) => {
   };
 
   const show = (payload: VisualAidPayload) => {
-    setSession(
-      applyLocalShow(state.session, payload, new Date().toISOString()),
-    );
+    setSession(applyLocalShow(state.session, payload, now()));
   };
 
   const clear = () => {
-    setSession(applyLocalClear(state.session, new Date().toISOString()));
+    setSession(applyLocalClear(state.session, now()));
   };
 
   window.__VISUAL_AID__ = { show, clear };
 
-  window.addEventListener("visual-aid:show", (event) => {
+  const onShowEvent = (event: Event) => {
     if (!(event instanceof CustomEvent) || !isPayload(event.detail)) {
       return;
     }
 
     show(event.detail);
-  });
+  };
 
-  window.addEventListener("visual-aid:clear", () => {
+  const onClearEvent = () => {
     clear();
-  });
+  };
+
+  window.addEventListener("visual-aid:show", onShowEvent);
+  window.addEventListener("visual-aid:clear", onClearEvent);
 
   renderInto(target, state);
 
+  let stopPolling = () => {};
+
   if (useTauriBridge) {
-    await startSessionPolling((session) => {
+    stopPolling = await pollSession((session) => {
       setSession(session);
     });
   }
+
+  return () => {
+    stopPolling();
+    window.removeEventListener("visual-aid:show", onShowEvent);
+    window.removeEventListener("visual-aid:clear", onClearEvent);
+    delete window.__VISUAL_AID__;
+  };
 };
