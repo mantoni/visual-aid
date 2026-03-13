@@ -10,6 +10,8 @@
     "check": "tsc --noEmit",
     "demo:payload": "tsx scripts/demo-payload.ts",
     "mcp": "tsx mcp/server.ts",
+    "test": "vitest run",
+    "verify": "npm run check && npm run test && npm run build",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
   },
@@ -31,6 +33,7 @@
     "@types/node": "*",
     "tsx": "*",
     "typescript": "*",
-    "vite": "*"
+    "vite": "*",
+    "vitest": "^4.1.0"
   }
 }

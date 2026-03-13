@@ -47,11 +47,14 @@ The baseline document set is:
 - [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md): operating rules for agent-driven work in this repository
 - [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): current system shape and technical boundaries
 - [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
+- [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md): behavior-spec convention and test mapping rules
+- [docs/specs/0001-mcp-session-flow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
 - [docs/decisions/0003-initial-scaffold-stack-and-layout.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0003-initial-scaffold-stack-and-layout.md): initial implementation stack and repository layout
 - [docs/decisions/0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
+- [docs/decisions/0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
 
 ## Documentation Rules
 
@@ -70,6 +73,8 @@ The current scaffold supports a simple local workflow:
 Useful commands:
 
 - `npm run check`: type-check the project
+- `npm test`: run the automated test suite
+- `npm run verify`: run type checks, tests, and frontend build together
 - `npm run build`: build the frontend bundle
 - `npm run tauri:build`: build the desktop app bundle
 - `npm run mcp`: run the MCP server over stdio

@@ -16,6 +16,7 @@ This repository is designed to be built and maintained primarily by a coding age
 3. Prefer updating existing documents over creating overlapping sources of truth.
 4. Keep implementation aligned with documented direction, or update the documentation first.
 5. Record assumptions when the user has not yet made a decision.
+6. For new behavior, add or update a behavior spec and automated tests in the same change.
 
 ## Required Documents
 
@@ -24,6 +25,7 @@ The following documents form the minimum operating framework for the project:
 - [README.md](/Users/max/projects/mantoni/visual-aid/README.md): project summary and document map
 - [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): what the project is for and what it should become
 - [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): technical structure, boundaries, and integration model
+- [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md): behavior spec format and test linkage
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/*.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): individual decision records
 
@@ -47,9 +49,10 @@ For substantial work, the agent should usually:
 
 1. Read the project summary and any relevant decision records.
 2. Update markdown documents if the task introduces or changes a decision.
-3. Implement the code.
-4. Verify behavior.
-5. Leave the repository in a state where the next agent session can recover context quickly from markdown alone.
+3. Add or update the relevant behavior spec and acceptance scenarios.
+4. Implement the code.
+5. Verify behavior with automated tests.
+6. Leave the repository in a state where the next agent session can recover context quickly from markdown alone.
 
 ## Writing Style
 
