@@ -127,6 +127,38 @@ describe("MCP stdio integration spec", () => {
     expect(session.items).toHaveLength(0);
   });
 
+  it("VAS-SHOW-003 append mode updates an existing item when the payload id matches", async () => {
+    await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        id: "plan",
+        format: "markdown",
+        content: "# Draft",
+        mode: "append",
+      },
+    });
+
+    await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        id: "plan",
+        format: "html",
+        content: "<article>Updated</article>",
+        mode: "append",
+      },
+    });
+
+    const session = JSON.parse(
+      await readFile(sessionPath, "utf8"),
+    ) as VisualAidSession;
+
+    expect(session.items).toHaveLength(1);
+    expect(session.items[0]?.id).toBe("plan");
+    expect(session.items[0]?.format).toBe("html");
+  });
+
   it("VAI-VALIDATION-001 invalid show payloads are rejected", async () => {
     const result = await client!.callTool({
       name: "visual-aid.show",

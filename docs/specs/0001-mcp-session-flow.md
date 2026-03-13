@@ -20,6 +20,7 @@ Related decisions:
 
 - `visual-aid.open` records an `open` action even if no launch target is available.
 - `visual-aid.show` writes a valid session state using either replace or append semantics.
+- `visual-aid.show` in `append` mode updates an existing item when the payload `id` matches a prior session item.
 - `visual-aid.clear` removes all active items from the session state.
 - Launch discovery prefers explicit overrides before auto-detected build artifacts.
 - When a second app launch is attempted for the same project, the existing main window is focused instead of leaving multiple app windows open.
@@ -47,6 +48,13 @@ When `visual-aid.show` receives a diff payload in `append` mode
 Then the session contains two items
 And the newest item format is `diff`
 
+### VAS-SHOW-003 Append mode updates an existing item when the payload id matches
+
+Given a session with an existing markdown item whose `id` is `plan`
+When `visual-aid.show` receives an html payload in `append` mode with the same `id`
+Then the session still contains one item with `id` `plan`
+And the newest item format is `html`
+
 ### VAS-CLEAR-001 Clear removes all items
 
 Given a session with rendered items
@@ -69,6 +77,7 @@ And the project does not keep multiple app windows open
 
 ## Test Mapping
 
-- `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-CLEAR-001`
+- `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-CLEAR-001`
+- `tests/mcp/integration.test.ts`: `VAS-SHOW-003`
 - `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`
 - `src-tauri/src/main.rs`: `VAS-SINGLE-INSTANCE-001`

@@ -52,12 +52,27 @@ export const applyShow = (
   session: VisualAidSession,
   payload: VisualAidPayload,
   now: string,
-) => ({
-  openedAt: session.openedAt,
-  lastAction: "show" as const,
-  updatedAt: now,
-  items: payload.mode === "append" ? [...session.items, payload] : [payload],
-});
+) => {
+  if (payload.mode !== "append") {
+    return {
+      openedAt: session.openedAt,
+      lastAction: "show" as const,
+      updatedAt: now,
+      items: [payload],
+    };
+  }
+
+  const items = payload.id
+    ? [...session.items.filter((item) => item.id !== payload.id), payload]
+    : [...session.items, payload];
+
+  return {
+    openedAt: session.openedAt,
+    lastAction: "show" as const,
+    updatedAt: now,
+    items,
+  };
+};
 
 export const applyClear = (session: VisualAidSession, now: string) => ({
   ...session,

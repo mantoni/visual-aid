@@ -16,6 +16,7 @@ describe("Renderer output spec", () => {
     const html = renderAppHtml({
       session: emptySession(),
       status: "Cleared",
+      selectedIndex: null,
     });
     const body = renderDocument(html);
 
@@ -78,6 +79,7 @@ describe("Renderer output spec", () => {
         ],
       },
       status: "Received Unified Diff payload",
+      selectedIndex: 1,
     });
     const body = renderDocument(html);
     const items = body.querySelectorAll(".history-item");
@@ -106,6 +108,7 @@ describe("Renderer output spec", () => {
           ],
         },
         status: "Received Markdown payload",
+        selectedIndex: 0,
       }),
     );
 
@@ -138,6 +141,7 @@ describe("Renderer output spec", () => {
           ],
         },
         status: "Received Unified Diff payload",
+        selectedIndex: 0,
       }),
     );
 
@@ -169,6 +173,7 @@ describe("Renderer output spec", () => {
           ],
         },
         status: "Received Mermaid payload",
+        selectedIndex: 0,
       }),
     );
 
@@ -198,6 +203,7 @@ describe("Renderer output spec", () => {
           ],
         },
         status: "Received Excalidraw payload",
+        selectedIndex: 0,
       }),
     );
 
@@ -206,5 +212,39 @@ describe("Renderer output spec", () => {
     expect(body.querySelector(".payload-excalidraw .payload-pre code")?.textContent).toContain(
       "\"elements\"",
     );
+  });
+
+  it("VAR-HISTORY-002 the current payload reflects the selected history item", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-13T17:44:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Older",
+              content: "# Older",
+            },
+            {
+              version: 1,
+              format: "html",
+              title: "Newer",
+              content: "<section>Newer</section>",
+            },
+          ],
+        },
+        status: "Received HTML payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".panel--viewer h2")?.textContent).toBe("Older");
+    expect(body.querySelectorAll(".history-item")[1]?.classList.contains("history-item--active")).toBe(
+      true,
+    );
+    expect(body.querySelector(".payload-markdown h2")?.textContent).toBe("Older");
   });
 });

@@ -12,14 +12,14 @@ Related decisions:
 ## Preconditions
 
 - The renderer receives a `VisualAidState` containing a session and status string.
-- The current payload is the last item in the session item list.
+- The current payload is the selected session item, defaulting to the newest item in the session list.
 - HTML payloads are rendered as HTML, while non-HTML payloads are rendered in preformatted code blocks.
 
 ## Invariants
 
 - Empty sessions show explicit empty-state messaging.
-- The current payload panel reflects the newest session item.
-- History is shown in reverse chronological order with the newest item marked active.
+- The current payload panel reflects the selected session item.
+- History is shown in reverse chronological order with the selected item marked active.
 - HTML payloads render as HTML content, not escaped text.
 
 ## Scenarios
@@ -52,6 +52,13 @@ When the renderer output is generated
 Then the first history item corresponds to the newest payload
 And that history item has the active state class
 
+### VAR-HISTORY-002 The current payload reflects the selected history item
+
+Given a renderer state with multiple session items and the older item selected
+When the renderer output is generated
+Then the current payload title matches the selected older item
+And the matching history item has the active state class
+
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-HTML-001`, `VAR-HISTORY-001`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-HISTORY-002`

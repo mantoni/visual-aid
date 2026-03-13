@@ -20,6 +20,7 @@ Related decisions:
 - Valid `visual-aid:show` events update the live DOM.
 - Invalid `visual-aid:show` payloads are ignored.
 - `visual-aid:clear` resets the UI to the empty state.
+- History-item clicks switch the current payload view to the selected session item.
 - Poll-driven session updates replace the rendered content in Tauri mode.
 
 ## Scenarios
@@ -42,6 +43,13 @@ Given a bootstrapped non-Tauri app shell with rendered content
 When a `visual-aid:clear` event is dispatched
 Then the empty-state message becomes visible
 
+### VUI-HISTORY-001 Clicking a history item updates the current payload view
+
+Given a bootstrapped non-Tauri app shell with multiple rendered items
+When the user clicks an older history item
+Then the current payload view updates to that item
+And the clicked history item becomes active
+
 ### VUI-POLL-001 Polling updates replace the DOM in Tauri mode
 
 Given a bootstrapped Tauri app shell
@@ -50,4 +58,4 @@ Then the current payload title and status update in the DOM
 
 ## Test Mapping
 
-- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-POLL-001`
+- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-POLL-001`

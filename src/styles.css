@@ -292,12 +292,31 @@ h2 {
   color: inherit;
   text-align: left;
   opacity: 0.72;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.history-item:hover,
+.history-item:focus-visible {
+  border-color: rgba(143, 208, 244, 0.24);
+  background: rgba(143, 208, 244, 0.08);
+  opacity: 0.92;
+}
+
+.history-item:focus-visible {
+  outline: 2px solid rgba(143, 208, 244, 0.4);
+  outline-offset: 2px;
 }
 
 .history-item--active {
   border-color: rgba(240, 177, 108, 0.28);
   background: rgba(240, 177, 108, 0.08);
   opacity: 1;
+  transform: translateY(-1px);
 }
 
 .history-item__title,

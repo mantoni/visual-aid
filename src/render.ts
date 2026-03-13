@@ -1,5 +1,9 @@
 import type { VisualAidPayload } from "./bridge";
-import { formatLabels, type VisualAidState } from "./view-model";
+import {
+  formatLabels,
+  resolveSelectedIndex,
+  type VisualAidState,
+} from "./view-model";
 
 export const escapeHtml = (value: string) =>
   value
@@ -235,15 +239,23 @@ export const renderMetadata = (payload: VisualAidPayload) => {
 };
 
 export const renderAppHtml = (state: VisualAidState) => {
-  const current = state.session.items.at(-1);
+  const selectedIndex = resolveSelectedIndex(state.session, state.selectedIndex);
+  const current =
+    selectedIndex === null ? null : state.session.items[selectedIndex] ?? null;
   const history = state.session.items
     .slice()
     .reverse()
     .map((item, index) => {
+      const sessionIndex = state.session.items.length - 1 - index;
       const title = item.title ?? `${formatLabels[item.format]} payload`;
 
       return `
-        <button class="history-item${index === 0 ? " history-item--active" : ""}" type="button" disabled>
+        <button
+          class="history-item${sessionIndex === selectedIndex ? " history-item--active" : ""}"
+          type="button"
+          data-history-index="${sessionIndex}"
+          aria-pressed="${sessionIndex === selectedIndex ? "true" : "false"}"
+        >
           <span class="history-item__title">${escapeHtml(title)}</span>
           <span class="history-item__meta">${escapeHtml(item.format)}</span>
         </button>

@@ -110,6 +110,46 @@ describe("Interactive UI spec", () => {
     cleanup();
   });
 
+  it("VUI-HISTORY-001 clicking a history item updates the current payload view", async () => {
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => false,
+      bootstrapPayload: {
+        version: 1,
+        format: "markdown",
+        title: "First Payload",
+        content: "# First",
+      },
+      now: () => "2026-03-13T17:31:00.000Z",
+    });
+
+    window.dispatchEvent(
+      new CustomEvent("visual-aid:show", {
+        detail: {
+          version: 1,
+          format: "html",
+          title: "Second Payload",
+          content: "<section>Second</section>",
+          mode: "append",
+        },
+      }),
+    );
+
+    const historyItems = document.querySelectorAll<HTMLButtonElement>(".history-item");
+    historyItems[1]?.click();
+
+    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
+      "First Payload",
+    );
+    expect(document.querySelectorAll(".history-item")[1]?.classList.contains("history-item--active")).toBe(
+      true,
+    );
+    expect(document.querySelector(".payload-markdown h2")?.textContent).toBe(
+      "First",
+    );
+
+    cleanup();
+  });
+
   it("VUI-POLL-001 polling updates replace the DOM in Tauri mode", async () => {
     const polledSession: VisualAidSession = {
       openedAt: "2026-03-13T17:32:00.000Z",

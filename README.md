@@ -65,6 +65,7 @@ The baseline document set is:
 - [docs/decisions/0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
 - [docs/decisions/0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
 - [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
+- [docs/decisions/0008-session-history-and-item-replacement.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
 
 ## Documentation Rules
 

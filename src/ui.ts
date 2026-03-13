@@ -8,6 +8,8 @@ import {
   applyLocalClear,
   applyLocalShow,
   createInitialState,
+  newestItemIndex,
+  resolveSelectedIndex,
   statusForSession,
   type VisualAidState,
 } from "./view-model";
@@ -65,6 +67,7 @@ export const bootstrapApp = async (
   const setSession = (session: VisualAidSession) => {
     state.session = session;
     state.status = statusForSession(session);
+    state.selectedIndex = newestItemIndex(session);
     renderInto(target, state);
   };
 
@@ -90,8 +93,32 @@ export const bootstrapApp = async (
     clear();
   };
 
+  const onHistoryClick = (event: Event) => {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const button = event.target.closest<HTMLButtonElement>(
+      ".history-item[data-history-index]",
+    );
+
+    if (!button || !target.contains(button)) {
+      return;
+    }
+
+    const index = Number(button.dataset.historyIndex);
+
+    if (!Number.isInteger(index)) {
+      return;
+    }
+
+    state.selectedIndex = resolveSelectedIndex(state.session, index);
+    renderInto(target, state);
+  };
+
   window.addEventListener("visual-aid:show", onShowEvent);
   window.addEventListener("visual-aid:clear", onClearEvent);
+  target.addEventListener("click", onHistoryClick);
 
   renderInto(target, state);
 
@@ -107,6 +134,7 @@ export const bootstrapApp = async (
     stopPolling();
     window.removeEventListener("visual-aid:show", onShowEvent);
     window.removeEventListener("visual-aid:clear", onClearEvent);
+    target.removeEventListener("click", onHistoryClick);
     delete window.__VISUAL_AID__;
   };
 };

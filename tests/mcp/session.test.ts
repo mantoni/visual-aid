@@ -22,6 +22,14 @@ const diffPayload: VisualAidPayload = {
   mode: "append",
 };
 
+const replacementPayload: VisualAidPayload = {
+  version: 1,
+  id: "plan",
+  format: "html",
+  content: "<article>Updated</article>",
+  mode: "append",
+};
+
 describe("MCP session spec", () => {
   it("VAS-OPEN-001 records open on an empty session", () => {
     const now = "2026-03-13T16:00:00.000Z";
@@ -51,6 +59,27 @@ describe("MCP session spec", () => {
 
     expect(next.items).toHaveLength(2);
     expect(next.items.at(-1)?.format).toBe("diff");
+  });
+
+  it("VAS-SHOW-003 append mode updates an existing item when the payload id matches", () => {
+    const initial = applyShow(
+      emptySession(),
+      {
+        version: 1,
+        id: "plan",
+        format: "markdown",
+        content: "# Draft",
+        mode: "append",
+      },
+      "2026-03-13T16:03:00.000Z",
+    );
+
+    const next = applyShow(initial, replacementPayload, "2026-03-13T16:04:00.000Z");
+
+    expect(next.items).toHaveLength(1);
+    expect(next.items[0]?.id).toBe("plan");
+    expect(next.items[0]?.format).toBe("html");
+    expect(next.items.at(-1)?.content).toBe("<article>Updated</article>");
   });
 
   it("VAS-CLEAR-001 clear removes all items", () => {

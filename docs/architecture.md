@@ -35,6 +35,7 @@ The first renderer pass is format-aware without depending on heavyweight externa
 - Mermaid is rendered as a dedicated diagram-source viewer rather than an executed diagram engine.
 - Excalidraw is rendered as a structured canvas summary with raw JSON preview when possible.
 - HTML is rendered directly inside an isolated payload container.
+- The renderer uses a single main viewer with a reverse-chronological history sidebar; the newest item is selected by default, and the user can select older session items locally.
 
 This keeps the early renderer surface explicit and testable while leaving room for richer format-specific engines later.
 
@@ -76,7 +77,7 @@ Required fields:
 
 Optional fields:
 
-- `id`: stable identifier for updates or replacement
+- `id`: stable identifier for updates or replacement within session history
 - `title`: short user-facing label
 - `summary`: short human-readable description
 - `mode`: render intent, initially `replace` or `append`
@@ -108,7 +109,6 @@ These should be treated as render targets, not as implementation commitments to 
 
 The following are still intentionally undecided:
 
-- single-document versus multi-pane rendering model
 - persistence of rendered sessions
 - plugin model for additional formats
 

@@ -1,8 +1,13 @@
-import type { VisualAidPayload, VisualAidSession } from "./bridge";
+import {
+  emptySession,
+  type VisualAidPayload,
+  type VisualAidSession,
+} from "./bridge";
 
 export type VisualAidState = {
   session: VisualAidSession;
   status: string;
+  selectedIndex: number | null;
 };
 
 export const formatLabels: Record<VisualAidPayload["format"], string> = {
@@ -41,6 +46,24 @@ export const sessionWithSample = (
   items: [bootstrapPayload ?? samplePayload],
 });
 
+export const newestItemIndex = (session: VisualAidSession) =>
+  session.items.length === 0 ? null : session.items.length - 1;
+
+export const resolveSelectedIndex = (
+  session: VisualAidSession,
+  selectedIndex: number | null,
+) => {
+  if (selectedIndex === null) {
+    return newestItemIndex(session);
+  }
+
+  if (selectedIndex < 0 || selectedIndex >= session.items.length) {
+    return newestItemIndex(session);
+  }
+
+  return selectedIndex;
+};
+
 export const statusForSession = (session: VisualAidSession) => {
   const current = session.items.at(-1);
 
@@ -62,29 +85,43 @@ export const statusForSession = (session: VisualAidSession) => {
 export const createInitialState = (
   useTauriBridge: boolean,
   bootstrapPayload?: VisualAidPayload,
-): VisualAidState => ({
-  session: useTauriBridge
-    ? {
-        openedAt: null,
-        lastAction: "clear",
-        updatedAt: null,
-        items: [],
-      }
-    : sessionWithSample(bootstrapPayload),
-  status: useTauriBridge ? "Connecting to desktop bridge" : "Renderer shell ready",
-});
+): VisualAidState => {
+  const session = useTauriBridge
+    ? emptySession()
+    : sessionWithSample(bootstrapPayload);
+
+  return {
+    session,
+    status: useTauriBridge ? "Connecting to desktop bridge" : "Renderer shell ready",
+    selectedIndex: newestItemIndex(session),
+  };
+};
 
 export const applyLocalShow = (
   session: VisualAidSession,
   payload: VisualAidPayload,
   updatedAt: string,
-): VisualAidSession => ({
-  openedAt: session.openedAt,
-  lastAction: "show",
-  updatedAt,
-  items:
-    payload.mode === "append" ? [...session.items, payload] : [payload],
-});
+): VisualAidSession => {
+  if (payload.mode !== "append") {
+    return {
+      openedAt: session.openedAt,
+      lastAction: "show",
+      updatedAt,
+      items: [payload],
+    };
+  }
+
+  const items = payload.id
+    ? [...session.items.filter((item) => item.id !== payload.id), payload]
+    : [...session.items, payload];
+
+  return {
+    openedAt: session.openedAt,
+    lastAction: "show",
+    updatedAt,
+    items,
+  };
+};
 
 export const applyLocalClear = (
   session: VisualAidSession,
