@@ -51,8 +51,8 @@ describe("Interactive UI spec", () => {
     expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
       "Event Payload",
     );
-    expect(document.querySelector(".payload-pre code")?.textContent).toContain(
-      "# Event Content",
+    expect(document.querySelector(".payload-markdown h2")?.textContent).toBe(
+      "Event Content",
     );
 
     cleanup();
@@ -81,8 +81,8 @@ describe("Interactive UI spec", () => {
     expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
       "Stable Payload",
     );
-    expect(document.querySelector(".payload-pre code")?.textContent).toContain(
-      "# Stable",
+    expect(document.querySelector(".payload-markdown h2")?.textContent).toBe(
+      "Stable",
     );
 
     cleanup();

@@ -26,6 +26,18 @@ The application is expected to:
 - determine how to render the payload based on its declared format
 - present a user-readable visual representation
 
+## Initial Renderer Semantics
+
+The first renderer pass is format-aware without depending on heavyweight external renderer libraries.
+
+- Markdown is rendered into simple semantic HTML for headings, paragraphs, lists, and fenced code blocks.
+- Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.
+- Mermaid is rendered as a dedicated diagram-source viewer rather than an executed diagram engine.
+- Excalidraw is rendered as a structured canvas summary with raw JSON preview when possible.
+- HTML is rendered directly inside an isolated payload container.
+
+This keeps the early renderer surface explicit and testable while leaving room for richer format-specific engines later.
+
 ## Initial MCP Contract
 
 The initial MCP surface should stay intentionally small:

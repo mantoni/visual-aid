@@ -7,7 +7,216 @@ export const escapeHtml = (value: string) =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 
+const renderMarkdown = (content: string) => {
+  const lines = content.split("\n");
+  const parts: string[] = [];
+  let paragraph: string[] = [];
+  let listItems: string[] = [];
+  let codeFence: string[] = [];
+  let codeFenceOpen = false;
+
+  const flushParagraph = () => {
+    if (paragraph.length === 0) {
+      return;
+    }
+
+    parts.push(`<p>${escapeHtml(paragraph.join(" "))}</p>`);
+    paragraph = [];
+  };
+
+  const flushList = () => {
+    if (listItems.length === 0) {
+      return;
+    }
+
+    parts.push(
+      `<ul>${listItems
+        .map((item) => `<li>${escapeHtml(item)}</li>`)
+        .join("")}</ul>`,
+    );
+    listItems = [];
+  };
+
+  const flushCodeFence = () => {
+    if (!codeFenceOpen) {
+      return;
+    }
+
+    parts.push(
+      `<pre class="payload-pre payload-pre--markdown"><code>${escapeHtml(codeFence.join("\n"))}</code></pre>`,
+    );
+    codeFence = [];
+    codeFenceOpen = false;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+
+    if (line.startsWith("```")) {
+      flushParagraph();
+      flushList();
+
+      if (codeFenceOpen) {
+        flushCodeFence();
+      } else {
+        codeFenceOpen = true;
+        codeFence = [];
+      }
+
+      continue;
+    }
+
+    if (codeFenceOpen) {
+      codeFence.push(rawLine);
+      continue;
+    }
+
+    if (line === "") {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.*)$/);
+    if (heading) {
+      flushParagraph();
+      flushList();
+      const level = heading[1].length;
+      parts.push(
+        `<h${level + 1} class="payload-markdown__heading">${escapeHtml(heading[2])}</h${level + 1}>`,
+      );
+      continue;
+    }
+
+    const bullet = line.match(/^-\s+(.*)$/);
+    if (bullet) {
+      flushParagraph();
+      listItems.push(bullet[1]);
+      continue;
+    }
+
+    flushList();
+    paragraph.push(line);
+  }
+
+  flushParagraph();
+  flushList();
+  flushCodeFence();
+
+  return `<div class="payload-markdown">${parts.join("")}</div>`;
+};
+
+const classifyDiffLine = (line: string) => {
+  if (line.startsWith("@@")) {
+    return "hunk";
+  }
+
+  if (line.startsWith("+++ ") || line.startsWith("--- ")) {
+    return "file";
+  }
+
+  if (line.startsWith("+")) {
+    return "add";
+  }
+
+  if (line.startsWith("-")) {
+    return "remove";
+  }
+
+  return "context";
+};
+
+const renderDiff = (content: string) => {
+  const rows = content
+    .split("\n")
+    .map((line) => {
+      const kind = classifyDiffLine(line);
+
+      return `
+        <div class="payload-diff__line payload-diff__line--${kind}">
+          <span class="payload-diff__gutter">${escapeHtml(
+            kind === "context" ? " " : line.slice(0, 1),
+          )}</span>
+          <code>${escapeHtml(line)}</code>
+        </div>
+      `;
+    })
+    .join("");
+
+  return `<div class="payload-diff">${rows}</div>`;
+};
+
+const renderMermaid = (content: string) => {
+  const firstLine = content.split("\n").find((line) => line.trim().length > 0) ?? "diagram";
+
+  return `
+    <div class="payload-mermaid">
+      <div class="payload-special__header">
+        <span class="payload-special__badge">Diagram Source</span>
+        <strong>${escapeHtml(firstLine)}</strong>
+      </div>
+      <pre class="payload-pre"><code>${escapeHtml(content)}</code></pre>
+    </div>
+  `;
+};
+
+const renderExcalidraw = (content: string) => {
+  let parsed: unknown = null;
+  let elementCount = 0;
+  let appStateKeys = 0;
+
+  try {
+    parsed = JSON.parse(content) as {
+      elements?: unknown[];
+      appState?: Record<string, unknown>;
+    };
+    if (parsed && typeof parsed === "object") {
+      const value = parsed as {
+        elements?: unknown[];
+        appState?: Record<string, unknown>;
+      };
+      elementCount = Array.isArray(value.elements) ? value.elements.length : 0;
+      appStateKeys =
+        value.appState && typeof value.appState === "object"
+          ? Object.keys(value.appState).length
+          : 0;
+    }
+  } catch {
+    parsed = null;
+  }
+
+  return `
+    <div class="payload-excalidraw">
+      <div class="payload-special__header">
+        <span class="payload-special__badge">Canvas Summary</span>
+        <strong>${parsed ? `${elementCount} elements` : "Unparsed payload"}</strong>
+      </div>
+      <div class="payload-special__stats">
+        <div><span>Elements</span><strong>${elementCount}</strong></div>
+        <div><span>App State Keys</span><strong>${appStateKeys}</strong></div>
+      </div>
+      <pre class="payload-pre"><code>${escapeHtml(content)}</code></pre>
+    </div>
+  `;
+};
+
 export const renderContent = (payload: VisualAidPayload) => {
+  if (payload.format === "markdown") {
+    return renderMarkdown(payload.content);
+  }
+
+  if (payload.format === "diff") {
+    return renderDiff(payload.content);
+  }
+
+  if (payload.format === "mermaid") {
+    return renderMermaid(payload.content);
+  }
+
+  if (payload.format === "excalidraw") {
+    return renderExcalidraw(payload.content);
+  }
+
   if (payload.format === "html") {
     return `<div class="payload-html">${payload.content}</div>`;
   }

@@ -26,7 +26,7 @@ describe("Renderer output spec", () => {
     expect(body.textContent).toContain("History is empty.");
   });
 
-  it("VAR-MARKDOWN-001 markdown payloads render in a preformatted block", () => {
+  it("VAR-MARKDOWN-001 markdown payloads render in the markdown container", () => {
     const state = createInitialState(false, {
       version: 1,
       format: "markdown",
@@ -35,8 +35,8 @@ describe("Renderer output spec", () => {
     });
     const body = renderDocument(renderAppHtml(state));
 
-    expect(body.querySelector(".payload-pre code")?.textContent).toContain(
-      "# Heading",
+    expect(body.querySelector(".payload-markdown h2")?.textContent).toBe(
+      "Heading",
     );
     expect(body.querySelector(".format-chip")?.textContent).toBe("Markdown");
   });
@@ -85,5 +85,126 @@ describe("Renderer output spec", () => {
     expect(items[0]?.textContent).toContain("Second");
     expect(items[0]?.classList.contains("history-item--active")).toBe(true);
     expect(items[1]?.textContent).toContain("First");
+  });
+
+  it("VFR-MARKDOWN-001 markdown headings and lists render semantically", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-13T17:40:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Semantic Markdown",
+              content: ["# Heading", "", "- first item", "- second item"].join(
+                "\n",
+              ),
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+      }),
+    );
+
+    expect(body.querySelector(".payload-markdown h2")?.textContent).toBe(
+      "Heading",
+    );
+    expect(body.querySelectorAll(".payload-markdown li")).toHaveLength(2);
+  });
+
+  it("VFR-DIFF-001 diff lines are classified by line type", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-13T17:41:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "diff",
+              title: "Diff Example",
+              content: [
+                "--- a/file.ts",
+                "+++ b/file.ts",
+                "@@ -1 +1 @@",
+                "-old",
+                "+new",
+              ].join("\n"),
+            },
+          ],
+        },
+        status: "Received Unified Diff payload",
+      }),
+    );
+
+    expect(body.querySelector(".payload-diff__line--remove code")?.textContent).toBe(
+      "-old",
+    );
+    expect(body.querySelector(".payload-diff__line--add code")?.textContent).toBe(
+      "+new",
+    );
+    expect(body.querySelector(".payload-diff__line--hunk code")?.textContent).toBe(
+      "@@ -1 +1 @@",
+    );
+  });
+
+  it("VFR-MERMAID-001 mermaid payloads render in a diagram-source viewer", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-13T17:42:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "mermaid",
+              title: "Diagram",
+              content: "graph TD\nA[Agent] --> B[Viewer]",
+            },
+          ],
+        },
+        status: "Received Mermaid payload",
+      }),
+    );
+
+    expect(body.querySelector(".payload-mermaid")).not.toBeNull();
+    expect(body.querySelector(".payload-mermaid .payload-pre code")?.textContent).toContain(
+      "graph TD",
+    );
+  });
+
+  it("VFR-EXCALIDRAW-001 excalidraw payloads show parsed summary details", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-13T17:43:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "excalidraw",
+              title: "Sketch",
+              content: JSON.stringify({
+                elements: [{ id: "a" }, { id: "b" }],
+                appState: { viewBackgroundColor: "#fff" },
+              }),
+            },
+          ],
+        },
+        status: "Received Excalidraw payload",
+      }),
+    );
+
+    expect(body.querySelector(".payload-excalidraw")).not.toBeNull();
+    expect(body.textContent).toContain("2 elements");
+    expect(body.querySelector(".payload-excalidraw .payload-pre code")?.textContent).toContain(
+      "\"elements\"",
+    );
   });
 });

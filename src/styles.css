@@ -144,13 +144,21 @@ h2 {
 
 .payload-pre,
 .payload-html,
+.payload-markdown,
+.payload-diff,
+.payload-mermaid,
+.payload-excalidraw,
 .history-list,
 .empty-state {
   margin: 0 24px 24px;
 }
 
 .payload-pre,
-.payload-html {
+.payload-html,
+.payload-markdown,
+.payload-diff,
+.payload-mermaid,
+.payload-excalidraw {
   padding: 20px;
   border-radius: 18px;
   background: rgba(5, 7, 10, 0.56);
@@ -173,6 +181,101 @@ h2 {
 
 .payload-html :last-child {
   margin-bottom: 0;
+}
+
+.payload-markdown h2,
+.payload-markdown h3,
+.payload-markdown h4,
+.payload-markdown p,
+.payload-markdown ul {
+  margin: 0 0 14px;
+}
+
+.payload-markdown ul {
+  padding-left: 20px;
+}
+
+.payload-markdown li + li {
+  margin-top: 8px;
+}
+
+.payload-diff {
+  display: grid;
+  gap: 6px;
+  font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+}
+
+.payload-diff__line {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.payload-diff__line code {
+  white-space: pre-wrap;
+}
+
+.payload-diff__line--add {
+  background: rgba(72, 196, 125, 0.14);
+}
+
+.payload-diff__line--remove {
+  background: rgba(226, 97, 89, 0.14);
+}
+
+.payload-diff__line--file {
+  background: rgba(143, 208, 244, 0.12);
+}
+
+.payload-diff__line--hunk {
+  background: rgba(240, 177, 108, 0.12);
+}
+
+.payload-special__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.payload-special__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(240, 177, 108, 0.12);
+  color: #f0b16c;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.payload-special__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.payload-special__stats div {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.payload-special__stats span,
+.payload-diff__gutter {
+  color: rgba(242, 238, 230, 0.58);
+}
+
+.payload-special__stats span {
+  display: block;
+  font-size: 0.78rem;
+  margin-bottom: 4px;
 }
 
 .history-list {

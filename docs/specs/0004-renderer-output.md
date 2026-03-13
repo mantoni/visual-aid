@@ -31,11 +31,11 @@ When the renderer output is generated
 Then the current payload title is `Waiting For Payloads`
 And the empty-state message is visible
 
-### VAR-MARKDOWN-001 Markdown payloads render in a preformatted block
+### VAR-MARKDOWN-001 Markdown payloads render in the markdown container
 
 Given a renderer state with a markdown payload
 When the renderer output is generated
-Then the current payload content appears inside `.payload-pre`
+Then the current payload content appears inside `.payload-markdown`
 And the format chip reads `Markdown`
 
 ### VAR-HTML-001 HTML payloads render as HTML content

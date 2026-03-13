@@ -53,12 +53,14 @@ The baseline document set is:
 - [docs/specs/0003-mcp-stdio-integration.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0003-mcp-stdio-integration.md): end-to-end MCP client/server behavior
 - [docs/specs/0004-renderer-output.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0004-renderer-output.md): visible renderer output and layout behavior
 - [docs/specs/0005-interactive-ui-behavior.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0005-interactive-ui-behavior.md): live DOM updates from UI events and polling
+- [docs/specs/0006-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0006-format-aware-renderers.md): first-pass renderer semantics for each supported format
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
 - [docs/decisions/0003-initial-scaffold-stack-and-layout.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0003-initial-scaffold-stack-and-layout.md): initial implementation stack and repository layout
 - [docs/decisions/0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
 - [docs/decisions/0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
+- [docs/decisions/0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
 
 ## Documentation Rules
 
