@@ -3,6 +3,7 @@
 use std::{collections::HashMap, env, fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
+use tauri::{Manager, WebviewWindow};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -61,9 +62,80 @@ fn read_session_state(session_path: Option<String>) -> Result<VisualAidSession, 
     serde_json::from_str(&raw).map_err(|error| error.to_string())
 }
 
+trait FocusableWindow {
+    fn show_window(&self) -> tauri::Result<()>;
+    fn unminimize_window(&self) -> tauri::Result<()>;
+    fn focus_window(&self) -> tauri::Result<()>;
+}
+
+impl<R: tauri::Runtime> FocusableWindow for WebviewWindow<R> {
+    fn show_window(&self) -> tauri::Result<()> {
+        self.show()
+    }
+
+    fn unminimize_window(&self) -> tauri::Result<()> {
+        self.unminimize()
+    }
+
+    fn focus_window(&self) -> tauri::Result<()> {
+        self.set_focus()
+    }
+}
+
+fn focus_existing_window(window: &impl FocusableWindow) {
+    let _ = window.show_window();
+    let _ = window.unminimize_window();
+    let _ = window.focus_window();
+}
+
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                focus_existing_window(&window);
+            }
+        }))
         .invoke_handler(tauri::generate_handler![read_session_state])
         .run(tauri::generate_context!())
         .expect("failed to run visual-aid application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{focus_existing_window, FocusableWindow};
+    use std::cell::RefCell;
+
+    #[derive(Default)]
+    struct FakeWindow {
+        calls: RefCell<Vec<&'static str>>,
+    }
+
+    impl FocusableWindow for FakeWindow {
+        fn show_window(&self) -> tauri::Result<()> {
+            self.calls.borrow_mut().push("show");
+            Ok(())
+        }
+
+        fn unminimize_window(&self) -> tauri::Result<()> {
+            self.calls.borrow_mut().push("unminimize");
+            Ok(())
+        }
+
+        fn focus_window(&self) -> tauri::Result<()> {
+            self.calls.borrow_mut().push("focus");
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn vas_single_instance_001_focuses_the_existing_main_window() {
+        let window = FakeWindow::default();
+
+        focus_existing_window(&window);
+
+        assert_eq!(
+            window.calls.borrow().as_slice(),
+            ["show", "unminimize", "focus"]
+        );
+    }
 }
