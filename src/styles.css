@@ -1,0 +1,243 @@
+:root {
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: #f2eee6;
+  background:
+    radial-gradient(circle at top left, rgba(247, 142, 44, 0.18), transparent 28%),
+    radial-gradient(circle at right center, rgba(103, 168, 201, 0.16), transparent 24%),
+    linear-gradient(160deg, #11161c 0%, #141f27 42%, #0c0f13 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+code,
+pre {
+  font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.shell {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.panel__label,
+.status-card__label {
+  margin: 0 0 8px;
+  color: #f0b16c;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 4vw, 4.8rem);
+  line-height: 0.95;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+.hero__copy {
+  max-width: 60ch;
+  margin-top: 12px;
+  color: rgba(242, 238, 230, 0.78);
+  line-height: 1.55;
+}
+
+.status-card {
+  min-width: 220px;
+  padding: 18px 20px;
+  border: 1px solid rgba(240, 177, 108, 0.2);
+  border-radius: 20px;
+  background: rgba(15, 22, 29, 0.58);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.25);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.95fr);
+  gap: 20px;
+}
+
+.sidebar {
+  display: grid;
+  gap: 20px;
+}
+
+.panel {
+  border: 1px solid rgba(242, 238, 230, 0.08);
+  border-radius: 24px;
+  background: rgba(13, 17, 24, 0.72);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.panel--viewer {
+  min-height: 640px;
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  padding: 22px 24px 0;
+}
+
+.panel__summary {
+  padding: 12px 24px 20px;
+  color: rgba(242, 238, 230, 0.76);
+  line-height: 1.5;
+}
+
+.format-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(103, 168, 201, 0.14);
+  color: #8fd0f4;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.payload-pre,
+.payload-html,
+.history-list,
+.empty-state {
+  margin: 0 24px 24px;
+}
+
+.payload-pre,
+.payload-html {
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(5, 7, 10, 0.56);
+  border: 1px solid rgba(143, 208, 244, 0.12);
+  overflow: auto;
+}
+
+.payload-pre {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.payload-pre--meta {
+  font-size: 0.88rem;
+}
+
+.payload-html :first-child {
+  margin-top: 0;
+}
+
+.payload-html :last-child {
+  margin-bottom: 0;
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(242, 238, 230, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  color: inherit;
+  text-align: left;
+  opacity: 0.72;
+}
+
+.history-item--active {
+  border-color: rgba(240, 177, 108, 0.28);
+  background: rgba(240, 177, 108, 0.08);
+  opacity: 1;
+}
+
+.history-item__title,
+.history-item__meta {
+  display: block;
+}
+
+.history-item__title {
+  font-weight: 700;
+}
+
+.history-item__meta,
+.metadata-empty,
+.empty-state {
+  color: rgba(242, 238, 230, 0.64);
+}
+
+.empty-state {
+  padding: 24px;
+  border: 1px dashed rgba(242, 238, 230, 0.12);
+  border-radius: 18px;
+}
+
+.empty-state--compact {
+  margin-top: 0;
+}
+
+@media (max-width: 960px) {
+  .shell {
+    padding: 18px;
+  }
+
+  .hero,
+  .panel__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .panel--viewer {
+    min-height: auto;
+  }
+}

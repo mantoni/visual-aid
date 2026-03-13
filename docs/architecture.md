@@ -10,6 +10,12 @@ At a high level:
 - MCP is the control and communication layer
 - the Tauri app is the local visual renderer shown to the user
 
+The initial scaffold uses:
+
+- a Vite-based vanilla TypeScript frontend for the renderer UI
+- a Tauri v2 Rust host in `src-tauri/`
+- a Node-based MCP server in `mcp/`
+
 ## Core Responsibilities
 
 The application is expected to:

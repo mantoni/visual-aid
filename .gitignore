@@ -1,0 +1,6 @@
+node_modules
+dist
+target
+.visual-aid
+src-tauri/gen
+*.log
