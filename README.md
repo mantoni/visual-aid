@@ -58,3 +58,27 @@ The baseline document set is:
 - Significant product, architecture, and process decisions must be captured as markdown before or alongside implementation.
 - When a decision changes prior direction, the relevant decision record and affected documents must be updated in the same change.
 - The markdown documents are the primary project memory for future agent work.
+
+## Current Development Loop
+
+The current scaffold supports a simple local workflow:
+
+1. Build or run the Tauri app.
+2. Write session state through the MCP server or a local helper script.
+3. Let the desktop app poll and render the latest session file.
+
+Useful commands:
+
+- `npm run check`: type-check the project
+- `npm run build`: build the frontend bundle
+- `npm run tauri:build`: build the desktop app bundle
+- `npm run mcp`: run the MCP server over stdio
+- `npm run demo:payload`: write a sample session payload to `.visual-aid/session.json`
+
+Environment variables:
+
+- `VISUAL_AID_SESSION_PATH`: override the JSON session file path
+- `VISUAL_AID_OPEN_COMMAND`: explicit command used by `visual-aid.open`
+- `VISUAL_AID_APP_PATH`: explicit app bundle path used by `visual-aid.open`
+
+If no launch override is configured, the MCP server will try to auto-discover a local macOS app bundle or binary under `src-tauri/target/`.

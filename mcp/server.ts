@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -47,20 +47,95 @@ const textResult = (text: string, isError = false) => ({
   isError,
 });
 
-const maybeLaunchApp = () => {
-  const command = process.env.VISUAL_AID_OPEN_COMMAND;
-
-  if (!command) {
-    return false;
+const detectLaunchTarget = async () => {
+  if (process.env.VISUAL_AID_OPEN_COMMAND) {
+    return {
+      kind: "command" as const,
+      value: process.env.VISUAL_AID_OPEN_COMMAND,
+      source: "VISUAL_AID_OPEN_COMMAND",
+    };
   }
 
-  spawn(command, {
+  if (process.env.VISUAL_AID_APP_PATH) {
+    return {
+      kind: "bundle" as const,
+      value: process.env.VISUAL_AID_APP_PATH,
+      source: "VISUAL_AID_APP_PATH",
+    };
+  }
+
+  const candidates = [
+    {
+      kind: "bundle" as const,
+      value: join(
+        process.cwd(),
+        "src-tauri",
+        "target",
+        "release",
+        "bundle",
+        "macos",
+        "visual-aid.app",
+      ),
+      source: "detected release app bundle",
+    },
+    {
+      kind: "binary" as const,
+      value: join(process.cwd(), "src-tauri", "target", "release", "visual-aid"),
+      source: "detected release binary",
+    },
+    {
+      kind: "binary" as const,
+      value: join(process.cwd(), "src-tauri", "target", "debug", "visual-aid"),
+      source: "detected debug binary",
+    },
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      await access(candidate.value);
+      return candidate;
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+};
+
+const maybeLaunchApp = async () => {
+  const launchTarget = await detectLaunchTarget();
+
+  if (!launchTarget) {
+    return null;
+  }
+
+  if (launchTarget.kind === "command") {
+    spawn(launchTarget.value, {
+      detached: true,
+      shell: true,
+      stdio: "ignore",
+    }).unref();
+
+    return launchTarget;
+  }
+
+  if (launchTarget.kind === "bundle") {
+    spawn("open", [launchTarget.value], {
+      detached: true,
+      stdio: "ignore",
+    }).unref();
+
+    return launchTarget;
+  }
+
+  const command = process.env.VISUAL_AID_OPEN_COMMAND;
+
+  spawn(launchTarget.value, {
     detached: true,
-    shell: true,
     stdio: "ignore",
   }).unref();
 
-  return true;
+  return launchTarget;
 };
 
 const server = new McpServer(
@@ -84,7 +159,7 @@ server.registerTool(
       "Launch the visual-aid desktop app or focus an existing instance.",
   },
   async () => {
-    const launched = maybeLaunchApp();
+    const launched = await maybeLaunchApp();
     const now = new Date().toISOString();
     const session = await readSession();
 
@@ -97,8 +172,8 @@ server.registerTool(
 
     return textResult(
       launched
-        ? `visual-aid launch command executed. Session state recorded at ${sessionPath}.`
-        : `visual-aid open recorded, but no launch command is configured. Set VISUAL_AID_OPEN_COMMAND to enable process launch. Session state recorded at ${sessionPath}.`,
+        ? `visual-aid launch executed via ${launched.source}. Session state recorded at ${sessionPath}.`
+        : `visual-aid open recorded, but no app launch target was found. Set VISUAL_AID_OPEN_COMMAND or VISUAL_AID_APP_PATH, or build the desktop app so it can be auto-detected. Session state recorded at ${sessionPath}.`,
     );
   },
 );
@@ -112,6 +187,7 @@ server.registerTool(
     inputSchema: visualAidPayloadSchema,
   },
   async (payload) => {
+    const launched = await maybeLaunchApp();
     const now = new Date().toISOString();
     const session = await readSession();
     const nextItems =
@@ -125,7 +201,7 @@ server.registerTool(
     });
 
     return textResult(
-      `Accepted ${payload.format} payload in ${payload.mode ?? "replace"} mode. Session state recorded at ${sessionPath}.`,
+      `Accepted ${payload.format} payload in ${payload.mode ?? "replace"} mode. ${launched ? `Launch checked via ${launched.source}. ` : ""}Session state recorded at ${sessionPath}.`,
     );
   },
 );
