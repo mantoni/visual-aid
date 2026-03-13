@@ -18,7 +18,8 @@ type VisualAidSession = {
 };
 
 const runtimeDir = join(process.cwd(), ".visual-aid");
-const sessionPath = join(runtimeDir, "session.json");
+const sessionPath =
+  process.env.VISUAL_AID_SESSION_PATH ?? join(runtimeDir, "session.json");
 
 const emptySession = (): VisualAidSession => ({
   openedAt: null,

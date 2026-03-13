@@ -15,6 +15,7 @@ The initial scaffold uses:
 - a Vite-based vanilla TypeScript frontend for the renderer UI
 - a Tauri v2 Rust host in `src-tauri/`
 - a Node-based MCP server in `mcp/`
+- a file-based session bridge for the first desktop integration step
 
 ## Core Responsibilities
 
@@ -34,6 +35,16 @@ The initial MCP surface should stay intentionally small:
 - `visual-aid.clear`: clear the current rendered view
 
 `visual-aid.show` may launch the app implicitly if it is not already running, but `visual-aid.open` remains useful for explicit control and debugging.
+
+## Initial Desktop Bridge
+
+The first live bridge between the MCP server and the desktop app is file-based:
+
+- the MCP server writes the current session state to a JSON file
+- the Tauri host exposes a command to read that session file
+- the frontend polls the command and refreshes the rendered view when the file changes
+
+This is an intentionally simple bridge for early implementation. It allows the contract and renderer shell to become usable before introducing a more direct runtime message channel.
 
 ## Initial Payload Envelope
 
@@ -73,6 +84,7 @@ These should be treated as render targets, not as implementation commitments to 
 - The app owns presentation.
 - MCP owns invocation and message transport between the two.
 - The project should preserve a clear boundary between transport and rendering so new formats can be added without redefining the integration model.
+- The initial desktop bridge may be replaced later without changing the external MCP payload envelope.
 
 ## Open Questions
 

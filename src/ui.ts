@@ -1,19 +1,15 @@
-type VisualAidFormat = "markdown" | "diff" | "mermaid" | "excalidraw" | "html";
-type VisualAidMode = "replace" | "append";
+import {
+  emptySession,
+  isTauriEnvironment,
+  startSessionPolling,
+  type VisualAidPayload,
+  type VisualAidSession,
+} from "./bridge";
 
-type VisualAidPayload = {
-  version: 1;
-  format: VisualAidFormat;
-  content: string;
-  id?: string;
-  title?: string;
-  summary?: string;
-  mode?: VisualAidMode;
-  metadata?: Record<string, unknown>;
-};
+type VisualAidFormat = VisualAidPayload["format"];
 
 type VisualAidState = {
-  items: VisualAidPayload[];
+  session: VisualAidSession;
   status: string;
 };
 
@@ -45,6 +41,13 @@ const samplePayload: VisualAidPayload = {
     source: "bootstrap",
   },
 };
+
+const sessionWithSample = (): VisualAidSession => ({
+  openedAt: null,
+  lastAction: "show",
+  updatedAt: null,
+  items: [window.__VISUAL_AID_BOOTSTRAP__ ?? samplePayload],
+});
 
 const formatLabels: Record<VisualAidFormat, string> = {
   markdown: "Markdown",
@@ -79,8 +82,8 @@ const renderMetadata = (payload: VisualAidPayload) => {
 };
 
 const render = (target: HTMLElement, state: VisualAidState) => {
-  const current = state.items.at(-1);
-  const history = state.items
+  const current = state.session.items.at(-1);
+  const history = state.session.items
     .slice()
     .reverse()
     .map((item, index) => {
@@ -134,7 +137,7 @@ const render = (target: HTMLElement, state: VisualAidState) => {
             <div class="panel__header">
               <div>
                 <p class="panel__label">Payload History</p>
-                <h2>${state.items.length} item${state.items.length === 1 ? "" : "s"}</h2>
+                <h2>${state.session.items.length} item${state.session.items.length === 1 ? "" : "s"}</h2>
               </div>
             </div>
             <div class="history-list">
@@ -169,26 +172,59 @@ const isPayload = (value: unknown): value is VisualAidPayload => {
   );
 };
 
-export const bootstrapApp = (target: Element | null) => {
+const statusForSession = (session: VisualAidSession) => {
+  const current = session.items.at(-1);
+
+  if (session.lastAction === "show" && current) {
+    return `Received ${formatLabels[current.format]} payload`;
+  }
+
+  if (session.lastAction === "open") {
+    return "App opened, waiting for payloads";
+  }
+
+  if (session.lastAction === "clear") {
+    return session.items.length === 0 ? "Cleared" : "Renderer shell ready";
+  }
+
+  return "Renderer shell ready";
+};
+
+export const bootstrapApp = async (target: Element | null) => {
   if (!(target instanceof HTMLElement)) {
     throw new Error("Expected #app root element to exist.");
   }
 
   const state: VisualAidState = {
-    items: [window.__VISUAL_AID_BOOTSTRAP__ ?? samplePayload],
-    status: "Renderer shell ready",
+    session: isTauriEnvironment() ? emptySession() : sessionWithSample(),
+    status: isTauriEnvironment() ? "Connecting to desktop bridge" : "Renderer shell ready",
+  };
+
+  const setSession = (session: VisualAidSession) => {
+    state.session = session;
+    state.status = statusForSession(session);
+    render(target, state);
   };
 
   const show = (payload: VisualAidPayload) => {
-    state.items = payload.mode === "append" ? [...state.items, payload] : [payload];
-    state.status = `Received ${formatLabels[payload.format]} payload`;
-    render(target, state);
+    setSession({
+      openedAt: state.session.openedAt,
+      lastAction: "show",
+      updatedAt: new Date().toISOString(),
+      items:
+        payload.mode === "append"
+          ? [...state.session.items, payload]
+          : [payload],
+    });
   };
 
   const clear = () => {
-    state.items = [];
-    state.status = "Cleared";
-    render(target, state);
+    setSession({
+      ...state.session,
+      lastAction: "clear",
+      updatedAt: new Date().toISOString(),
+      items: [],
+    });
   };
 
   window.__VISUAL_AID__ = { show, clear };
@@ -206,4 +242,10 @@ export const bootstrapApp = (target: Element | null) => {
   });
 
   render(target, state);
+
+  if (isTauriEnvironment()) {
+    await startSessionPolling((session) => {
+      setSession(session);
+    });
+  }
 };
