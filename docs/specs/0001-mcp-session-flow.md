@@ -68,6 +68,13 @@ Given both an explicit launch command and detectable local app artifacts
 When launch discovery runs
 Then the explicit launch command is selected
 
+### VAS-LAUNCH-002 Canonical dogfood sessions prefer the debug app target
+
+Given the canonical `.visual-aid/dev-session.json` session path
+And both debug and release local app artifacts are detectable
+When launch discovery runs
+Then the debug binary is selected before the release artifacts
+
 ### VAS-SINGLE-INSTANCE-001 Duplicate app launches focus the existing main window
 
 Given the app is already running for the project
@@ -79,5 +86,5 @@ And the project does not keep multiple app windows open
 
 - `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-CLEAR-001`
 - `tests/mcp/integration.test.ts`: `VAS-SHOW-003`
-- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`
+- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`
 - `src-tauri/src/main.rs`: `VAS-SINGLE-INSTANCE-001`

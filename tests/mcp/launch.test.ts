@@ -49,4 +49,39 @@ describe("MCP launch spec", () => {
       source: "VISUAL_AID_OPEN_COMMAND",
     });
   });
+
+  it("VAS-LAUNCH-002 canonical dogfood sessions prefer the debug app target", async () => {
+    const root = join(
+      process.cwd(),
+      ".tmp-tests",
+      `launch-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    );
+    tempRoots.push(root);
+
+    await mkdir(
+      join(
+        root,
+        "src-tauri",
+        "target",
+        "release",
+        "bundle",
+        "macos",
+        "visual-aid.app",
+      ),
+      { recursive: true },
+    );
+    await mkdir(join(root, "src-tauri", "target", "debug"), { recursive: true });
+    const { writeFile } = await import("node:fs/promises");
+    await writeFile(join(root, "src-tauri", "target", "debug", "visual-aid"), "");
+
+    const target = await detectLaunchTarget(root, {
+      VISUAL_AID_SESSION_PATH: join(root, ".visual-aid", "dev-session.json"),
+    });
+
+    expect(target).toEqual({
+      kind: "binary",
+      value: join(root, "src-tauri", "target", "debug", "visual-aid"),
+      source: "detected debug binary",
+    });
+  });
 });

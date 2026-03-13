@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { access } from "node:fs/promises";
-import { join } from "node:path";
+import { join, normalize } from "node:path";
 
 export type LaunchTarget =
   | {
@@ -39,7 +39,14 @@ export const detectLaunchTarget = async (
     } satisfies LaunchTarget;
   }
 
-  const candidates: LaunchTarget[] = [
+  const canonicalDogfoodSessionSuffix = normalize(
+    join(".visual-aid", "dev-session.json"),
+  );
+  const prefersDebugBinary =
+    typeof env.VISUAL_AID_SESSION_PATH === "string" &&
+    normalize(env.VISUAL_AID_SESSION_PATH).endsWith(canonicalDogfoodSessionSuffix);
+
+  const releaseCandidates: LaunchTarget[] = [
     {
       kind: "bundle",
       value: join(
@@ -64,6 +71,9 @@ export const detectLaunchTarget = async (
       source: "detected debug binary",
     },
   ];
+  const candidates = prefersDebugBinary
+    ? [releaseCandidates[2], releaseCandidates[0], releaseCandidates[1]]
+    : releaseCandidates;
 
   for (const candidate of candidates) {
     try {
