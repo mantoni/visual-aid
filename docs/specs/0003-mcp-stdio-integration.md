@@ -28,7 +28,7 @@ Related decisions:
 
 Given a connected MCP client
 When the client lists tools
-Then the tool names include `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear`
+Then the tool names include `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear`
 
 ### VAI-SHOW-001 Show writes the session file through a real MCP call
 

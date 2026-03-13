@@ -12,11 +12,16 @@ The first version should be small, explicit, and stable enough to support early 
 
 ## Decision
 
-The initial MCP contract will expose three tools:
+The initial MCP contract will expose four tools:
 
+- `visual-aid.status`: return diagnostic information about the server and session
 - `visual-aid.open`: launch the app or focus an existing instance
 - `visual-aid.show`: render a structured payload in the app
 - `visual-aid.clear`: clear the current rendered output
+
+The server will also expose one fixed diagnostic resource:
+
+- `visual-aid://status`: JSON status for host integration and debugging
 
 The initial payload envelope for `visual-aid.show` will be:
 

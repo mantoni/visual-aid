@@ -42,11 +42,16 @@ This keeps the early renderer surface explicit and testable while leaving room f
 
 The initial MCP surface should stay intentionally small:
 
+- `visual-aid.status`: return diagnostic information about the MCP server and session state
 - `visual-aid.open`: launch the app or focus an existing instance
 - `visual-aid.show`: send a structured payload to the app and render it
 - `visual-aid.clear`: clear the current rendered view
 
 `visual-aid.show` may launch the app implicitly if it is not already running, but `visual-aid.open` remains useful for explicit control and debugging.
+
+The server also exposes a diagnostic resource:
+
+- `visual-aid://status`: readable JSON status for host integration and debugging
 
 ## Initial Desktop Bridge
 

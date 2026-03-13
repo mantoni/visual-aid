@@ -79,6 +79,7 @@ describe("MCP stdio integration spec", () => {
       "visual-aid.clear",
       "visual-aid.open",
       "visual-aid.show",
+      "visual-aid.status",
     ]);
   });
 

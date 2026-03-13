@@ -19,6 +19,25 @@ const textResult = (text: string, isError = false) => ({
   isError,
 });
 
+const getDiagnostics = async () => {
+  const session = await readSession(sessionPath);
+
+  return {
+    server: {
+      name: "visual-aid",
+      version: "0.1.0",
+    },
+    session: {
+      path: sessionPath,
+      exists: session.openedAt !== null || session.updatedAt !== null || session.items.length > 0,
+      lastAction: session.lastAction,
+      itemCount: session.items.length,
+      openedAt: session.openedAt,
+      updatedAt: session.updatedAt,
+    },
+  };
+};
+
 const server = new McpServer(
   {
     name: "visual-aid",
@@ -27,8 +46,53 @@ const server = new McpServer(
   {
     capabilities: {
       logging: {},
+      resources: {},
       tools: {},
     },
+  },
+);
+
+server.registerTool(
+  "visual-aid.status",
+  {
+    title: "Get visual-aid diagnostics",
+    description:
+      "Return a human-readable summary of the current MCP and session status.",
+  },
+  async () => {
+    const diagnostics = await getDiagnostics();
+
+    return textResult(
+      [
+        `server=${diagnostics.server.name}@${diagnostics.server.version}`,
+        `sessionPath=${diagnostics.session.path}`,
+        `lastAction=${diagnostics.session.lastAction}`,
+        `itemCount=${diagnostics.session.itemCount}`,
+      ].join("\n"),
+    );
+  },
+);
+
+server.registerResource(
+  "visual-aid-status",
+  "visual-aid://status",
+  {
+    title: "visual-aid status",
+    description: "Current diagnostic information for the visual-aid MCP server.",
+    mimeType: "application/json",
+  },
+  async (uri) => {
+    const diagnostics = await getDiagnostics();
+
+    return {
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "application/json",
+          text: JSON.stringify(diagnostics, null, 2),
+        },
+      ],
+    };
   },
 );
 
