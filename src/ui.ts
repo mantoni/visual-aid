@@ -1,17 +1,18 @@
 import {
-  emptySession,
   isTauriEnvironment,
   startSessionPolling,
   type VisualAidPayload,
   type VisualAidSession,
 } from "./bridge";
-
-type VisualAidFormat = VisualAidPayload["format"];
-
-type VisualAidState = {
-  session: VisualAidSession;
-  status: string;
-};
+import {
+  applyLocalClear,
+  applyLocalShow,
+  createInitialState,
+  formatLabels,
+  sessionWithSample,
+  statusForSession,
+  type VisualAidState,
+} from "./view-model";
 
 declare global {
   interface Window {
@@ -22,40 +23,6 @@ declare global {
     };
   }
 }
-
-const samplePayload: VisualAidPayload = {
-  version: 1,
-  format: "markdown",
-  title: "Scaffold Ready",
-  summary: "The app shell is running and waiting for MCP payloads.",
-  content: [
-    "# visual-aid",
-    "",
-    "The renderer shell is ready for structured payloads.",
-    "",
-    "- format: markdown",
-    "- source: scaffold bootstrap",
-    "- next step: wire the MCP transport into the desktop host",
-  ].join("\n"),
-  metadata: {
-    source: "bootstrap",
-  },
-};
-
-const sessionWithSample = (): VisualAidSession => ({
-  openedAt: null,
-  lastAction: "show",
-  updatedAt: null,
-  items: [window.__VISUAL_AID_BOOTSTRAP__ ?? samplePayload],
-});
-
-const formatLabels: Record<VisualAidFormat, string> = {
-  markdown: "Markdown",
-  diff: "Unified Diff",
-  mermaid: "Mermaid",
-  excalidraw: "Excalidraw",
-  html: "HTML",
-};
 
 const escapeHtml = (value: string) =>
   value
@@ -172,33 +139,16 @@ const isPayload = (value: unknown): value is VisualAidPayload => {
   );
 };
 
-const statusForSession = (session: VisualAidSession) => {
-  const current = session.items.at(-1);
-
-  if (session.lastAction === "show" && current) {
-    return `Received ${formatLabels[current.format]} payload`;
-  }
-
-  if (session.lastAction === "open") {
-    return "App opened, waiting for payloads";
-  }
-
-  if (session.lastAction === "clear") {
-    return session.items.length === 0 ? "Cleared" : "Renderer shell ready";
-  }
-
-  return "Renderer shell ready";
-};
-
 export const bootstrapApp = async (target: Element | null) => {
   if (!(target instanceof HTMLElement)) {
     throw new Error("Expected #app root element to exist.");
   }
 
-  const state: VisualAidState = {
-    session: isTauriEnvironment() ? emptySession() : sessionWithSample(),
-    status: isTauriEnvironment() ? "Connecting to desktop bridge" : "Renderer shell ready",
-  };
+  const useTauriBridge = isTauriEnvironment();
+  const state: VisualAidState = createInitialState(
+    useTauriBridge,
+    window.__VISUAL_AID_BOOTSTRAP__,
+  );
 
   const setSession = (session: VisualAidSession) => {
     state.session = session;
@@ -207,24 +157,13 @@ export const bootstrapApp = async (target: Element | null) => {
   };
 
   const show = (payload: VisualAidPayload) => {
-    setSession({
-      openedAt: state.session.openedAt,
-      lastAction: "show",
-      updatedAt: new Date().toISOString(),
-      items:
-        payload.mode === "append"
-          ? [...state.session.items, payload]
-          : [payload],
-    });
+    setSession(
+      applyLocalShow(state.session, payload, new Date().toISOString()),
+    );
   };
 
   const clear = () => {
-    setSession({
-      ...state.session,
-      lastAction: "clear",
-      updatedAt: new Date().toISOString(),
-      items: [],
-    });
+    setSession(applyLocalClear(state.session, new Date().toISOString()));
   };
 
   window.__VISUAL_AID__ = { show, clear };
@@ -243,7 +182,7 @@ export const bootstrapApp = async (target: Element | null) => {
 
   render(target, state);
 
-  if (isTauriEnvironment()) {
+  if (useTauriBridge) {
     await startSessionPolling((session) => {
       setSession(session);
     });

@@ -33,34 +33,58 @@ export const emptySession = (): VisualAidSession => ({
   items: [],
 });
 
-export const startSessionPolling = async (
+export const syncSession = async (
+  lastSeen: string,
+  invokeSession: () => Promise<VisualAidSession>,
   onSession: (session: VisualAidSession) => void,
 ) => {
-  if (!isTauriEnvironment()) {
+  const session = await invokeSession();
+  const next = sessionSnapshot(session);
+
+  if (next !== lastSeen) {
+    onSession(session);
+  }
+
+  return next;
+};
+
+export const startSessionPolling = async (
+  onSession: (session: VisualAidSession) => void,
+  options?: {
+    enabled?: boolean;
+    intervalMs?: number;
+    invokeSession?: () => Promise<VisualAidSession>;
+    onError?: (error: unknown) => void;
+  },
+) => {
+  const enabled = options?.enabled ?? isTauriEnvironment();
+
+  if (!enabled) {
     return () => {};
   }
 
   let lastSeen = "";
+  const invokeSession =
+    options?.invokeSession ??
+    (() => invoke<VisualAidSession>("read_session_state"));
+  const onError =
+    options?.onError ??
+    ((error: unknown) => {
+      console.error("Failed to sync visual-aid session:", error);
+    });
+  const intervalMs = options?.intervalMs ?? 1000;
 
   const sync = async () => {
-    const session = await invoke<VisualAidSession>("read_session_state");
-    const next = sessionSnapshot(session);
-
-    if (next !== lastSeen) {
-      lastSeen = next;
-      onSession(session);
-    }
+    lastSeen = await syncSession(lastSeen, invokeSession, onSession);
   };
 
   await sync();
 
-  const timer = window.setInterval(() => {
-    void sync().catch((error) => {
-      console.error("Failed to sync visual-aid session:", error);
-    });
-  }, 1000);
+  const timer = globalThis.setInterval(() => {
+    void sync().catch(onError);
+  }, intervalMs);
 
   return () => {
-    window.clearInterval(timer);
+    globalThis.clearInterval(timer);
   };
 };
