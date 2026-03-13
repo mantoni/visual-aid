@@ -31,6 +31,7 @@
   "devDependencies": {
     "@tauri-apps/cli": "*",
     "@types/node": "*",
+    "jsdom": "^28.1.0",
     "tsx": "*",
     "typescript": "*",
     "vite": "*",

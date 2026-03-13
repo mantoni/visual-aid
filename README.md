@@ -51,6 +51,7 @@ The baseline document set is:
 - [docs/specs/0001-mcp-session-flow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
 - [docs/specs/0002-desktop-bridge-and-renderer-state.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0002-desktop-bridge-and-renderer-state.md): polling and renderer-state behavior
 - [docs/specs/0003-mcp-stdio-integration.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0003-mcp-stdio-integration.md): end-to-end MCP client/server behavior
+- [docs/specs/0004-renderer-output.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0004-renderer-output.md): visible renderer output and layout behavior
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
