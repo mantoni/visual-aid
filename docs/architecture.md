@@ -60,6 +60,7 @@ The first live bridge between the MCP server and the desktop app is file-based:
 
 - the MCP server writes the current session state to a JSON file
 - the Tauri host exposes a command to read that session file
+- the Tauri host keeps a last known good non-empty session snapshot derived from that session path for local recovery
 - the frontend polls the command and refreshes the rendered view when the file changes
 - the MCP server can auto-discover a local app bundle or release binary for launch in development
 
@@ -109,7 +110,6 @@ These should be treated as render targets, not as implementation commitments to 
 
 The following are still intentionally undecided:
 
-- persistence of rendered sessions
 - plugin model for additional formats
 
 These should be resolved through decision records as implementation starts.

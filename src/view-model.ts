@@ -21,16 +21,17 @@ export const formatLabels: Record<VisualAidPayload["format"], string> = {
 export const samplePayload: VisualAidPayload = {
   version: 1,
   format: "markdown",
-  title: "Scaffold Ready",
-  summary: "The app shell is running and waiting for MCP payloads.",
+  title: "visual-aid Ready",
+  summary: "The app shell is ready for MCP payloads and local session recovery.",
   content: [
     "# visual-aid",
     "",
     "The renderer shell is ready for structured payloads.",
     "",
     "- format: markdown",
-    "- source: scaffold bootstrap",
-    "- next step: wire the MCP transport into the desktop host",
+    "- source: bootstrap preview",
+    "- history: newest payloads stay visible in the sidebar",
+    "- recovery: the desktop host keeps the last good session snapshot",
   ].join("\n"),
   metadata: {
     source: "bootstrap",

@@ -57,6 +57,7 @@ The baseline document set is:
 - [docs/specs/0006-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0006-format-aware-renderers.md): first-pass renderer semantics for each supported format
 - [docs/specs/0007-mcp-diagnostics.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0007-mcp-diagnostics.md): diagnostic tool and resource behavior for host integration
 - [docs/specs/0008-dogfooding-start-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
+- [docs/specs/0009-persisted-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
 - [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
@@ -67,6 +68,7 @@ The baseline document set is:
 - [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
 - [docs/decisions/0008-session-history-and-item-replacement.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
 - [docs/decisions/0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
+- [docs/decisions/0010-last-known-good-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0010-last-known-good-session-restore.md): persist and restore the last known good rendered session snapshot
 
 ## Documentation Rules
 

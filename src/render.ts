@@ -295,7 +295,7 @@ export const renderAppHtml = (state: VisualAidState) => {
           <p class="eyebrow">Agent Visualization Surface</p>
           <h1>visual-aid</h1>
           <p class="hero__copy">
-            A desktop surface for structured agent output. The scaffold currently renders the latest payload and keeps a lightweight in-memory history.
+            A desktop surface for structured agent output. The app renders format-aware payloads, keeps session history in the sidebar, and can recover the last good local session snapshot.
           </p>
         </div>
         <div class="status-card">
