@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const visualAidFormatSchema = z.enum([
   "markdown",
+  "json",
   "diff",
   "mermaid",
   "excalidraw",

@@ -1,7 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 
-type VisualAidFormat = "markdown" | "diff" | "mermaid" | "excalidraw" | "html";
+type VisualAidFormat =
+  | "markdown"
+  | "json"
+  | "diff"
+  | "mermaid"
+  | "excalidraw"
+  | "html";
 type VisualAidMode = "replace" | "append";
 
 export type VisualAidPayload = {

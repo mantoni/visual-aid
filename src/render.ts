@@ -219,6 +219,117 @@ const renderExcalidraw = (content: string) => {
   `;
 };
 
+const describeJsonValue = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return `${value.length} item${value.length === 1 ? "" : "s"}`;
+  }
+
+  if (value && typeof value === "object") {
+    const size = Object.keys(value as Record<string, unknown>).length;
+    return `${size} key${size === 1 ? "" : "s"}`;
+  }
+
+  if (value === null) {
+    return "null";
+  }
+
+  return typeof value;
+};
+
+const renderJsonNode = (value: unknown, key?: string): string => {
+  const keyMarkup = key
+    ? `<span class="payload-json__key">${escapeHtml(key)}</span>`
+    : "";
+
+  if (Array.isArray(value)) {
+    const children = value
+      .map((item, index) => renderJsonNode(item, `[${index}]`))
+      .join("");
+
+    return `
+      <details class="payload-json__node" open>
+        <summary>${keyMarkup}<span class="payload-json__type">Array</span><span class="payload-json__meta">${value.length} item${value.length === 1 ? "" : "s"}</span></summary>
+        <div class="payload-json__children">${children || '<div class="payload-json__leaf payload-json__leaf--empty">[]</div>'}</div>
+      </details>
+    `;
+  }
+
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>);
+    const children = entries
+      .map(([childKey, childValue]) => renderJsonNode(childValue, childKey))
+      .join("");
+
+    return `
+      <details class="payload-json__node" open>
+        <summary>${keyMarkup}<span class="payload-json__type">Object</span><span class="payload-json__meta">${entries.length} key${entries.length === 1 ? "" : "s"}</span></summary>
+        <div class="payload-json__children">${children || '<div class="payload-json__leaf payload-json__leaf--empty">{}</div>'}</div>
+      </details>
+    `;
+  }
+
+  const primitive =
+    typeof value === "string"
+      ? `"${escapeHtml(value)}"`
+      : escapeHtml(String(value));
+  const primitiveType = value === null ? "null" : typeof value;
+
+  return `
+    <div class="payload-json__leaf">
+      ${keyMarkup}
+      <code class="payload-json__value payload-json__value--${primitiveType}">${primitive}</code>
+    </div>
+  `;
+};
+
+const renderJson = (content: string) => {
+  try {
+    const parsed = JSON.parse(content) as unknown;
+    const rootType = Array.isArray(parsed)
+      ? "Array"
+      : parsed === null
+        ? "Null"
+        : typeof parsed === "object"
+          ? "Object"
+          : typeof parsed === "string"
+            ? "String"
+            : typeof parsed === "number"
+              ? "Number"
+              : typeof parsed === "boolean"
+                ? "Boolean"
+                : "Value";
+
+    return `
+      <div class="payload-json">
+        <div class="payload-special__header">
+          <span class="payload-special__badge">Parsed JSON</span>
+          <strong>${rootType} · ${escapeHtml(describeJsonValue(parsed))}</strong>
+        </div>
+        <div class="payload-json__tree">
+          ${renderJsonNode(parsed)}
+        </div>
+        <details class="payload-json__raw">
+          <summary>Raw JSON</summary>
+          <pre class="payload-pre payload-pre--json"><code>${escapeHtml(JSON.stringify(parsed, null, 2))}</code></pre>
+        </details>
+      </div>
+    `;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to parse JSON payload.";
+
+    return `
+      <div class="payload-json">
+        <div class="payload-special__header">
+          <span class="payload-special__badge">Unparsed JSON</span>
+          <strong>${escapeHtml(message)}</strong>
+        </div>
+        <pre class="payload-pre payload-pre--json"><code>${escapeHtml(content)}</code></pre>
+      </div>
+    `;
+  }
+};
+
 const htmlFragmentStyles = [
   ":root {",
   '  color-scheme: dark;',
@@ -325,6 +436,10 @@ export const renderContent = (payload: VisualAidPayload) => {
 
   if (payload.format === "diff") {
     return renderDiff(payload.content);
+  }
+
+  if (payload.format === "json") {
+    return renderJson(payload.content);
   }
 
   if (payload.format === "mermaid") {

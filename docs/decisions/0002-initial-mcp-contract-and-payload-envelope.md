@@ -51,6 +51,7 @@ Field rules:
 Initial supported `format` values are:
 
 - `markdown`
+- `json`
 - `diff`
 - `mermaid`
 - `excalidraw`

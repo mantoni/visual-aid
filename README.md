@@ -11,6 +11,7 @@ Agents should be able to launch the app and send it structured payloads over MCP
 The visual aid is intended for structured formats such as:
 
 - Markdown
+- JSON
 - Unified diff
 - Mermaid
 - Excalidraw
@@ -75,6 +76,7 @@ The baseline document set is:
 - [docs/decisions/0013-project-owned-format-expansion.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0013-project-owned-format-expansion.md): keep new format support in the core codebase rather than plugins
 - [docs/decisions/0014-single-window-workspace-tabs.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
 - [docs/decisions/0015-richer-markdown-rendering.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
+- [docs/decisions/0016-json-payload-renderer.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
 
 ## Documentation Rules
 

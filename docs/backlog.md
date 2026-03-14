@@ -7,7 +7,6 @@ Capture the currently intended product backlog in one place so future agent sess
 ## Now
 
 - Improve Markdown rendering beyond the current lightweight renderer. This is the first renderer-quality priority.
-- Add a JSON renderer with a format-aware structured view.
 - Write installation and usage documentation for end users and agents.
 - Define and document a release process that builds installers and uploads them to GitHub Releases.
 - Strengthen agent-facing guidance so agents routinely use `visual-aid` when a richer surface helps the user inspect structured output.

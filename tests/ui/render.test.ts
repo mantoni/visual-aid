@@ -216,6 +216,69 @@ describe("Renderer output spec", () => {
     );
   });
 
+  it("VFR-JSON-001 JSON payloads render a parsed tree and raw preview", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-14T11:04:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "json",
+              title: "JSON Example",
+              content: JSON.stringify({
+                name: "visual-aid",
+                steps: ["render", "verify"],
+                ready: true,
+              }),
+            },
+          ],
+        },
+        status: "Received JSON payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-json")).not.toBeNull();
+    expect(body.textContent).toContain("Parsed JSON");
+    expect(body.querySelector(".payload-json__key")?.textContent).toBe("name");
+    expect(body.querySelector(".payload-json__value--string")?.textContent).toContain(
+      "\"visual-aid\"",
+    );
+    expect(body.querySelector(".payload-json__raw code")?.textContent).toContain(
+      "\"steps\"",
+    );
+  });
+
+  it("VFR-JSON-002 invalid JSON payloads show a readable fallback", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-14T11:05:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "json",
+              title: "Broken JSON",
+              content: '{"name": "visual-aid",}',
+            },
+          ],
+        },
+        status: "Received JSON payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.textContent).toContain("Unparsed JSON");
+    expect(body.querySelector(".payload-pre--json code")?.textContent).toContain(
+      '{"name": "visual-aid",}',
+    );
+  });
+
   it("renderAppHtml includes the Mermaid frame and source disclosure", () => {
     const body = renderDocument(
       renderAppHtml({

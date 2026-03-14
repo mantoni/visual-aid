@@ -44,6 +44,13 @@ When the client calls `visual-aid.clear`
 Then the session file contains zero items
 And the session `lastAction` is `clear`
 
+### VAI-SHOW-002 Show accepts JSON payloads through a real MCP call
+
+Given a connected MCP client and an empty session path
+When the client calls `visual-aid.show` with a valid JSON payload
+Then the session file contains exactly one JSON item
+And the session `lastAction` is `show`
+
 ### VAI-VALIDATION-001 Invalid show payloads are rejected
 
 Given a connected MCP client
@@ -53,4 +60,4 @@ And the returned text mentions input validation
 
 ## Test Mapping
 
-- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-VALIDATION-001`
+- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-VALIDATION-001`

@@ -127,6 +127,26 @@ describe("MCP stdio integration spec", () => {
     expect(session.items).toHaveLength(0);
   });
 
+  it("VAI-SHOW-002 show accepts JSON payloads through a real MCP call", async () => {
+    await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "json",
+        content: '{"name":"visual-aid","ready":true}',
+        mode: "replace",
+      },
+    });
+
+    const session = JSON.parse(
+      await readFile(sessionPath, "utf8"),
+    ) as VisualAidSession;
+
+    expect(session.lastAction).toBe("show");
+    expect(session.items).toHaveLength(1);
+    expect(session.items[0]?.format).toBe("json");
+  });
+
   it("VAS-SHOW-003 append mode updates an existing item when the payload id matches", async () => {
     await client!.callTool({
       name: "visual-aid.show",

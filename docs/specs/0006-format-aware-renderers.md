@@ -19,6 +19,7 @@ Related decisions:
 
 - Markdown uses semantic document structure instead of a raw pre block when possible.
 - Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, and fenced code blocks while escaping raw HTML.
+- JSON payloads expose parsed structure when valid and keep a readable raw fallback when invalid.
 - Diff lines are visually classified by their line prefix and role.
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
 - Excalidraw payloads expose parsed canvas metadata when valid JSON is provided.
@@ -47,6 +48,20 @@ When the renderer output is generated
 Then added and removed lines render with different diff line classes
 And hunk lines are marked separately
 
+### VFR-JSON-001 JSON payloads render a parsed tree and raw preview
+
+Given a valid JSON payload
+When the renderer output is generated
+Then the viewer shows a parsed tree representation of the JSON structure
+And a raw JSON preview remains available
+
+### VFR-JSON-002 Invalid JSON payloads show a readable fallback
+
+Given an invalid JSON payload
+When the renderer output is generated
+Then the UI shows that the payload could not be parsed
+And the raw JSON text remains visible for inspection
+
 ### VFR-MERMAID-001 Mermaid payloads render as diagrams when rendering succeeds
 
 Given a mermaid payload
@@ -70,5 +85,5 @@ And the raw JSON preview remains visible
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-DIFF-001`, `VFR-EXCALIDRAW-001`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
 - `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`

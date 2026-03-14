@@ -14,7 +14,7 @@ Related decisions:
 
 - The active session is stored as a JSON document.
 - Payloads follow the version `1` envelope defined for the MCP contract.
-- Supported formats include `markdown`, `diff`, `mermaid`, `excalidraw`, and `html`.
+- Supported formats include `markdown`, `json`, `diff`, `mermaid`, `excalidraw`, and `html`.
 
 ## Invariants
 
