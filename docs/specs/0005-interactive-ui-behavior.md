@@ -8,12 +8,13 @@ Related decisions:
 
 - [0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md)
 - [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
+- [0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md)
 
 ## Preconditions
 
 - `bootstrapApp` attaches UI event handlers to the current window.
 - Valid custom events use the same payload envelope as the MCP session flow.
-- Tauri-mode startup consumes session updates through the polling bridge.
+- Tauri-mode startup consumes session updates through the desktop bridge.
 
 ## Invariants
 
@@ -21,7 +22,7 @@ Related decisions:
 - Invalid `visual-aid:show` payloads are ignored.
 - `visual-aid:clear` resets the UI to the empty state.
 - History-item clicks switch the current payload view to the selected session item.
-- Poll-driven session updates replace the rendered content in Tauri mode.
+- Host-driven session updates replace the rendered content in Tauri mode.
 
 ## Scenarios
 
@@ -50,12 +51,12 @@ When the user clicks an older history item
 Then the current payload view updates to that item
 And the clicked history item becomes active
 
-### VUI-POLL-001 Polling updates replace the DOM in Tauri mode
+### VUI-BRIDGE-001 Host bridge updates replace the DOM in Tauri mode
 
 Given a bootstrapped Tauri app shell
-When the polling bridge delivers a session update
+When the desktop bridge delivers a session update
 Then the current payload title and status update in the DOM
 
 ## Test Mapping
 
-- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-POLL-001`
+- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-BRIDGE-001`

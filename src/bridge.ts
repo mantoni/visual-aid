@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 type VisualAidFormat = "markdown" | "diff" | "mermaid" | "excalidraw" | "html";
 type VisualAidMode = "replace" | "append";
@@ -20,6 +21,8 @@ export type VisualAidSession = {
   updatedAt: string | null;
   items: VisualAidPayload[];
 };
+
+export const SESSION_UPDATED_EVENT = "visual-aid:session-updated";
 
 const canonicalizeValue = (value: unknown): unknown => {
   if (Array.isArray(value)) {
@@ -67,14 +70,18 @@ export const syncSession = async (
   return next;
 };
 
-export const startSessionPolling = async (
+type SessionBridgeOptions = {
+  enabled?: boolean;
+  invokeSession?: () => Promise<VisualAidSession>;
+  subscribeSession?: (
+    onSession: (session: VisualAidSession) => void,
+  ) => Promise<() => void> | (() => void);
+  onError?: (error: unknown) => void;
+};
+
+export const startSessionBridge = async (
   onSession: (session: VisualAidSession) => void,
-  options?: {
-    enabled?: boolean;
-    intervalMs?: number;
-    invokeSession?: () => Promise<VisualAidSession>;
-    onError?: (error: unknown) => void;
-  },
+  options?: SessionBridgeOptions,
 ) => {
   const enabled = options?.enabled ?? isTauriEnvironment();
 
@@ -86,24 +93,42 @@ export const startSessionPolling = async (
   const invokeSession =
     options?.invokeSession ??
     (() => invoke<VisualAidSession>("read_session_state"));
+  const subscribeSession =
+    options?.subscribeSession ??
+    ((handleSession: (session: VisualAidSession) => void) =>
+      listen<VisualAidSession>(SESSION_UPDATED_EVENT, (event) => {
+        handleSession(event.payload);
+      }));
   const onError =
     options?.onError ??
     ((error: unknown) => {
       console.error("Failed to sync visual-aid session:", error);
     });
-  const intervalMs = options?.intervalMs ?? 1000;
+  const handleSession = (session: VisualAidSession) => {
+    const next = sessionSnapshot(session);
 
-  const sync = async () => {
-    lastSeen = await syncSession(lastSeen, invokeSession, onSession);
+    if (next !== lastSeen) {
+      lastSeen = next;
+      onSession(session);
+    }
   };
 
-  await sync();
+  const stopListening = await subscribeSession((session) => {
+    try {
+      handleSession(session);
+    } catch (error) {
+      onError(error);
+    }
+  });
 
-  const timer = globalThis.setInterval(() => {
-    void sync().catch(onError);
-  }, intervalMs);
+  try {
+    lastSeen = await syncSession(lastSeen, invokeSession, handleSession);
+  } catch (error) {
+    stopListening();
+    throw error;
+  }
 
   return () => {
-    globalThis.clearInterval(timer);
+    stopListening();
   };
 };

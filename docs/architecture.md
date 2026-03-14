@@ -59,9 +59,9 @@ The server also exposes a diagnostic resource:
 The first live bridge between the MCP server and the desktop app is file-based:
 
 - the MCP server writes the current session state to a JSON file
-- the Tauri host exposes a command to read that session file
+- the Tauri host exposes a command to read that session file for initial bootstrap and recovery
 - the Tauri host keeps a last known good non-empty session snapshot derived from that session path for local recovery
-- the frontend polls the command and refreshes the rendered view when the file changes
+- the Tauri host watches the session path and emits renderer updates when the session changes
 - the MCP server can auto-discover a local app bundle or release binary for launch in development
 
 This is an intentionally simple bridge for early implementation. It allows the contract and renderer shell to become usable before introducing a more direct runtime message channel.

@@ -35,3 +35,5 @@ Costs and constraints:
 - polling is less efficient than a push-based bridge
 - file path coordination must be handled carefully across environments
 - the session file becomes an implementation detail that will likely be replaced later
+
+The frontend-polling portion of this decision is superseded by [0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md).

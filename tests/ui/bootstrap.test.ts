@@ -150,7 +150,7 @@ describe("Interactive UI spec", () => {
     cleanup();
   });
 
-  it("VUI-POLL-001 polling updates replace the DOM in Tauri mode", async () => {
+  it("VUI-BRIDGE-001 host bridge updates replace the DOM in Tauri mode", async () => {
     const polledSession: VisualAidSession = {
       openedAt: "2026-03-13T17:32:00.000Z",
       lastAction: "show",
@@ -168,7 +168,7 @@ describe("Interactive UI spec", () => {
 
     const cleanup = await bootstrapApp(setupRoot(), {
       isTauriEnvironment: () => true,
-      startSessionPolling: async (onSession) => {
+      startSessionBridge: async (onSession) => {
         onSession(polledSession);
         return stopPolling;
       },

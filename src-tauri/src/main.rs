@@ -5,10 +5,15 @@ use std::{
     env, fs,
     io::ErrorKind,
     path::{Path, PathBuf},
+    sync::mpsc::channel,
+    thread,
 };
 
+use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use serde::{Deserialize, Serialize};
-use tauri::{Manager, WebviewWindow};
+use tauri::{Emitter, Manager, WebviewWindow};
+
+const SESSION_UPDATED_EVENT: &str = "visual-aid:session-updated";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -96,6 +101,79 @@ fn remove_persisted_session(path: &Path) -> Result<(), String> {
     }
 }
 
+fn session_watch_root(session_path: &Path) -> PathBuf {
+    session_path
+        .parent()
+        .map(Path::to_path_buf)
+        .unwrap_or_else(|| PathBuf::from("."))
+}
+
+fn should_handle_session_event(event: &Event, session_path: &Path) -> bool {
+    event.paths.iter().any(|path| path == session_path)
+}
+
+fn emit_session_update<R: tauri::Runtime>(
+    app: &tauri::AppHandle<R>,
+    session_path: &Path,
+) -> Result<(), String> {
+    let session = read_session_state(Some(session_path.to_string_lossy().into_owned()))?;
+    app.emit(SESSION_UPDATED_EVENT, session)
+        .map_err(|error| error.to_string())
+}
+
+fn start_session_bridge_watcher<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<(), String> {
+    let session_path = default_session_path()?;
+    let watch_root = session_watch_root(&session_path);
+
+    if let Some(parent) = session_path.parent() {
+        fs::create_dir_all(parent).map_err(|error| error.to_string())?;
+    }
+
+    thread::spawn(move || {
+        let (tx, rx) = channel();
+        let mut watcher = match RecommendedWatcher::new(
+            move |result| {
+                let _ = tx.send(result);
+            },
+            Config::default(),
+        ) {
+            Ok(watcher) => watcher,
+            Err(error) => {
+                eprintln!("visual-aid session watcher failed to start: {error}");
+                return;
+            }
+        };
+
+        if let Err(error) = watcher.watch(&watch_root, RecursiveMode::NonRecursive) {
+            eprintln!(
+                "visual-aid session watcher failed to watch {}: {error}",
+                watch_root.display()
+            );
+            return;
+        }
+
+        for result in rx {
+            let event = match result {
+                Ok(event) => event,
+                Err(error) => {
+                    eprintln!("visual-aid session watcher error: {error}");
+                    continue;
+                }
+            };
+
+            if !should_handle_session_event(&event, &session_path) {
+                continue;
+            }
+
+            if let Err(error) = emit_session_update(&app, &session_path) {
+                eprintln!("visual-aid session emit failed: {error}");
+            }
+        }
+    });
+
+    Ok(())
+}
+
 #[tauri::command]
 fn read_session_state(session_path: Option<String>) -> Result<VisualAidSession, String> {
     let path = session_path
@@ -148,6 +226,10 @@ fn focus_existing_window(window: &impl FocusableWindow) {
 
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            start_session_bridge_watcher(app.handle().clone())?;
+            Ok(())
+        })
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             if let Some(window) = app.get_webview_window("main") {
                 focus_existing_window(&window);
@@ -161,9 +243,10 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::{
-        focus_existing_window, persisted_session_path, read_session_state, FocusableWindow,
-        VisualAidSession,
+        focus_existing_window, persisted_session_path, read_session_state, session_watch_root,
+        should_handle_session_event, FocusableWindow, VisualAidSession,
     };
+    use notify::Event;
     use std::{
         cell::RefCell,
         env, fs,
@@ -342,5 +425,29 @@ mod tests {
         assert!(!persisted_path.exists());
 
         cleanup(&root);
+    }
+
+    #[test]
+    fn vpb_watch_001_session_events_match_the_live_session_path() {
+        let session_path = PathBuf::from("/tmp/visual-aid/session.json");
+        let event = Event {
+            kind: notify::event::EventKind::Modify(notify::event::ModifyKind::Data(
+                notify::event::DataChange::Any,
+            )),
+            paths: vec![session_path.clone()],
+            attrs: Default::default(),
+        };
+
+        assert!(should_handle_session_event(&event, &session_path));
+    }
+
+    #[test]
+    fn vpb_watch_002_watch_root_uses_the_session_parent_directory() {
+        let session_path = PathBuf::from("/tmp/visual-aid/session.json");
+
+        assert_eq!(
+            session_watch_root(&session_path),
+            PathBuf::from("/tmp/visual-aid")
+        );
     }
 }

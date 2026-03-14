@@ -3,16 +3,17 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   emptySession,
   sessionSnapshot,
-  startSessionPolling,
+  startSessionBridge,
+  type VisualAidSession,
   syncSession,
 } from "../../src/bridge";
 
-describe("Desktop bridge polling spec", () => {
+describe("Desktop bridge spec", () => {
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it("VAB-POLL-001 polling emits when the session changes", async () => {
+  it("VAB-BRIDGE-001 bridge emits when the session changes", async () => {
     const session = {
       ...emptySession(),
       lastAction: "show" as const,
@@ -32,9 +33,7 @@ describe("Desktop bridge polling spec", () => {
     expect(next).not.toBe("");
   });
 
-  it("VAB-POLL-002 polling suppresses identical snapshots", async () => {
-    vi.useFakeTimers();
-
+  it("VAB-BRIDGE-002 bridge suppresses identical snapshots", async () => {
     const session = {
       ...emptySession(),
       lastAction: "show" as const,
@@ -46,25 +45,32 @@ describe("Desktop bridge polling spec", () => {
         },
       ],
     };
-    const invokeSession = vi.fn().mockResolvedValue(session);
     const onSession = vi.fn();
+    const stopListening = vi.fn();
+    let deliver: ((session: VisualAidSession) => void) | null = null;
 
-    const stop = await startSessionPolling(onSession, {
+    const stop = await startSessionBridge(onSession, {
       enabled: true,
-      intervalMs: 25,
-      invokeSession,
+      invokeSession: vi.fn().mockResolvedValue(session),
+      subscribeSession: (handleSession) => {
+        deliver = handleSession;
+        return stopListening;
+      },
     });
 
     expect(onSession).toHaveBeenCalledTimes(1);
-
-    await vi.advanceTimersByTimeAsync(50);
+    const deliverUpdate = deliver as ((session: VisualAidSession) => void) | null;
+    if (deliverUpdate) {
+      deliverUpdate(session);
+    }
 
     expect(onSession).toHaveBeenCalledTimes(1);
 
     stop();
+    expect(stopListening).toHaveBeenCalledTimes(1);
   });
 
-  it("VAB-POLL-003 polling treats reordered metadata keys as the same snapshot", async () => {
+  it("VAB-BRIDGE-003 bridge treats reordered metadata keys as the same snapshot", async () => {
     const firstSession = {
       ...emptySession(),
       lastAction: "show" as const,
@@ -96,14 +102,26 @@ describe("Desktop bridge polling spec", () => {
       ],
     };
     const onSession = vi.fn();
+    const stopListening = vi.fn();
+    let deliver: ((session: VisualAidSession) => void) | null = null;
 
-    const next = await syncSession(
-      sessionSnapshot(firstSession),
-      async () => reorderedSession,
-      onSession,
-    );
+    await startSessionBridge(onSession, {
+      enabled: true,
+      invokeSession: async () => firstSession,
+      subscribeSession: (handleSession) => {
+        deliver = handleSession;
+        return stopListening;
+      },
+    });
+
+    onSession.mockClear();
+    const deliverUpdate = deliver as ((session: VisualAidSession) => void) | null;
+    if (deliverUpdate) {
+      deliverUpdate(reorderedSession);
+    }
 
     expect(onSession).not.toHaveBeenCalled();
-    expect(next).toBe(sessionSnapshot(firstSession));
+    expect(sessionSnapshot(reorderedSession)).toBe(sessionSnapshot(firstSession));
+    expect(stopListening).not.toHaveBeenCalled();
   });
 });

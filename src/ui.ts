@@ -1,6 +1,6 @@
 import {
   isTauriEnvironment,
-  startSessionPolling,
+  startSessionBridge,
   type VisualAidPayload,
   type VisualAidSession,
 } from "./bridge";
@@ -19,7 +19,7 @@ type BootstrapOptions = {
   bootstrapPayload?: VisualAidPayload;
   isTauriEnvironment?: () => boolean;
   now?: () => string;
-  startSessionPolling?: (
+  startSessionBridge?: (
     onSession: (session: VisualAidSession) => void,
   ) => Promise<() => void> | (() => void);
 };
@@ -57,7 +57,7 @@ export const bootstrapApp = async (
 
   const detectTauri = options?.isTauriEnvironment ?? isTauriEnvironment;
   const now = options?.now ?? (() => new Date().toISOString());
-  const pollSession = options?.startSessionPolling ?? startSessionPolling;
+  const connectSessionBridge = options?.startSessionBridge ?? startSessionBridge;
   const useTauriBridge = detectTauri();
   const state: VisualAidState = createInitialState(
     useTauriBridge,
@@ -122,16 +122,16 @@ export const bootstrapApp = async (
 
   renderInto(target, state);
 
-  let stopPolling = () => {};
+  let stopBridge = () => {};
 
   if (useTauriBridge) {
-    stopPolling = await pollSession((session) => {
+    stopBridge = await connectSessionBridge((session) => {
       setSession(session);
     });
   }
 
   return () => {
-    stopPolling();
+    stopBridge();
     window.removeEventListener("visual-aid:show", onShowEvent);
     window.removeEventListener("visual-aid:clear", onClearEvent);
     target.removeEventListener("click", onHistoryClick);
