@@ -47,6 +47,8 @@ The baseline document set is:
 
 - [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md): operating rules for agent-driven work in this repository
 - [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): current system shape and technical boundaries
+- [docs/installation.md](/Users/max/projects/mantoni/visual-aid/docs/installation.md): source-first installation guide and prerequisites
+- [docs/usage.md](/Users/max/projects/mantoni/visual-aid/docs/usage.md): how to run the app, connect Codex, and send payloads
 - [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md): canonical local dogfood flow centered on `npm start`
 - [docs/backlog.md](/Users/max/projects/mantoni/visual-aid/docs/backlog.md): current prioritized backlog and accepted future direction
 - [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
