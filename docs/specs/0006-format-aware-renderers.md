@@ -18,6 +18,7 @@ Related decisions:
 ## Invariants
 
 - Markdown uses semantic document structure instead of a raw pre block when possible.
+- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, and fenced code blocks while escaping raw HTML.
 - Diff lines are visually classified by their line prefix and role.
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
 - Excalidraw payloads expose parsed canvas metadata when valid JSON is provided.
@@ -31,6 +32,13 @@ Given a markdown payload with headings and bullet items
 When the renderer output is generated
 Then headings are rendered as heading elements
 And bullet items are rendered inside a list
+
+### VFR-MARKDOWN-002 Markdown renders richer document structure
+
+Given a markdown payload with a blockquote, ordered list, table, link, and fenced code block
+When the renderer output is generated
+Then the output includes semantic blockquote, ordered-list, table, and anchor elements
+And fenced code is rendered in a dedicated code block with its language label visible when supplied
 
 ### VFR-DIFF-001 Diff lines are classified by line type
 
@@ -62,5 +70,5 @@ And the raw JSON preview remains visible
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-DIFF-001`, `VFR-EXCALIDRAW-001`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-DIFF-001`, `VFR-EXCALIDRAW-001`
 - `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`

@@ -200,17 +200,128 @@ h2 {
 .payload-markdown h2,
 .payload-markdown h3,
 .payload-markdown h4,
+.payload-markdown h5,
+.payload-markdown h6,
 .payload-markdown p,
-.payload-markdown ul {
+.payload-markdown ul,
+.payload-markdown ol,
+.payload-markdown blockquote,
+.payload-markdown hr,
+.payload-markdown table,
+.payload-markdown .payload-markdown__table-wrap,
+.payload-markdown .payload-markdown__code-block {
   margin: 0 0 14px;
+}
+
+.payload-markdown {
+  line-height: 1.7;
+}
+
+.payload-markdown h1,
+.payload-markdown h2,
+.payload-markdown h3,
+.payload-markdown h4,
+.payload-markdown h5,
+.payload-markdown h6 {
+  line-height: 1.15;
+}
+
+.payload-markdown h1 {
+  font-size: 2rem;
+}
+
+.payload-markdown h2 {
+  font-size: 1.6rem;
+}
+
+.payload-markdown h3 {
+  font-size: 1.3rem;
 }
 
 .payload-markdown ul {
   padding-left: 20px;
 }
 
+.payload-markdown ol {
+  padding-left: 24px;
+}
+
 .payload-markdown li + li {
   margin-top: 8px;
+}
+
+.payload-markdown blockquote {
+  padding: 12px 16px;
+  border-left: 3px solid rgba(240, 177, 108, 0.72);
+  border-radius: 0 12px 12px 0;
+  background: rgba(240, 177, 108, 0.08);
+  color: rgba(242, 238, 230, 0.82);
+}
+
+.payload-markdown p code,
+.payload-markdown li code,
+.payload-markdown blockquote code,
+.payload-markdown table code {
+  padding: 0.15rem 0.4rem;
+  border-radius: 8px;
+  background: rgba(143, 208, 244, 0.12);
+  color: #8fd0f4;
+}
+
+.payload-markdown a {
+  color: #8fd0f4;
+  text-underline-offset: 0.18em;
+}
+
+.payload-markdown hr {
+  border: 0;
+  border-top: 1px solid rgba(242, 238, 230, 0.14);
+}
+
+.payload-markdown__code-block {
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(4, 8, 12, 0.88);
+  border: 1px solid rgba(143, 208, 244, 0.12);
+}
+
+.payload-markdown__code-label {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(143, 208, 244, 0.12);
+  color: rgba(242, 238, 230, 0.64);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.payload-pre--markdown {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.payload-markdown__table-wrap {
+  overflow: auto;
+}
+
+.payload-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.payload-markdown th,
+.payload-markdown td {
+  padding: 10px 12px;
+  border: 1px solid rgba(143, 208, 244, 0.14);
+  text-align: left;
+  vertical-align: top;
+}
+
+.payload-markdown th {
+  background: rgba(143, 208, 244, 0.08);
 }
 
 .payload-diff {

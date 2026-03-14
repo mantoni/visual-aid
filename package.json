@@ -27,11 +27,13 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "*",
     "@tauri-apps/api": "^2.10.1",
+    "markdown-it": "^14.1.1",
     "mermaid": "^11.13.0",
     "zod": "*"
   },
   "devDependencies": {
     "@tauri-apps/cli": "*",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "*",
     "jsdom": "^28.1.0",
     "tsx": "*",

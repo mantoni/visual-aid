@@ -1,4 +1,5 @@
 import type { VisualAidPayload } from "./bridge";
+import MarkdownIt from "markdown-it";
 import { hydrateMermaidPayloads } from "./mermaid";
 import {
   formatLabels,
@@ -17,6 +18,23 @@ const escapeHtmlAttribute = (value: string) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
+type MarkdownToken = {
+  info: string;
+  attrSet(name: string, value: string): void;
+};
+
+type MarkdownRendererLike = {
+  renderToken(tokens: MarkdownToken[], idx: number, options: unknown): string;
+};
+
+type MarkdownRenderRule = (
+  tokens: MarkdownToken[],
+  idx: number,
+  options: unknown,
+  env: unknown,
+  self: MarkdownRendererLike,
+) => string;
+
 const sortObjectKeys = (value: unknown): unknown => {
   if (Array.isArray(value)) {
     return value.map((item) => sortObjectKeys(item));
@@ -33,104 +51,71 @@ const sortObjectKeys = (value: unknown): unknown => {
   return value;
 };
 
-const renderMarkdown = (content: string) => {
-  const lines = content.split("\n");
-  const parts: string[] = [];
-  let paragraph: string[] = [];
-  let listItems: string[] = [];
-  let codeFence: string[] = [];
-  let codeFenceOpen = false;
+const markdownRenderer = new MarkdownIt({
+  html: false,
+  linkify: true,
+});
 
-  const flushParagraph = () => {
-    if (paragraph.length === 0) {
-      return;
-    }
+const existingMarkdownFence = markdownRenderer.renderer.rules.fence
+  ?.bind(markdownRenderer.renderer.rules) as MarkdownRenderRule | undefined;
 
-    parts.push(`<p>${escapeHtml(paragraph.join(" "))}</p>`);
-    paragraph = [];
-  };
+const defaultMarkdownFence: MarkdownRenderRule =
+  existingMarkdownFence ??
+  ((
+    tokens: MarkdownToken[],
+    idx: number,
+    options: unknown,
+    _env: unknown,
+    self: MarkdownRendererLike,
+  ) => self.renderToken(tokens, idx, options));
 
-  const flushList = () => {
-    if (listItems.length === 0) {
-      return;
-    }
+markdownRenderer.renderer.rules.fence = (
+  tokens: MarkdownToken[],
+  idx: number,
+  options: unknown,
+  env: unknown,
+  self: MarkdownRendererLike,
+) => {
+  const token = tokens[idx];
+  const language = token?.info.trim().split(/\s+/, 1)[0] ?? "";
+  const rendered = defaultMarkdownFence(tokens, idx, options, env, self).replace(
+    "<pre><code",
+    '<pre class="payload-pre payload-pre--markdown"><code',
+  );
 
-    parts.push(
-      `<ul>${listItems
-        .map((item) => `<li>${escapeHtml(item)}</li>`)
-        .join("")}</ul>`,
-    );
-    listItems = [];
-  };
-
-  const flushCodeFence = () => {
-    if (!codeFenceOpen) {
-      return;
-    }
-
-    parts.push(
-      `<pre class="payload-pre payload-pre--markdown"><code>${escapeHtml(codeFence.join("\n"))}</code></pre>`,
-    );
-    codeFence = [];
-    codeFenceOpen = false;
-  };
-
-  for (const rawLine of lines) {
-    const line = rawLine.trimEnd();
-
-    if (line.startsWith("```")) {
-      flushParagraph();
-      flushList();
-
-      if (codeFenceOpen) {
-        flushCodeFence();
-      } else {
-        codeFenceOpen = true;
-        codeFence = [];
-      }
-
-      continue;
-    }
-
-    if (codeFenceOpen) {
-      codeFence.push(rawLine);
-      continue;
-    }
-
-    if (line === "") {
-      flushParagraph();
-      flushList();
-      continue;
-    }
-
-    const heading = line.match(/^(#{1,3})\s+(.*)$/);
-    if (heading) {
-      flushParagraph();
-      flushList();
-      const level = heading[1].length;
-      parts.push(
-        `<h${level + 1} class="payload-markdown__heading">${escapeHtml(heading[2])}</h${level + 1}>`,
-      );
-      continue;
-    }
-
-    const bullet = line.match(/^-\s+(.*)$/);
-    if (bullet) {
-      flushParagraph();
-      listItems.push(bullet[1]);
-      continue;
-    }
-
-    flushList();
-    paragraph.push(line);
+  if (!language) {
+    return `<div class="payload-markdown__code-block">${rendered}</div>`;
   }
 
-  flushParagraph();
-  flushList();
-  flushCodeFence();
-
-  return `<div class="payload-markdown">${parts.join("")}</div>`;
+  return `
+    <div class="payload-markdown__code-block">
+      <div class="payload-markdown__code-label">${escapeHtml(language)}</div>
+      ${rendered}
+    </div>
+  `;
 };
+
+markdownRenderer.renderer.rules.table_open = () =>
+  '<div class="payload-markdown__table-wrap"><table>';
+markdownRenderer.renderer.rules.table_close = () => "</table></div>";
+
+markdownRenderer.renderer.rules.link_open = (
+  tokens: MarkdownToken[],
+  idx: number,
+  options: unknown,
+  _env: unknown,
+  self: MarkdownRendererLike,
+) => {
+  const token = tokens[idx];
+
+  token?.attrSet("target", "_blank");
+  token?.attrSet("rel", "noreferrer");
+
+  return self.renderToken(tokens, idx, options);
+};
+
+const renderMarkdown = (content: string) =>
+  `<div class="payload-markdown">${markdownRenderer.render(content)}</div>`;
 
 const classifyDiffLine = (line: string) => {
   if (line.startsWith("@@")) {

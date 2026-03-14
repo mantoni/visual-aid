@@ -38,3 +38,4 @@ Costs and constraints:
 
 The Mermaid-specific source-viewer portion of this decision is superseded by [0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md).
 The HTML-specific direct-container portion of this decision is superseded by [0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md).
+The Markdown-specific minimal-parser portion of this decision is superseded by [0015-richer-markdown-rendering.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0015-richer-markdown-rendering.md).

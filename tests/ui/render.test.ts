@@ -36,7 +36,7 @@ describe("Renderer output spec", () => {
     });
     const body = renderDocument(renderAppHtml(state));
 
-    expect(body.querySelector(".payload-markdown h2")?.textContent).toBe(
+    expect(body.querySelector(".payload-markdown h1")?.textContent).toBe(
       "Heading",
     );
     expect(body.querySelector(".format-chip")?.textContent).toBe("Markdown");
@@ -115,10 +115,67 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".payload-markdown h2")?.textContent).toBe(
+    expect(body.querySelector(".payload-markdown h1")?.textContent).toBe(
       "Heading",
     );
     expect(body.querySelectorAll(".payload-markdown li")).toHaveLength(2);
+  });
+
+  it("VFR-MARKDOWN-002 markdown tables, blockquotes, links, and fenced code render with richer structure", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-14T10:12:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Rich Markdown",
+              content: [
+                "## Status",
+                "",
+                "> Ready for review with `cargo test` output attached.",
+                "",
+                "1. Build",
+                "2. Verify",
+                "",
+                "| Step | State |",
+                "| --- | --- |",
+                "| Render | Done |",
+                "",
+                "See [docs](https://example.com/docs).",
+                "",
+                "```ts",
+                "export const status = 'ok';",
+                "```",
+              ].join("\n"),
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-markdown blockquote")?.textContent).toContain(
+      "Ready for review",
+    );
+    expect(body.querySelectorAll(".payload-markdown ol li")).toHaveLength(2);
+    expect(body.querySelector(".payload-markdown table th")?.textContent).toBe("Step");
+    expect(body.querySelector(".payload-markdown a")?.getAttribute("href")).toBe(
+      "https://example.com/docs",
+    );
+    expect(body.querySelector(".payload-markdown a")?.getAttribute("target")).toBe(
+      "_blank",
+    );
+    expect(body.querySelector(".payload-markdown__code-label")?.textContent).toBe(
+      "ts",
+    );
+    expect(body.querySelector(".payload-pre--markdown code")?.textContent).toContain(
+      "export const status = 'ok';",
+    );
   });
 
   it("VFR-DIFF-001 diff lines are classified by line type", () => {
@@ -249,7 +306,7 @@ describe("Renderer output spec", () => {
     expect(body.querySelectorAll(".history-item")[1]?.classList.contains("history-item--active")).toBe(
       true,
     );
-    expect(body.querySelector(".payload-markdown h2")?.textContent).toBe("Older");
+    expect(body.querySelector(".payload-markdown h1")?.textContent).toBe("Older");
   });
 
   it("VAR-META-001 metadata renders in a stable key order", () => {

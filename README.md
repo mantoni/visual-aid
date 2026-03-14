@@ -74,6 +74,7 @@ The baseline document set is:
 - [docs/decisions/0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md): replace renderer polling with host-emitted desktop session updates
 - [docs/decisions/0013-project-owned-format-expansion.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0013-project-owned-format-expansion.md): keep new format support in the core codebase rather than plugins
 - [docs/decisions/0014-single-window-workspace-tabs.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
+- [docs/decisions/0015-richer-markdown-rendering.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
 
 ## Documentation Rules
 
