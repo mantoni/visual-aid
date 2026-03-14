@@ -156,7 +156,7 @@ describe("Renderer output spec", () => {
     );
   });
 
-  it("VFR-MERMAID-001 mermaid payloads render in a diagram-source viewer", () => {
+  it("renderAppHtml includes the Mermaid frame and source disclosure", () => {
     const body = renderDocument(
       renderAppHtml({
         session: {
@@ -178,7 +178,8 @@ describe("Renderer output spec", () => {
     );
 
     expect(body.querySelector(".payload-mermaid")).not.toBeNull();
-    expect(body.querySelector(".payload-mermaid .payload-pre code")?.textContent).toContain(
+    expect(body.querySelector(".payload-mermaid__diagram")).not.toBeNull();
+    expect(body.querySelector(".payload-mermaid__source-code")?.textContent).toContain(
       "graph TD",
     );
   });

@@ -272,6 +272,60 @@ h2 {
   color: rgba(242, 238, 230, 0.58);
 }
 
+.payload-mermaid__diagram {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: 18px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top, rgba(103, 168, 201, 0.16), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 244, 247, 0.96));
+  border: 1px solid rgba(143, 208, 244, 0.18);
+  overflow: auto;
+}
+
+.payload-mermaid__diagram svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.payload-mermaid__placeholder,
+.payload-mermaid__status,
+.payload-mermaid__error,
+.payload-mermaid__source summary {
+  font-size: 0.9rem;
+}
+
+.payload-mermaid__placeholder,
+.payload-mermaid__status {
+  color: rgba(242, 238, 230, 0.72);
+}
+
+.payload-mermaid__status,
+.payload-mermaid__error {
+  margin: 14px 0 0;
+}
+
+.payload-mermaid__error {
+  color: #f0b16c;
+}
+
+.payload-mermaid__source {
+  margin-top: 16px;
+}
+
+.payload-mermaid__source summary {
+  cursor: pointer;
+  color: #8fd0f4;
+  font-weight: 700;
+}
+
+.payload-pre--mermaid {
+  margin: 12px 0 0;
+}
+
 .payload-special__stats span {
   display: block;
   font-size: 0.78rem;

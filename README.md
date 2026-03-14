@@ -66,6 +66,7 @@ The baseline document set is:
 - [docs/decisions/0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
 - [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
 - [docs/decisions/0008-session-history-and-item-replacement.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
+- [docs/decisions/0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
 
 ## Documentation Rules
 

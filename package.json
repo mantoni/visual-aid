@@ -27,6 +27,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "*",
     "@tauri-apps/api": "^2.10.1",
+    "mermaid": "^11.13.0",
     "zod": "*"
   },
   "devDependencies": {

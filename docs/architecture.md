@@ -32,7 +32,7 @@ The first renderer pass is format-aware without depending on heavyweight externa
 
 - Markdown is rendered into simple semantic HTML for headings, paragraphs, lists, and fenced code blocks.
 - Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.
-- Mermaid is rendered as a dedicated diagram-source viewer rather than an executed diagram engine.
+- Mermaid is rendered as a diagram when possible, with the source kept available as a fallback and inspection surface.
 - Excalidraw is rendered as a structured canvas summary with raw JSON preview when possible.
 - HTML is rendered directly inside an isolated payload container.
 - The renderer uses a single main viewer with a reverse-chronological history sidebar; the newest item is selected by default, and the user can select older session items locally.

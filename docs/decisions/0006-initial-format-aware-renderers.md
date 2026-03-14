@@ -33,5 +33,7 @@ Positive consequences:
 Costs and constraints:
 
 - markdown support is intentionally partial rather than full CommonMark
-- mermaid and excalidraw are specialized viewers, not fully interactive engines yet
+- excalidraw is still a specialized viewer, not a fully interactive engine
 - richer rendering libraries may still be needed later and could replace these implementations
+
+The Mermaid-specific source-viewer portion of this decision is superseded by [0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md).

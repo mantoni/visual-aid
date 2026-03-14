@@ -1,4 +1,5 @@
 import type { VisualAidPayload } from "./bridge";
+import { hydrateMermaidPayloads } from "./mermaid";
 import {
   formatLabels,
   resolveSelectedIndex,
@@ -156,10 +157,18 @@ const renderMermaid = (content: string) => {
   return `
     <div class="payload-mermaid">
       <div class="payload-special__header">
-        <span class="payload-special__badge">Diagram Source</span>
+        <span class="payload-special__badge">Rendered Diagram</span>
         <strong>${escapeHtml(firstLine)}</strong>
       </div>
-      <pre class="payload-pre"><code>${escapeHtml(content)}</code></pre>
+      <div class="payload-mermaid__diagram" data-mermaid-diagram>
+        <div class="payload-mermaid__placeholder">Rendering diagram...</div>
+      </div>
+      <p class="payload-mermaid__status" data-mermaid-status>Rendering diagram</p>
+      <p class="payload-mermaid__error" data-mermaid-error hidden></p>
+      <details class="payload-mermaid__source" data-mermaid-source-panel>
+        <summary>Source</summary>
+        <pre class="payload-pre payload-pre--mermaid"><code class="payload-mermaid__source-code" data-mermaid-source-code>${escapeHtml(content)}</code></pre>
+      </details>
     </div>
   `;
 };
@@ -326,4 +335,7 @@ export const renderAppHtml = (state: VisualAidState) => {
 
 export const renderInto = (target: HTMLElement, state: VisualAidState) => {
   target.innerHTML = renderAppHtml(state);
+  void hydrateMermaidPayloads(target).catch((error) => {
+    console.error("Failed to hydrate Mermaid payloads:", error);
+  });
 };

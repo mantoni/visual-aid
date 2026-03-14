@@ -13,13 +13,13 @@ Related decisions:
 
 - The renderer receives a valid payload format from the version `1` envelope.
 - The output is generated in the current payload panel.
-- The first renderer pass favors specialized HTML structure over full external rendering engines.
+- The renderer favors lightweight format-specific presentation with readable fallbacks when a richer view cannot be produced.
 
 ## Invariants
 
 - Markdown uses semantic document structure instead of a raw pre block when possible.
 - Diff lines are visually classified by their line prefix and role.
-- Mermaid payloads are shown in a dedicated diagram-source frame.
+- Mermaid payloads attempt to render as diagrams while keeping their source available.
 - Excalidraw payloads expose parsed canvas metadata when valid JSON is provided.
 - HTML payloads still render as direct markup.
 
@@ -39,12 +39,19 @@ When the renderer output is generated
 Then added and removed lines render with different diff line classes
 And hunk lines are marked separately
 
-### VFR-MERMAID-001 Mermaid payloads render in a diagram-source viewer
+### VFR-MERMAID-001 Mermaid payloads render as diagrams when rendering succeeds
 
 Given a mermaid payload
 When the renderer output is generated
-Then the viewer includes a mermaid-specific container
-And the source text remains visible
+Then the viewer includes a rendered diagram
+And the Mermaid source remains available in the payload view
+
+### VFR-MERMAID-002 Mermaid payloads fall back to source when rendering fails
+
+Given a mermaid payload that cannot be rendered
+When the renderer attempts to hydrate the payload view
+Then the UI shows a readable fallback message
+And the Mermaid source is visible for inspection
 
 ### VFR-EXCALIDRAW-001 Excalidraw payloads show parsed summary details
 
@@ -55,4 +62,5 @@ And the raw JSON preview remains visible
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-DIFF-001`, `VFR-MERMAID-001`, `VFR-EXCALIDRAW-001`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-DIFF-001`, `VFR-EXCALIDRAW-001`
+- `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`
