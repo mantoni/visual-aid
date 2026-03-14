@@ -21,7 +21,26 @@ export type VisualAidSession = {
   items: VisualAidPayload[];
 };
 
-const sessionSnapshot = (session: VisualAidSession) => JSON.stringify(session);
+const canonicalizeValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalizeValue(item));
+  }
+
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).sort(
+      ([left], [right]) => left.localeCompare(right),
+    );
+
+    return Object.fromEntries(
+      entries.map(([key, nested]) => [key, canonicalizeValue(nested)]),
+    );
+  }
+
+  return value;
+};
+
+export const sessionSnapshot = (session: VisualAidSession) =>
+  JSON.stringify(canonicalizeValue(session));
 
 export const isTauriEnvironment = () =>
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;

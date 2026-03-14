@@ -12,6 +12,22 @@ export const escapeHtml = (value: string) =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 
+const sortObjectKeys = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map((item) => sortObjectKeys(item));
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, nested]) => [key, sortObjectKeys(nested)]),
+    );
+  }
+
+  return value;
+};
+
 const renderMarkdown = (content: string) => {
   const lines = content.split("\n");
   const parts: string[] = [];
@@ -243,7 +259,7 @@ export const renderMetadata = (payload: VisualAidPayload) => {
   }
 
   return `<pre class="payload-pre payload-pre--meta"><code>${escapeHtml(
-    JSON.stringify(payload.metadata, null, 2),
+    JSON.stringify(sortObjectKeys(payload.metadata), null, 2),
   )}</code></pre>`;
 };
 

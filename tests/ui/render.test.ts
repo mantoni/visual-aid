@@ -248,4 +248,35 @@ describe("Renderer output spec", () => {
     );
     expect(body.querySelector(".payload-markdown h2")?.textContent).toBe("Older");
   });
+
+  it("VAR-META-001 metadata renders in a stable key order", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-14T09:50:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "mermaid",
+              title: "Metadata Example",
+              content: "graph TD\nA-->B",
+              metadata: {
+                source: "manual-test",
+                checkedAt: "2026-03-14T10:22:30+01:00",
+              },
+            },
+          ],
+        },
+        status: "Received Mermaid payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-pre--meta code")?.textContent).toBe(`{
+  "checkedAt": "2026-03-14T10:22:30+01:00",
+  "source": "manual-test"
+}`);
+  });
 });

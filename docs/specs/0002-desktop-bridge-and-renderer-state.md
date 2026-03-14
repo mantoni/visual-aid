@@ -19,6 +19,7 @@ Related decisions:
 
 - Polling emits an update when the session snapshot changes.
 - Polling suppresses duplicate updates for identical snapshots.
+- Polling treats semantically identical sessions as unchanged even when object key order differs.
 - A `show` session with a current payload produces a format-specific status string.
 - Non-Tauri startup uses a sample session so the shell is inspectable without the desktop bridge.
 
@@ -33,6 +34,12 @@ Then the session listener is invoked with the new session
 ### VAB-POLL-002 Polling suppresses identical snapshots
 
 Given a polling bridge with an unchanged session snapshot
+When the next polling cycle runs
+Then the session listener is not invoked again
+
+### VAB-POLL-003 Polling ignores metadata key reordering for unchanged sessions
+
+Given a polling bridge with the same session content but different metadata key order
 When the next polling cycle runs
 Then the session listener is not invoked again
 
@@ -51,5 +58,5 @@ And the initial status is `Renderer shell ready`
 
 ## Test Mapping
 
-- `tests/bridge/polling.test.ts`: `VAB-POLL-001`, `VAB-POLL-002`
+- `tests/bridge/polling.test.ts`: `VAB-POLL-001`, `VAB-POLL-002`, `VAB-POLL-003`
 - `tests/ui/view-model.test.ts`: `VAB-STATUS-001`, `VAB-BOOT-001`

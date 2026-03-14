@@ -21,6 +21,7 @@ Related decisions:
 - The current payload panel reflects the selected session item.
 - History is shown in reverse chronological order with the selected item marked active.
 - HTML payloads render as HTML content, not escaped text.
+- Metadata is rendered in a stable JSON key order for the selected payload.
 
 ## Scenarios
 
@@ -59,6 +60,13 @@ When the renderer output is generated
 Then the current payload title matches the selected older item
 And the matching history item has the active state class
 
+### VAR-META-001 Metadata renders in a stable key order
+
+Given a renderer state with payload metadata
+When the renderer output is generated
+Then the metadata panel renders JSON for the selected payload
+And the metadata keys appear in a stable sorted order
+
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-HISTORY-002`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-HISTORY-002`, `VAR-META-001`
