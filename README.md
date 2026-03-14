@@ -69,6 +69,7 @@ The baseline document set is:
 - [docs/decisions/0008-session-history-and-item-replacement.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
 - [docs/decisions/0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
 - [docs/decisions/0010-last-known-good-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0010-last-known-good-session-restore.md): persist and restore the last known good rendered session snapshot
+- [docs/decisions/0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md): render HTML payloads as isolated fragments with app-owned styling
 
 ## Documentation Rules
 

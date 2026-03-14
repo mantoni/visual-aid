@@ -20,7 +20,7 @@ Specifically:
 - diff will render as classified line rows with visual add/remove/hunk/file distinction
 - mermaid will render as a diagram-source viewer with format-specific framing
 - excalidraw will render a parsed summary view plus JSON preview when valid
-- HTML will render directly in the payload container
+- HTML will render inside the payload container
 
 ## Consequences
 
@@ -37,3 +37,4 @@ Costs and constraints:
 - richer rendering libraries may still be needed later and could replace these implementations
 
 The Mermaid-specific source-viewer portion of this decision is superseded by [0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md).
+The HTML-specific direct-container portion of this decision is superseded by [0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md).

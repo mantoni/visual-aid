@@ -8,19 +8,20 @@ Related decisions:
 
 - [0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md)
 - [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
+- [0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md)
 
 ## Preconditions
 
 - The renderer receives a `VisualAidState` containing a session and status string.
 - The current payload is the selected session item, defaulting to the newest item in the session list.
-- HTML payloads are rendered as HTML, while non-HTML payloads are rendered in preformatted code blocks.
+- HTML payloads are treated as fragment content rendered in an isolated HTML surface.
 
 ## Invariants
 
 - Empty sessions show explicit empty-state messaging.
 - The current payload panel reflects the selected session item.
 - History is shown in reverse chronological order with the selected item marked active.
-- HTML payloads render as HTML content, not escaped text.
+- HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
 - Metadata is rendered in a stable JSON key order for the selected payload.
 
 ## Scenarios
@@ -39,12 +40,12 @@ When the renderer output is generated
 Then the current payload content appears inside `.payload-markdown`
 And the format chip reads `Markdown`
 
-### VAR-HTML-001 HTML payloads render as HTML content
+### VAR-HTML-001 HTML payloads render as isolated fragments
 
 Given a renderer state with an HTML payload
 When the renderer output is generated
-Then the payload appears inside `.payload-html`
-And embedded markup is present in the DOM
+Then the payload appears inside a sandboxed HTML iframe
+And the payload markup is stored in the iframe document source rather than injected into the host DOM
 
 ### VAR-HISTORY-001 History is reverse chronological with the newest item active
 

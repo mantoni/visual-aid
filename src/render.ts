@@ -12,6 +12,11 @@ export const escapeHtml = (value: string) =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 
+const escapeHtmlAttribute = (value: string) =>
+  escapeHtml(value)
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
 const sortObjectKeys = (value: unknown): unknown => {
   if (Array.isArray(value)) {
     return value.map((item) => sortObjectKeys(item));
@@ -229,6 +234,105 @@ const renderExcalidraw = (content: string) => {
   `;
 };
 
+const htmlFragmentStyles = [
+  ":root {",
+  '  color-scheme: dark;',
+  '  font-family: "Avenir Next", "Segoe UI", sans-serif;',
+  "}",
+  "body {",
+  "  margin: 0;",
+  "  padding: 20px;",
+  "  background: #0b1118;",
+  "  color: #f2eee6;",
+  "}",
+  ".payload-html-doc {",
+  "  line-height: 1.6;",
+  "}",
+  ".payload-html-fragment > :first-child {",
+  "  margin-top: 0;",
+  "}",
+  ".payload-html-fragment > :last-child {",
+  "  margin-bottom: 0;",
+  "}",
+  "h1, h2, h3, h4, h5, h6 {",
+  "  margin: 0 0 0.8rem;",
+  "  line-height: 1.15;",
+  "}",
+  "p, ul, ol, table, pre, blockquote {",
+  "  margin: 0 0 1rem;",
+  "}",
+  "ul, ol {",
+  "  padding-left: 1.25rem;",
+  "}",
+  "table {",
+  "  width: 100%;",
+  "  border-collapse: collapse;",
+  "}",
+  "th, td {",
+  "  padding: 0.65rem 0.75rem;",
+  "  border: 1px solid rgba(143, 208, 244, 0.18);",
+  "  text-align: left;",
+  "  vertical-align: top;",
+  "}",
+  "th {",
+  "  background: rgba(143, 208, 244, 0.12);",
+  "}",
+  "pre, code {",
+  '  font-family: "JetBrains Mono", "SFMono-Regular", monospace;',
+  "}",
+  "pre {",
+  "  padding: 1rem;",
+  "  border-radius: 12px;",
+  "  background: rgba(5, 7, 10, 0.62);",
+  "  overflow: auto;",
+  "}",
+  "blockquote {",
+  "  padding-left: 1rem;",
+  "  border-left: 3px solid rgba(240, 177, 108, 0.72);",
+  "  color: rgba(242, 238, 230, 0.82);",
+  "}",
+  ".va-callout {",
+  "  padding: 1rem 1.1rem;",
+  "  border-radius: 14px;",
+  "  border: 1px solid rgba(240, 177, 108, 0.22);",
+  "  background: rgba(240, 177, 108, 0.08);",
+  "}",
+  ".va-card {",
+  "  padding: 1rem 1.1rem;",
+  "  border-radius: 14px;",
+  "  border: 1px solid rgba(143, 208, 244, 0.2);",
+  "  background: rgba(143, 208, 244, 0.08);",
+  "}",
+].join("\n");
+
+const renderHtml = (content: string) => {
+  const srcdoc = [
+    "<!doctype html>",
+    '<html lang="en">',
+    "  <head>",
+    '    <meta charset="utf-8" />',
+    '    <meta name="viewport" content="width=device-width, initial-scale=1" />',
+    `    <style>${htmlFragmentStyles}</style>`,
+    "  </head>",
+    '  <body class="payload-html-doc">',
+    `    <main class="payload-html-fragment">${content}</main>`,
+    "  </body>",
+    "</html>",
+  ].join("\n");
+
+  return `
+    <div class="payload-html">
+      <iframe
+        class="payload-html__frame"
+        title="HTML payload"
+        sandbox
+        referrerpolicy="no-referrer"
+        srcdoc="${escapeHtmlAttribute(srcdoc)}"
+      ></iframe>
+    </div>
+  `;
+};
+
 export const renderContent = (payload: VisualAidPayload) => {
   if (payload.format === "markdown") {
     return renderMarkdown(payload.content);
@@ -247,7 +351,7 @@ export const renderContent = (payload: VisualAidPayload) => {
   }
 
   if (payload.format === "html") {
-    return `<div class="payload-html">${payload.content}</div>`;
+    return renderHtml(payload.content);
   }
 
   return `<pre class="payload-pre"><code>${escapeHtml(payload.content)}</code></pre>`;

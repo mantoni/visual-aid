@@ -183,6 +183,20 @@ h2 {
   margin-bottom: 0;
 }
 
+.payload-html {
+  padding: 10px;
+  overflow: hidden;
+}
+
+.payload-html__frame {
+  display: block;
+  width: 100%;
+  min-height: 420px;
+  border: 0;
+  border-radius: 14px;
+  background: #0b1118;
+}
+
 .payload-markdown h2,
 .payload-markdown h3,
 .payload-markdown h4,

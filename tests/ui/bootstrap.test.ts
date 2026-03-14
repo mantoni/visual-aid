@@ -180,9 +180,11 @@ describe("Interactive UI spec", () => {
     expect(document.querySelector(".status-card strong")?.textContent).toBe(
       "Received HTML payload",
     );
-    expect(document.querySelector(".payload-html em")?.textContent).toBe(
-      "Polled",
-    );
+    expect(
+      document
+        .querySelector<HTMLIFrameElement>(".payload-html__frame")
+        ?.getAttribute("srcdoc"),
+    ).toContain("<section><em>Polled</em> HTML</section>");
 
     cleanup();
 

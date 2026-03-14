@@ -34,7 +34,7 @@ The first renderer pass is format-aware without depending on heavyweight externa
 - Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.
 - Mermaid is rendered as a diagram when possible, with the source kept available as a fallback and inspection surface.
 - Excalidraw is rendered as a structured canvas summary with raw JSON preview when possible.
-- HTML is rendered directly inside an isolated payload container.
+- HTML is rendered as fragment-oriented content inside a sandboxed isolated payload surface with app-provided base styles.
 - The renderer uses a single main viewer with a reverse-chronological history sidebar; the newest item is selected by default, and the user can select older session items locally.
 
 This keeps the early renderer surface explicit and testable while leaving room for richer format-specific engines later.

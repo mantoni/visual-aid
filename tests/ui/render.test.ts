@@ -50,10 +50,13 @@ describe("Renderer output spec", () => {
       content: "<article><strong>Rendered</strong> HTML</article>",
     });
     const body = renderDocument(renderAppHtml(state));
+    const frame = body.querySelector<HTMLIFrameElement>(".payload-html__frame");
 
-    expect(body.querySelector(".payload-html article strong")?.textContent).toBe(
-      "Rendered",
-    );
+    expect(frame).not.toBeNull();
+    expect(frame?.getAttribute("sandbox")).toBe("");
+    expect(frame?.getAttribute("srcdoc")).toContain("<article><strong>Rendered</strong> HTML</article>");
+    expect(frame?.getAttribute("srcdoc")).toContain(".payload-html-fragment");
+    expect(body.querySelector(".payload-html article")).toBeNull();
     expect(body.querySelector(".payload-pre")).toBeNull();
   });
 
