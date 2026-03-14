@@ -34,6 +34,8 @@ Initial scope should focus on:
 - rendering a small set of high-value formats well
 - making the integration simple enough that agents can use it consistently
 
+Format growth remains product-owned. New formats should be added directly in the codebase rather than through a plugin model.
+
 Out of scope for the earliest phase:
 
 - collaborative editing
@@ -54,3 +56,9 @@ Support a first set of renderers for the core structured formats.
 ### Milestone 3
 
 Improve usability, layout, and payload handling so the tool becomes practical in everyday agent workflows.
+
+Current Milestone 3 priorities include:
+
+- stronger renderer quality, starting with Markdown
+- single-window multi-session browsing across working directories
+- installation, usage, and release documentation that make the product easier to adopt

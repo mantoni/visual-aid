@@ -32,6 +32,7 @@ Then read only the specific spec and decision files relevant to the task.
 - For any new externally visible behavior, add or update a spec in `docs/specs/` and add or update automated tests in the same change.
 - Keep specs behavioral. Do not document internal implementation details as acceptance criteria.
 - Test names should include the matching scenario ID from the relevant spec.
+- When a diagram, diff, backlog, long explanation, or other structured artifact would be easier to inspect visually, use `visual-aid` instead of forcing it through terminal text alone.
 - Open markdown resources in `visual-aid` when they are part of the task context and help the user inspect repo state.
 - Send resource-oriented output or extra meta-information through `visual-aid` when that richer surface is useful, while keeping terminal replies concise.
 

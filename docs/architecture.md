@@ -106,10 +106,16 @@ These should be treated as render targets, not as implementation commitments to 
 - The project should preserve a clear boundary between transport and rendering so new formats can be added without redefining the integration model.
 - The initial desktop bridge may be replaced later without changing the external MCP payload envelope.
 
+## Product Direction
+
+The following direction is now explicit even where implementation is still pending:
+
+- additional formats are added in the product codebase rather than through a plugin model
+- future multi-session browsing should use single-window workspace tabs keyed by working directory
+- a future full-document HTML workflow should use a separate explicit format instead of broadening fragment-oriented `html`
+
 ## Open Questions
 
 The following are still intentionally undecided:
 
-- plugin model for additional formats
-
-These should be resolved through decision records as implementation starts.
+- whether the project should add a separate non-Codex helper that launches both the app and the MCP server for manual workflows

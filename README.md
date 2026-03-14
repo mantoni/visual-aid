@@ -16,7 +16,7 @@ The visual aid is intended for structured formats such as:
 - Excalidraw
 - HTML
 
-The set of supported formats can grow over time as new agent workflows emerge.
+The set of supported formats can grow over time as new agent workflows emerge, but those formats are added in the product codebase rather than through a plugin model.
 
 ## Core Idea
 
@@ -47,6 +47,7 @@ The baseline document set is:
 - [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md): operating rules for agent-driven work in this repository
 - [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): current system shape and technical boundaries
 - [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md): canonical local dogfood flow centered on `npm start`
+- [docs/backlog.md](/Users/max/projects/mantoni/visual-aid/docs/backlog.md): current prioritized backlog and accepted future direction
 - [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
 - [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md): behavior-spec convention and test mapping rules
 - [docs/specs/0001-mcp-session-flow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
@@ -71,6 +72,8 @@ The baseline document set is:
 - [docs/decisions/0010-last-known-good-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0010-last-known-good-session-restore.md): persist and restore the last known good rendered session snapshot
 - [docs/decisions/0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md): render HTML payloads as isolated fragments with app-owned styling
 - [docs/decisions/0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md): replace renderer polling with host-emitted desktop session updates
+- [docs/decisions/0013-project-owned-format-expansion.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0013-project-owned-format-expansion.md): keep new format support in the core codebase rather than plugins
+- [docs/decisions/0014-single-window-workspace-tabs.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
 
 ## Documentation Rules
 
