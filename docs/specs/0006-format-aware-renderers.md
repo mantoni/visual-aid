@@ -6,8 +6,8 @@ Define the visible semantics of the first renderer pass for each supported paylo
 
 Related decisions:
 
-- [0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md)
-- [0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md)
+- [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
+- [0006-initial-format-aware-renderers.md](../decisions/0006-initial-format-aware-renderers.md)
 
 ## Preconditions
 

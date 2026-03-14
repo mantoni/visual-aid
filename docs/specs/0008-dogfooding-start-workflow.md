@@ -6,8 +6,8 @@ Define the canonical local dogfooding workflow centered on `npm start`.
 
 Related decisions:
 
-- [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
-- [0007-npm-start-canonical-dogfood-entrypoint.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md)
+- [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
+- [0007-npm-start-canonical-dogfood-entrypoint.md](../decisions/0007-npm-start-canonical-dogfood-entrypoint.md)
 
 ## Preconditions
 

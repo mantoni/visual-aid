@@ -6,8 +6,8 @@ Define the desktop host behavior for persisting and restoring the last known goo
 
 Related decisions:
 
-- [0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md)
-- [0010-last-known-good-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0010-last-known-good-session-restore.md)
+- [0004-initial-file-based-session-bridge.md](../decisions/0004-initial-file-based-session-bridge.md)
+- [0010-last-known-good-session-restore.md](../decisions/0010-last-known-good-session-restore.md)
 
 ## Preconditions
 

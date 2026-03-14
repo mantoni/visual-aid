@@ -6,9 +6,9 @@ Define the visible renderer behavior for the current payload area, history list,
 
 Related decisions:
 
-- [0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md)
-- [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
-- [0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md)
+- [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
+- [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
+- [0011-isolated-html-fragments.md](../decisions/0011-isolated-html-fragments.md)
 
 ## Preconditions
 

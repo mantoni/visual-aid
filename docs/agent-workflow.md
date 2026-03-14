@@ -22,12 +22,12 @@ This repository is designed to be built and maintained primarily by a coding age
 
 The following documents form the minimum operating framework for the project:
 
-- [README.md](/Users/max/projects/mantoni/visual-aid/README.md): project summary and document map
-- [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): what the project is for and what it should become
-- [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): technical structure, boundaries, and integration model
-- [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md): behavior spec format and test linkage
-- [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
-- [docs/decisions/*.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): individual decision records
+- [README.md](../README.md): project summary and document map
+- [docs/product.md](product.md): what the project is for and what it should become
+- [docs/architecture.md](architecture.md): technical structure, boundaries, and integration model
+- [docs/specs/README.md](specs/README.md): behavior spec format and test linkage
+- [docs/decisions/README.md](decisions/README.md): how decisions are recorded
+- [docs/decisions/*.md](decisions/README.md): individual decision records
 
 ## Decision Policy
 

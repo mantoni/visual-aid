@@ -6,9 +6,9 @@ Define the live DOM behavior of the app shell when it receives custom UI events 
 
 Related decisions:
 
-- [0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md)
-- [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
-- [0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md)
+- [0004-initial-file-based-session-bridge.md](../decisions/0004-initial-file-based-session-bridge.md)
+- [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
+- [0012-push-based-session-bridge.md](../decisions/0012-push-based-session-bridge.md)
 
 ## Preconditions
 

@@ -45,40 +45,40 @@ This project is intended to be built and maintained primarily by a coding agent.
 
 The baseline document set is:
 
-- [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md): operating rules for agent-driven work in this repository
-- [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md): current system shape and technical boundaries
-- [docs/installation.md](/Users/max/projects/mantoni/visual-aid/docs/installation.md): source-first installation guide and prerequisites
-- [docs/usage.md](/Users/max/projects/mantoni/visual-aid/docs/usage.md): how to run the app, connect Codex, and send payloads
-- [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md): canonical local dogfood flow centered on `npm start`
-- [docs/backlog.md](/Users/max/projects/mantoni/visual-aid/docs/backlog.md): current prioritized backlog and accepted future direction
-- [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md): product intent, scope, and milestone direction
-- [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md): behavior-spec convention and test mapping rules
-- [docs/specs/0001-mcp-session-flow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
-- [docs/specs/0002-desktop-bridge-and-renderer-state.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0002-desktop-bridge-and-renderer-state.md): polling and renderer-state behavior
-- [docs/specs/0003-mcp-stdio-integration.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0003-mcp-stdio-integration.md): end-to-end MCP client/server behavior
-- [docs/specs/0004-renderer-output.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0004-renderer-output.md): visible renderer output and layout behavior
-- [docs/specs/0005-interactive-ui-behavior.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0005-interactive-ui-behavior.md): live DOM updates from UI events and polling
-- [docs/specs/0006-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0006-format-aware-renderers.md): first-pass renderer semantics for each supported format
-- [docs/specs/0007-mcp-diagnostics.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0007-mcp-diagnostics.md): diagnostic tool and resource behavior for host integration
-- [docs/specs/0008-dogfooding-start-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
-- [docs/specs/0009-persisted-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
-- [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md): how decisions are recorded
-- [docs/decisions/0001-markdown-first-agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
-- [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
-- [docs/decisions/0003-initial-scaffold-stack-and-layout.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0003-initial-scaffold-stack-and-layout.md): initial implementation stack and repository layout
-- [docs/decisions/0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
-- [docs/decisions/0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
-- [docs/decisions/0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
-- [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
-- [docs/decisions/0008-session-history-and-item-replacement.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
-- [docs/decisions/0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
-- [docs/decisions/0010-last-known-good-session-restore.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0010-last-known-good-session-restore.md): persist and restore the last known good rendered session snapshot
-- [docs/decisions/0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md): render HTML payloads as isolated fragments with app-owned styling
-- [docs/decisions/0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md): replace renderer polling with host-emitted desktop session updates
-- [docs/decisions/0013-project-owned-format-expansion.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0013-project-owned-format-expansion.md): keep new format support in the core codebase rather than plugins
-- [docs/decisions/0014-single-window-workspace-tabs.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
-- [docs/decisions/0015-richer-markdown-rendering.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
-- [docs/decisions/0016-json-payload-renderer.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
+- [docs/agent-workflow.md](docs/agent-workflow.md): operating rules for agent-driven work in this repository
+- [docs/architecture.md](docs/architecture.md): current system shape and technical boundaries
+- [docs/installation.md](docs/installation.md): source-first installation guide and prerequisites
+- [docs/usage.md](docs/usage.md): how to run the app, connect Codex, and send payloads
+- [docs/dogfooding.md](docs/dogfooding.md): canonical local dogfood flow centered on `npm start`
+- [docs/backlog.md](docs/backlog.md): current prioritized backlog and accepted future direction
+- [docs/product.md](docs/product.md): product intent, scope, and milestone direction
+- [docs/specs/README.md](docs/specs/README.md): behavior-spec convention and test mapping rules
+- [docs/specs/0001-mcp-session-flow.md](docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
+- [docs/specs/0002-desktop-bridge-and-renderer-state.md](docs/specs/0002-desktop-bridge-and-renderer-state.md): polling and renderer-state behavior
+- [docs/specs/0003-mcp-stdio-integration.md](docs/specs/0003-mcp-stdio-integration.md): end-to-end MCP client/server behavior
+- [docs/specs/0004-renderer-output.md](docs/specs/0004-renderer-output.md): visible renderer output and layout behavior
+- [docs/specs/0005-interactive-ui-behavior.md](docs/specs/0005-interactive-ui-behavior.md): live DOM updates from UI events and polling
+- [docs/specs/0006-format-aware-renderers.md](docs/specs/0006-format-aware-renderers.md): first-pass renderer semantics for each supported format
+- [docs/specs/0007-mcp-diagnostics.md](docs/specs/0007-mcp-diagnostics.md): diagnostic tool and resource behavior for host integration
+- [docs/specs/0008-dogfooding-start-workflow.md](docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
+- [docs/specs/0009-persisted-session-restore.md](docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
+- [docs/decisions/README.md](docs/decisions/README.md): how decisions are recorded
+- [docs/decisions/0001-markdown-first-agent-workflow.md](docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
+- [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
+- [docs/decisions/0003-initial-scaffold-stack-and-layout.md](docs/decisions/0003-initial-scaffold-stack-and-layout.md): initial implementation stack and repository layout
+- [docs/decisions/0004-initial-file-based-session-bridge.md](docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
+- [docs/decisions/0005-documentation-integrated-testing.md](docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
+- [docs/decisions/0006-initial-format-aware-renderers.md](docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
+- [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
+- [docs/decisions/0008-session-history-and-item-replacement.md](docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
+- [docs/decisions/0009-rendered-mermaid-diagrams.md](docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
+- [docs/decisions/0010-last-known-good-session-restore.md](docs/decisions/0010-last-known-good-session-restore.md): persist and restore the last known good rendered session snapshot
+- [docs/decisions/0011-isolated-html-fragments.md](docs/decisions/0011-isolated-html-fragments.md): render HTML payloads as isolated fragments with app-owned styling
+- [docs/decisions/0012-push-based-session-bridge.md](docs/decisions/0012-push-based-session-bridge.md): replace renderer polling with host-emitted desktop session updates
+- [docs/decisions/0013-project-owned-format-expansion.md](docs/decisions/0013-project-owned-format-expansion.md): keep new format support in the core codebase rather than plugins
+- [docs/decisions/0014-single-window-workspace-tabs.md](docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
+- [docs/decisions/0015-richer-markdown-rendering.md](docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
+- [docs/decisions/0016-json-payload-renderer.md](docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
 
 ## Documentation Rules
 
@@ -94,7 +94,7 @@ The canonical local dogfood flow is:
 2. Point Codex `config.toml` at that same session file. Run `npm start -- --print-codex-config` to print the exact MCP config block for the current checkout.
 3. Use `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` through Codex against that shared session.
 
-See [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md) for the concise setup and quick test sequence.
+See [docs/dogfooding.md](docs/dogfooding.md) for the concise setup and quick test sequence.
 
 Useful commands:
 

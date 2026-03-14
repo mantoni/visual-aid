@@ -38,6 +38,6 @@ Costs and constraints:
 - excalidraw is still a specialized viewer, not a fully interactive engine
 - richer rendering libraries may still be needed later and could replace these implementations
 
-The Mermaid-specific source-viewer portion of this decision is superseded by [0009-rendered-mermaid-diagrams.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0009-rendered-mermaid-diagrams.md).
-The HTML-specific direct-container portion of this decision is superseded by [0011-isolated-html-fragments.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0011-isolated-html-fragments.md).
-The Markdown-specific minimal-parser portion of this decision is superseded by [0015-richer-markdown-rendering.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0015-richer-markdown-rendering.md).
+The Mermaid-specific source-viewer portion of this decision is superseded by [0009-rendered-mermaid-diagrams.md](0009-rendered-mermaid-diagrams.md).
+The HTML-specific direct-container portion of this decision is superseded by [0011-isolated-html-fragments.md](0011-isolated-html-fragments.md).
+The Markdown-specific minimal-parser portion of this decision is superseded by [0015-richer-markdown-rendering.md](0015-richer-markdown-rendering.md).

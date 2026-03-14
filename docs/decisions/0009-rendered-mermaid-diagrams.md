@@ -37,4 +37,4 @@ Costs and constraints:
 
 - the frontend now depends on the Mermaid renderer library
 - Mermaid output is still a viewer, not a full diagram editor
-- this supersedes the Mermaid-specific source-viewer portion of [0006-initial-format-aware-renderers.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0006-initial-format-aware-renderers.md)
+- this supersedes the Mermaid-specific source-viewer portion of [0006-initial-format-aware-renderers.md](0006-initial-format-aware-renderers.md)

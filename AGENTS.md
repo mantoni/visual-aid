@@ -8,12 +8,12 @@ The repository is intentionally optimized for agent-driven work. Markdown docume
 ## First Read
 Before making substantial changes, read the documents that define the current direction:
 
-- [README.md](/Users/max/projects/mantoni/visual-aid/README.md)
-- [docs/agent-workflow.md](/Users/max/projects/mantoni/visual-aid/docs/agent-workflow.md)
-- [docs/product.md](/Users/max/projects/mantoni/visual-aid/docs/product.md)
-- [docs/architecture.md](/Users/max/projects/mantoni/visual-aid/docs/architecture.md)
-- [docs/specs/README.md](/Users/max/projects/mantoni/visual-aid/docs/specs/README.md)
-- [docs/decisions/README.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/README.md)
+- [README.md](README.md)
+- [docs/agent-workflow.md](docs/agent-workflow.md)
+- [docs/product.md](docs/product.md)
+- [docs/architecture.md](docs/architecture.md)
+- [docs/specs/README.md](docs/specs/README.md)
+- [docs/decisions/README.md](docs/decisions/README.md)
 
 Then read only the specific spec and decision files relevant to the task.
 
@@ -37,7 +37,7 @@ Then read only the specific spec and decision files relevant to the task.
 - Send resource-oriented output or extra meta-information through `visual-aid` when that richer surface is useful, while keeping terminal replies concise.
 
 ## Development Flow
-The canonical local workflow is the dogfood path described in [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md).
+The canonical local workflow is the dogfood path described in [docs/dogfooding.md](docs/dogfooding.md).
 
 Use these commands by default:
 

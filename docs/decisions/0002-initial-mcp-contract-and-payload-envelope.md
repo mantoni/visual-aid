@@ -68,7 +68,7 @@ Positive consequences:
 Costs and constraints:
 
 - some future formats may require richer metadata than this first envelope provides
-- detailed append behavior and item replacement semantics are defined later in [0008-session-history-and-item-replacement.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0008-session-history-and-item-replacement.md)
+- detailed append behavior and item replacement semantics are defined later in [0008-session-history-and-item-replacement.md](0008-session-history-and-item-replacement.md)
 - future incompatible changes will require a schema version increment and a new decision record
 
 ## Notes

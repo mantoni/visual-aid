@@ -6,9 +6,9 @@ Define the expected end-to-end behavior of the MCP server when a real MCP client
 
 Related decisions:
 
-- [0002-initial-mcp-contract-and-payload-envelope.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md)
-- [0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md)
-- [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
+- [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
+- [0004-initial-file-based-session-bridge.md](../decisions/0004-initial-file-based-session-bridge.md)
+- [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
 
 ## Preconditions
 

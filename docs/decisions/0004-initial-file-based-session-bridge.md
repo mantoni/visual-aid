@@ -36,4 +36,4 @@ Costs and constraints:
 - file path coordination must be handled carefully across environments
 - the session file becomes an implementation detail that will likely be replaced later
 
-The frontend-polling portion of this decision is superseded by [0012-push-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0012-push-based-session-bridge.md).
+The frontend-polling portion of this decision is superseded by [0012-push-based-session-bridge.md](0012-push-based-session-bridge.md).

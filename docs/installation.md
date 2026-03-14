@@ -59,5 +59,5 @@ Tauri will place the resulting bundles under `src-tauri/target/`.
 
 ## Related Docs
 
-- [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md)
-- [docs/usage.md](/Users/max/projects/mantoni/visual-aid/docs/usage.md)
+- [docs/dogfooding.md](dogfooding.md)
+- [docs/usage.md](usage.md)

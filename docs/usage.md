@@ -118,5 +118,5 @@ env VISUAL_AID_SESSION_PATH=(pwd)/.visual-aid/dev-session.json npx tsx mcp/serve
 
 ## Related Docs
 
-- [docs/installation.md](/Users/max/projects/mantoni/visual-aid/docs/installation.md)
-- [docs/dogfooding.md](/Users/max/projects/mantoni/visual-aid/docs/dogfooding.md)
+- [docs/installation.md](installation.md)
+- [docs/dogfooding.md](dogfooding.md)

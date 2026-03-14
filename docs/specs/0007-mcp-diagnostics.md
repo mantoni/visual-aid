@@ -6,7 +6,7 @@ Define a minimal diagnostic surface that makes MCP host integration observable t
 
 Related decisions:
 
-- [0005-documentation-integrated-testing.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0005-documentation-integrated-testing.md)
+- [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
 
 ## Preconditions
 

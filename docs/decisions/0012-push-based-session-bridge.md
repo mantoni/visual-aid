@@ -37,4 +37,4 @@ Costs and constraints:
 
 - the host now owns a file watcher lifecycle in addition to session reads
 - file-watch behavior must handle create, replace, and remove events reliably
-- this supersedes the frontend polling portion of [0004-initial-file-based-session-bridge.md](/Users/max/projects/mantoni/visual-aid/docs/decisions/0004-initial-file-based-session-bridge.md)
+- this supersedes the frontend polling portion of [0004-initial-file-based-session-bridge.md](0004-initial-file-based-session-bridge.md)
