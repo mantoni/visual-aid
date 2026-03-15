@@ -119,7 +119,8 @@ export const bootstrapApp = async (
 
   const detectTauri = options?.isTauriEnvironment ?? isTauriEnvironment;
   const now = options?.now ?? (() => new Date().toISOString());
-  const connectSessionBridge = options?.startSessionBridge ?? startSessionBridge;
+  const connectSessionBridge =
+    options?.startSessionBridge ?? startSessionBridge;
   const useTauriBridge = detectTauri();
   const state: VisualAidState = createInitialState(
     useTauriBridge,
@@ -142,6 +143,7 @@ export const bootstrapApp = async (
       state.selectedWorkspaceId,
     );
     state.selectedIndex = newestItemIndex(session);
+    state.historyOpen = false;
     renderInto(target, state);
   };
 
@@ -200,6 +202,7 @@ export const bootstrapApp = async (
     }
 
     state.selectedIndex = resolveSelectedIndex(state.session, index);
+    state.historyOpen = false;
     renderInto(target, state);
   };
 
@@ -232,6 +235,41 @@ export const bootstrapApp = async (
     );
     state.status = statusForSession(state.session);
     state.selectedIndex = newestItemIndex(state.session);
+    state.historyOpen = false;
+    renderInto(target, state);
+  };
+
+  const onHistoryToggleClick = (event: Event) => {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const toggle = event.target.closest<HTMLButtonElement>(
+      "[data-history-toggle]",
+    );
+
+    if (!toggle || !target.contains(toggle)) {
+      return;
+    }
+
+    state.historyOpen = !state.historyOpen;
+    renderInto(target, state);
+  };
+
+  const onHistoryDismissClick = (event: Event) => {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const dismiss = event.target.closest<HTMLButtonElement>(
+      "[data-history-dismiss]",
+    );
+
+    if (!dismiss || !target.contains(dismiss) || !state.historyOpen) {
+      return;
+    }
+
+    state.historyOpen = false;
     renderInto(target, state);
   };
 
@@ -239,6 +277,8 @@ export const bootstrapApp = async (
   window.addEventListener("visual-aid:clear", onClearEvent);
   target.addEventListener("click", onHistoryClick);
   target.addEventListener("click", onWorkspaceTabClick);
+  target.addEventListener("click", onHistoryToggleClick);
+  target.addEventListener("click", onHistoryDismissClick);
   const stopThemeSync = syncAppTheme(target);
 
   renderInto(target, state);
@@ -258,6 +298,8 @@ export const bootstrapApp = async (
     window.removeEventListener("visual-aid:clear", onClearEvent);
     target.removeEventListener("click", onHistoryClick);
     target.removeEventListener("click", onWorkspaceTabClick);
+    target.removeEventListener("click", onHistoryToggleClick);
+    target.removeEventListener("click", onHistoryDismissClick);
     delete window.__VISUAL_AID__;
   };
 };

@@ -45,7 +45,10 @@ const installMatchMedia = (initialMatches: boolean) => {
     },
     media: "(prefers-color-scheme: dark)",
     onchange: null,
-    addEventListener: (_type: string, listener: EventListenerOrEventListenerObject | null) => {
+    addEventListener: (
+      _type: string,
+      listener: EventListenerOrEventListenerObject | null,
+    ) => {
       if (listener) {
         listeners.add(listener);
       }
@@ -72,7 +75,10 @@ const installMatchMedia = (initialMatches: boolean) => {
     },
   } as MediaQueryList;
 
-  vi.stubGlobal("matchMedia", vi.fn(() => mediaQuery));
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => mediaQuery),
+  );
 
   return {
     setMatches(nextMatches: boolean) {
@@ -115,9 +121,9 @@ describe("Interactive UI spec", () => {
       }),
     );
 
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Event Payload",
-    );
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("Event Payload");
     expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
       "Event Content",
     );
@@ -145,9 +151,9 @@ describe("Interactive UI spec", () => {
       }),
     );
 
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Stable Payload",
-    );
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("Stable Payload");
     expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
       "Stable",
     );
@@ -169,8 +175,10 @@ describe("Interactive UI spec", () => {
 
     window.dispatchEvent(new Event("visual-aid:clear"));
 
-    expect(document.querySelector(".splash h1")?.textContent).toBe("Visual AId");
-    expect(document.querySelector(".panel--viewer")).toBeNull();
+    expect(document.querySelector(".splash h1")?.textContent).toBe(
+      "Visual AId",
+    );
+    expect(document.querySelector(".viewer-surface")).toBeNull();
     expect(document.body.textContent).toContain(
       "Waiting for the first payload in this workspace.",
     );
@@ -202,18 +210,61 @@ describe("Interactive UI spec", () => {
       }),
     );
 
-    const historyItems = document.querySelectorAll<HTMLButtonElement>(".history-item");
+    document.querySelector<HTMLButtonElement>("[data-history-toggle]")?.click();
+    const historyItems =
+      document.querySelectorAll<HTMLButtonElement>(".history-item");
     historyItems[1]?.click();
 
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "First Payload",
-    );
-    expect(document.querySelectorAll(".history-item")[1]?.classList.contains("history-item--active")).toBe(
-      true,
-    );
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("First Payload");
+    expect(
+      document
+        .querySelectorAll(".history-item")[1]
+        ?.classList.contains("history-item--active"),
+    ).toBe(true);
     expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
       "First",
     );
+    expect(document.querySelector(".history-overlay--open")).toBeNull();
+
+    cleanup();
+  });
+
+  it("VUI-HISTORY-002 the recents toggle controls history visibility", async () => {
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => false,
+      bootstrapPayload: {
+        version: 1,
+        format: "markdown",
+        title: "History Toggle",
+        content: "# Toggle",
+      },
+    });
+
+    const toggle = document.querySelector<HTMLButtonElement>(
+      "[data-history-toggle]",
+    );
+
+    toggle?.click();
+
+    expect(document.querySelector(".history-overlay--open")).not.toBeNull();
+    expect(
+      document
+        .querySelector<HTMLButtonElement>("[data-history-toggle]")
+        ?.getAttribute("aria-expanded"),
+    ).toBe("true");
+
+    document
+      .querySelector<HTMLButtonElement>("[data-history-dismiss]")
+      ?.click();
+
+    expect(document.querySelector(".history-overlay--open")).toBeNull();
+    expect(
+      document
+        .querySelector<HTMLButtonElement>("[data-history-toggle]")
+        ?.getAttribute("aria-expanded"),
+    ).toBe("false");
 
     cleanup();
   });
@@ -253,12 +304,9 @@ describe("Interactive UI spec", () => {
       },
     });
 
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Polled Payload",
-    );
-    expect(document.querySelector(".app-status strong")?.textContent).toBe(
-      "Received HTML payload",
-    );
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("Polled Payload");
     expect(
       document
         .querySelector<HTMLIFrameElement>(".payload-html__frame")
@@ -322,15 +370,18 @@ describe("Interactive UI spec", () => {
       },
     });
 
-    const workspaceTabs = document.querySelectorAll<HTMLButtonElement>(".workspace-tab");
+    const workspaceTabs =
+      document.querySelectorAll<HTMLButtonElement>(".workspace-tab");
     workspaceTabs[1]?.click();
 
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Workspace Two",
-    );
-    expect(document.querySelectorAll(".workspace-tab")[1]?.classList.contains("workspace-tab--active")).toBe(
-      true,
-    );
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("Workspace Two");
+    expect(
+      document
+        .querySelectorAll(".workspace-tab")[1]
+        ?.classList.contains("workspace-tab--active"),
+    ).toBe(true);
     expect(document.querySelector(".payload-html__frame")).not.toBeNull();
 
     cleanup();
@@ -342,13 +393,17 @@ describe("Interactive UI spec", () => {
       isTauriEnvironment: () => false,
     });
 
-    expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe("dark");
+    expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe(
+      "dark",
+    );
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(document.body.dataset.theme).toBe("dark");
 
     matchMedia.setMatches(false);
 
-    expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe("light");
+    expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe(
+      "light",
+    );
     expect(document.documentElement.dataset.theme).toBe("light");
     expect(document.body.dataset.theme).toBe("light");
 
@@ -357,7 +412,9 @@ describe("Interactive UI spec", () => {
 
   it("VWT-BRIDGE-001 bridge updates can add and activate a new workspace", async () => {
     const bridge = {
-      deliver: null as ((workspaceState: VisualAidWorkspaceState) => void) | null,
+      deliver: null as
+        | ((workspaceState: VisualAidWorkspaceState) => void)
+        | null,
     };
 
     const cleanup = await bootstrapApp(setupRoot(), {
@@ -444,12 +501,14 @@ describe("Interactive UI spec", () => {
     });
 
     expect(document.querySelectorAll(".workspace-tab")).toHaveLength(2);
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Workspace Two",
-    );
-    expect(document.querySelectorAll(".workspace-tab")[1]?.classList.contains("workspace-tab--active")).toBe(
-      true,
-    );
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("Workspace Two");
+    expect(
+      document
+        .querySelectorAll(".workspace-tab")[1]
+        ?.classList.contains("workspace-tab--active"),
+    ).toBe(true);
 
     cleanup();
   });

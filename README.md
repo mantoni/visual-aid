@@ -94,6 +94,7 @@ The baseline document set is:
 - [docs/decisions/0027-remove-excalidraw-format.md](docs/decisions/0027-remove-excalidraw-format.md): remove Excalidraw as a first-class payload format
 - [docs/decisions/0028-app-shell-splash-and-theme.md](docs/decisions/0028-app-shell-splash-and-theme.md): define the branded splash state, app chrome, and adaptive light/dark shell theming
 - [docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md](docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md): remove arbitrary payload metadata in favor of explicit fields
+- [docs/decisions/0030-document-style-active-shell.md](docs/decisions/0030-document-style-active-shell.md): shift active payload sessions to a content-first document shell with toggleable recents
 
 ## Documentation Rules
 

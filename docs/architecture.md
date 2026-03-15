@@ -36,7 +36,7 @@ The first renderer pass is format-aware without depending on heavyweight externa
 - Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.
 - Mermaid is rendered as a diagram when possible, with the source kept available as a fallback and inspection surface.
 - HTML is rendered as fragment-oriented content inside a sandboxed isolated payload surface with app-provided base styles.
-- The renderer uses a single main viewer with top-level workspace tabs keyed by working directory, a reverse-chronological history sidebar for the selected workspace, and a branded splash surface when the active workspace has no rendered payloads.
+- The renderer uses a single main viewer with a compact workspace switcher in the toolbar, a toggleable reverse-chronological recents sheet for the selected workspace, and a branded splash surface when the active workspace has no rendered payloads.
 
 This keeps the early renderer surface explicit and testable while leaving room for richer format-specific engines later.
 

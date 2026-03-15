@@ -9,6 +9,7 @@ export type VisualAidState = {
   session: VisualAidSession;
   status: string;
   selectedIndex: number | null;
+  historyOpen?: boolean;
   workspaceState?: VisualAidWorkspaceState;
   selectedWorkspaceId?: string | null;
 };
@@ -28,7 +29,8 @@ export const samplePayload: VisualAidPayload = {
   version: 1,
   format: "markdown",
   title: `${appDisplayName} Ready`,
-  summary: "The app shell is ready for MCP payloads and local session recovery.",
+  summary:
+    "The app shell is ready for MCP payloads and local session recovery.",
   content: [
     `# ${appDisplayName}`,
     "",
@@ -36,7 +38,7 @@ export const samplePayload: VisualAidPayload = {
     "",
     "- format: markdown",
     "- source: bootstrap preview",
-    "- history: newest payloads stay visible in the sidebar",
+    "- history: newest payloads are available from recents",
     "- recovery: the desktop host keeps the last good session snapshot",
   ].join("\n"),
 };
@@ -71,7 +73,9 @@ export const resolveSelectedWorkspaceId = (
 ) => {
   if (
     selectedWorkspaceId &&
-    workspaceState.workspaces.some((workspace) => workspace.id === selectedWorkspaceId)
+    workspaceState.workspaces.some(
+      (workspace) => workspace.id === selectedWorkspaceId,
+    )
   ) {
     return selectedWorkspaceId;
   }
@@ -146,7 +150,10 @@ export const statusForSession = (session: VisualAidSession) => {
 export const statusForWorkspaceState = (
   workspaceState: VisualAidWorkspaceState | undefined,
   selectedWorkspaceId: string | null | undefined,
-) => statusForSession(sessionForWorkspaceState(workspaceState, selectedWorkspaceId));
+) =>
+  statusForSession(
+    sessionForWorkspaceState(workspaceState, selectedWorkspaceId),
+  );
 
 export const createInitialState = (
   useTauriBridge: boolean,
@@ -161,8 +168,11 @@ export const createInitialState = (
   return {
     workspaceState,
     session,
-    status: useTauriBridge ? "Connecting to desktop bridge" : "Renderer shell ready",
+    status: useTauriBridge
+      ? "Connecting to desktop bridge"
+      : "Renderer shell ready",
     selectedIndex: newestItemIndex(session),
+    historyOpen: false,
     selectedWorkspaceId,
   };
 };
@@ -220,7 +230,9 @@ const replaceWorkspaceSession = (
   return {
     activeWorkspaceId: resolvedWorkspaceId,
     workspaces: workspaceState.workspaces.map((workspace) =>
-      workspace.id === resolvedWorkspaceId ? { ...workspace, session } : workspace,
+      workspace.id === resolvedWorkspaceId
+        ? { ...workspace, session }
+        : workspace,
     ),
   };
 };

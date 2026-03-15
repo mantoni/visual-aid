@@ -17,9 +17,9 @@ Related decisions:
 
 ## Invariants
 
-- The app shows a top-level tab strip when more than one workspace session is available.
+- The app shows a compact workspace switcher when more than one workspace session is available.
 - Each workspace tab represents one working directory and keeps its own payload history.
-- The active workspace controls the visible history sidebar, current payload view, and status copy.
+- The active workspace controls the available recents history, current payload view, and toolbar title.
 - When a workspace receives a new session update from the desktop bridge, that workspace becomes active.
 - Clicking a workspace tab switches the visible session locally without mutating other workspace histories.
 

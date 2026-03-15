@@ -21,9 +21,10 @@ describe("Renderer output spec", () => {
     const body = renderDocument(html);
 
     expect(body.querySelector(".splash h1")?.textContent).toBe("Visual AId");
-    expect(body.querySelector(".panel--viewer")).toBeNull();
-    expect(body.textContent).toContain("Waiting for the first payload in this workspace.");
-    expect(body.querySelector(".app-status strong")?.textContent).toBe("Cleared");
+    expect(body.querySelector(".viewer-surface")).toBeNull();
+    expect(body.textContent).toContain(
+      "Waiting for the first payload in this workspace.",
+    );
   });
 
   it("VAR-MARKDOWN-001 markdown payloads render in the markdown container", () => {
@@ -70,7 +71,9 @@ describe("Renderer output spec", () => {
 
     expect(frame).not.toBeNull();
     expect(frame?.getAttribute("sandbox")).toBe("");
-    expect(frame?.getAttribute("srcdoc")).toContain("<article><strong>Rendered</strong> HTML</article>");
+    expect(frame?.getAttribute("srcdoc")).toContain(
+      "<article><strong>Rendered</strong> HTML</article>",
+    );
     expect(frame?.getAttribute("srcdoc")).toContain(".payload-html-fragment");
     expect(body.querySelector(".payload-html article")).toBeNull();
     expect(body.querySelector(".payload-pre")).toBeNull();
@@ -99,6 +102,7 @@ describe("Renderer output spec", () => {
       },
       status: "Received Unified Diff payload",
       selectedIndex: 1,
+      historyOpen: true,
     });
     const body = renderDocument(html);
     const items = body.querySelectorAll(".history-item");
@@ -108,7 +112,7 @@ describe("Renderer output spec", () => {
     expect(items[1]?.textContent).toContain("First");
   });
 
-  it("VAR-LAYOUT-001 payload sessions show viewer and history without a metadata panel", () => {
+  it("VAR-LAYOUT-001 payload sessions show a document viewer and compact recents control", () => {
     const body = renderDocument(
       renderAppHtml({
         session: {
@@ -129,10 +133,9 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".panel--viewer")).not.toBeNull();
-    expect(body.querySelector(".history-list")).not.toBeNull();
-    expect(body.textContent).not.toContain("Metadata");
-    expect(body.textContent).not.toContain("Envelope Details");
+    expect(body.querySelector(".viewer-surface")).not.toBeNull();
+    expect(body.querySelector(".history-toggle")).not.toBeNull();
+    expect(body.querySelector(".app-status")).toBeNull();
   });
 
   it("VWT-TABS-001 multiple workspaces render as tabs", () => {
@@ -207,6 +210,43 @@ describe("Renderer output spec", () => {
     expect(tabs[1]?.classList.contains("workspace-tab--active")).toBe(true);
   });
 
+  it("VAR-HISTORY-003 recents are hidden until the user opens them", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T10:10:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "First",
+              content: "# First",
+            },
+            {
+              version: 1,
+              format: "code",
+              title: "Second",
+              content: "const second = true;",
+            },
+          ],
+        },
+        status: "Received Source Code payload",
+        selectedIndex: 1,
+      }),
+    );
+
+    expect(
+      body.querySelector(".history-toggle")?.getAttribute("aria-expanded"),
+    ).toBe("false");
+    expect(
+      body
+        .querySelector(".history-overlay")
+        ?.classList.contains("history-overlay--open"),
+    ).toBe(false);
+  });
+
   it("VFR-MARKDOWN-001 markdown headings and lists render semantically", () => {
     const body = renderDocument(
       renderAppHtml({
@@ -274,26 +314,28 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".payload-markdown blockquote")?.textContent).toContain(
-      "Ready for review",
-    );
+    expect(
+      body.querySelector(".payload-markdown blockquote")?.textContent,
+    ).toContain("Ready for review");
     expect(body.querySelectorAll(".payload-markdown ol li")).toHaveLength(2);
-    expect(body.querySelector(".payload-markdown table th")?.textContent).toBe("Step");
-    expect(body.querySelector(".payload-markdown a")?.getAttribute("href")).toBe(
-      "https://example.com/docs",
+    expect(body.querySelector(".payload-markdown table th")?.textContent).toBe(
+      "Step",
     );
-    expect(body.querySelector(".payload-markdown a")?.getAttribute("target")).toBe(
-      "_blank",
-    );
-    expect(body.querySelector(".payload-markdown__code-label")?.textContent).toBe(
-      "ts",
-    );
-    expect(body.querySelector(".payload-pre--markdown code")?.textContent).toContain(
-      "export const status = 'ok';",
-    );
-    expect(body.querySelector(".payload-pre--markdown .hljs-keyword")?.textContent).toContain(
-      "export",
-    );
+    expect(
+      body.querySelector(".payload-markdown a")?.getAttribute("href"),
+    ).toBe("https://example.com/docs");
+    expect(
+      body.querySelector(".payload-markdown a")?.getAttribute("target"),
+    ).toBe("_blank");
+    expect(
+      body.querySelector(".payload-markdown__code-label")?.textContent,
+    ).toBe("ts");
+    expect(
+      body.querySelector(".payload-pre--markdown code")?.textContent,
+    ).toContain("export const status = 'ok';");
+    expect(
+      body.querySelector(".payload-pre--markdown .hljs-keyword")?.textContent,
+    ).toContain("export");
   });
 
   it("VFR-MARKDOWN-006 markdown raw html snippets render as sanitized html", () => {
@@ -309,9 +351,9 @@ describe("Renderer output spec", () => {
               format: "markdown",
               title: "Inline HTML",
               content: [
-                "Status: <strong>ready</strong> and <span class=\"va-inline\">visible</span>.",
+                'Status: <strong>ready</strong> and <span class="va-inline">visible</span>.',
                 "",
-                "<div class=\"va-callout\"><em>Sanitized block HTML</em></div>",
+                '<div class="va-callout"><em>Sanitized block HTML</em></div>',
                 "",
                 "<script>window.__visualAidScriptRan = true;</script>",
               ].join("\n"),
@@ -323,13 +365,15 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".payload-markdown strong")?.textContent).toBe("ready");
-    expect(body.querySelector(".payload-markdown .va-inline")?.textContent).toBe(
-      "visible",
+    expect(body.querySelector(".payload-markdown strong")?.textContent).toBe(
+      "ready",
     );
-    expect(body.querySelector(".payload-markdown .va-callout em")?.textContent).toBe(
-      "Sanitized block HTML",
-    );
+    expect(
+      body.querySelector(".payload-markdown .va-inline")?.textContent,
+    ).toBe("visible");
+    expect(
+      body.querySelector(".payload-markdown .va-callout em")?.textContent,
+    ).toBe("Sanitized block HTML");
     expect(body.querySelector(".payload-markdown script")).toBeNull();
   });
 
@@ -361,10 +405,15 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".payload-markdown .payload-mermaid--embedded")).not.toBeNull();
-    expect(body.querySelector(".payload-markdown .payload-mermaid__diagram")).not.toBeNull();
     expect(
-      body.querySelector(".payload-markdown .payload-mermaid__source-code")?.textContent,
+      body.querySelector(".payload-markdown .payload-mermaid--embedded"),
+    ).not.toBeNull();
+    expect(
+      body.querySelector(".payload-markdown .payload-mermaid__diagram"),
+    ).not.toBeNull();
+    expect(
+      body.querySelector(".payload-markdown .payload-mermaid__source-code")
+        ?.textContent,
     ).toContain("graph TD");
   });
 
@@ -399,16 +448,20 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".payload-markdown .payload-diff--embedded")).not.toBeNull();
     expect(
-      body.querySelector(".payload-markdown .payload-diff__line--file code")?.textContent,
+      body.querySelector(".payload-markdown .payload-diff--embedded"),
+    ).not.toBeNull();
+    expect(
+      body.querySelector(".payload-markdown .payload-diff__line--file code")
+        ?.textContent,
     ).toBe("--- a/src/render.ts");
     expect(
       body.querySelector(".payload-markdown .payload-diff__line--remove code")
         ?.textContent,
     ).toBe("-const oldValue = 1;");
     expect(
-      body.querySelector(".payload-markdown .payload-diff__line--add code")?.textContent,
+      body.querySelector(".payload-markdown .payload-diff__line--add code")
+        ?.textContent,
     ).toBe("+const newValue = 2;");
   });
 
@@ -438,12 +491,12 @@ describe("Renderer output spec", () => {
     expect(body.querySelector(".payload-code__label")?.textContent).toBe(
       "typescript",
     );
-    expect(body.querySelector(".payload-code .hljs-keyword")?.textContent).toContain(
-      "export",
-    );
-    expect(body.querySelector(".payload-code .payload-pre--code code")?.textContent).toContain(
-      "export const status = 'ok';",
-    );
+    expect(
+      body.querySelector(".payload-code .hljs-keyword")?.textContent,
+    ).toContain("export");
+    expect(
+      body.querySelector(".payload-code .payload-pre--code code")?.textContent,
+    ).toContain("export const status = 'ok';");
   });
 
   it("VFR-DIFF-001 diff lines are classified by line type", () => {
@@ -473,15 +526,15 @@ describe("Renderer output spec", () => {
       }),
     );
 
-    expect(body.querySelector(".payload-diff__line--remove code")?.textContent).toBe(
-      "-old",
-    );
-    expect(body.querySelector(".payload-diff__line--add code")?.textContent).toBe(
-      "+new",
-    );
-    expect(body.querySelector(".payload-diff__line--hunk code")?.textContent).toBe(
-      "@@ -1 +1 @@",
-    );
+    expect(
+      body.querySelector(".payload-diff__line--remove code")?.textContent,
+    ).toBe("-old");
+    expect(
+      body.querySelector(".payload-diff__line--add code")?.textContent,
+    ).toBe("+new");
+    expect(
+      body.querySelector(".payload-diff__line--hunk code")?.textContent,
+    ).toBe("@@ -1 +1 @@");
   });
 
   it("VFR-JSON-001 JSON payloads render a parsed tree and raw preview", () => {
@@ -512,12 +565,12 @@ describe("Renderer output spec", () => {
     expect(body.querySelector(".payload-json")).not.toBeNull();
     expect(body.textContent).toContain("Parsed JSON");
     expect(body.querySelector(".payload-json__key")?.textContent).toBe("name");
-    expect(body.querySelector(".payload-json__value--string")?.textContent).toContain(
-      "\"visual-aid\"",
-    );
-    expect(body.querySelector(".payload-json__raw code")?.textContent).toContain(
-      "\"steps\"",
-    );
+    expect(
+      body.querySelector(".payload-json__value--string")?.textContent,
+    ).toContain('"visual-aid"');
+    expect(
+      body.querySelector(".payload-json__raw code")?.textContent,
+    ).toContain('"steps"');
   });
 
   it("VFR-JSON-002 invalid JSON payloads show a readable fallback", () => {
@@ -542,9 +595,9 @@ describe("Renderer output spec", () => {
     );
 
     expect(body.textContent).toContain("Unparsed JSON");
-    expect(body.querySelector(".payload-pre--json code")?.textContent).toContain(
-      '{"name": "visual-aid",}',
-    );
+    expect(
+      body.querySelector(".payload-pre--json code")?.textContent,
+    ).toContain('{"name": "visual-aid",}');
   });
 
   it("renderAppHtml includes the Mermaid frame and source disclosure", () => {
@@ -570,9 +623,9 @@ describe("Renderer output spec", () => {
 
     expect(body.querySelector(".payload-mermaid")).not.toBeNull();
     expect(body.querySelector(".payload-mermaid__diagram")).not.toBeNull();
-    expect(body.querySelector(".payload-mermaid__source-code")?.textContent).toContain(
-      "graph TD",
-    );
+    expect(
+      body.querySelector(".payload-mermaid__source-code")?.textContent,
+    ).toContain("graph TD");
   });
 
   it("VAR-HISTORY-002 the current payload reflects the selected history item", () => {
@@ -599,14 +652,20 @@ describe("Renderer output spec", () => {
         },
         status: "Received HTML payload",
         selectedIndex: 0,
+        historyOpen: true,
       }),
     );
 
-    expect(body.querySelector(".panel--viewer h2")?.textContent).toBe("Older");
-    expect(body.querySelectorAll(".history-item")[1]?.classList.contains("history-item--active")).toBe(
-      true,
+    expect(body.querySelector(".document-toolbar__title")?.textContent).toBe(
+      "Older",
     );
-    expect(body.querySelector(".payload-markdown h1")?.textContent).toBe("Older");
+    expect(
+      body
+        .querySelectorAll(".history-item")[1]
+        ?.classList.contains("history-item--active"),
+    ).toBe(true);
+    expect(body.querySelector(".payload-markdown h1")?.textContent).toBe(
+      "Older",
+    );
   });
-
 });

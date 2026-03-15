@@ -21,6 +21,7 @@ Related decisions:
 - Valid `visual-aid:show` events update the live DOM.
 - Invalid `visual-aid:show` payloads are ignored.
 - `visual-aid:clear` resets the UI to the splash state.
+- The recents toggle opens and closes the history sheet locally.
 - History-item clicks switch the current payload view to the selected session item.
 - Host-driven session updates replace the rendered content in Tauri mode.
 - The shell follows the system color scheme and updates when that preference changes.
@@ -48,15 +49,22 @@ Then the splash waiting message becomes visible
 ### VUI-HISTORY-001 Clicking a history item updates the current payload view
 
 Given a bootstrapped non-Tauri app shell with multiple rendered items
-When the user clicks an older history item
+When the user opens recents and clicks an older history item
 Then the current payload view updates to that item
 And the clicked history item becomes active
+
+### VUI-HISTORY-002 The recents toggle controls history visibility
+
+Given a bootstrapped non-Tauri app shell with rendered content
+When the user clicks the `Recents` toggle
+Then the recents sheet becomes visible
+And when the user dismisses the sheet it becomes hidden again
 
 ### VUI-BRIDGE-001 Host bridge updates replace the DOM in Tauri mode
 
 Given a bootstrapped Tauri app shell
 When the desktop bridge delivers a session update
-Then the current payload title and status update in the DOM
+Then the current payload title and content update in the DOM
 
 ### VUI-THEME-001 Bootstrap follows preferred color scheme changes
 
@@ -66,4 +74,4 @@ Then the root app theme attribute updates to match
 
 ## Test Mapping
 
-- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-BRIDGE-001`, `VUI-THEME-001`
+- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-HISTORY-002`, `VUI-BRIDGE-001`, `VUI-THEME-001`

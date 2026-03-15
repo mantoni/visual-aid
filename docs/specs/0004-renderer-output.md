@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define the visible renderer behavior for the splash state, current payload area, and history list.
+Define the visible renderer behavior for the splash state, current payload area, compact toolbar, and recents sheet.
 
 Related decisions:
 
@@ -20,8 +20,9 @@ Related decisions:
 ## Invariants
 
 - Empty sessions show a branded splash screen rather than the payload viewer panels.
-- The current payload panel reflects the selected session item.
-- History is shown in reverse chronological order with the selected item marked active.
+- The current payload view reflects the selected session item.
+- The active shell uses a compact toolbar instead of in-content app branding or global status copy.
+- History is available from a toggleable recents sheet and is shown in reverse chronological order with the selected item marked active.
 - HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
 
 ## Scenarios
@@ -62,13 +63,13 @@ When the renderer output is generated
 Then the first history item corresponds to the newest payload
 And that history item has the active state class
 
-### VAR-LAYOUT-001 Payload sessions show viewer and history without a metadata panel
+### VAR-LAYOUT-001 Payload sessions show a document viewer and compact recents control
 
 Given a renderer state with a current payload
 When the renderer output is generated
-Then the payload viewer panel is visible
-And the history panel is visible
-And no metadata panel is rendered
+Then the payload viewer surface is visible
+And the recents toggle is visible
+And no in-content app status block is rendered
 
 ### VAR-HISTORY-002 The current payload reflects the selected history item
 
@@ -77,6 +78,13 @@ When the renderer output is generated
 Then the current payload title matches the selected older item
 And the matching history item has the active state class
 
+### VAR-HISTORY-003 Recents are hidden until the user opens them
+
+Given a renderer state with a current payload and multiple session items
+When the renderer output is generated
+Then the recents toggle reports a collapsed state
+And the recents sheet is not open
+
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`, `VAR-HISTORY-003`

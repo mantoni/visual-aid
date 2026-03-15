@@ -33,9 +33,7 @@ export const escapeHtml = (value: string) =>
     .replaceAll(">", "&gt;");
 
 const escapeHtmlAttribute = (value: string) =>
-  escapeHtml(value)
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+  escapeHtml(value).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 
 type MarkdownToken = {
   content: string;
@@ -200,7 +198,8 @@ const renderMermaid = (
     embedded?: boolean;
   },
 ) => {
-  const firstLine = content.split("\n").find((line) => line.trim().length > 0) ?? "diagram";
+  const firstLine =
+    content.split("\n").find((line) => line.trim().length > 0) ?? "diagram";
   const embeddedClass = options?.embedded ? " payload-mermaid--embedded" : "";
 
   return `
@@ -283,11 +282,14 @@ markdownRenderer.renderer.rules.link_open = (
 };
 
 const renderMarkdown = (content: string) =>
-  `<div class="payload-markdown">${DOMPurify.sanitize(markdownRenderer.render(content), {
-    ADD_ATTR: ["rel", "target"],
-    FORBID_ATTR: ["style"],
-    FORBID_TAGS: ["iframe", "script", "style"],
-  })}</div>`;
+  `<div class="payload-markdown">${DOMPurify.sanitize(
+    markdownRenderer.render(content),
+    {
+      ADD_ATTR: ["rel", "target"],
+      FORBID_ATTR: ["style"],
+      FORBID_TAGS: ["iframe", "script", "style"],
+    },
+  )}</div>`;
 
 const describeJsonValue = (value: unknown) => {
   if (Array.isArray(value)) {
@@ -402,7 +404,7 @@ const renderJson = (content: string) => {
 
 const htmlFragmentStyles = [
   ":root {",
-  '  color-scheme: light dark;',
+  "  color-scheme: light dark;",
   '  font-family: "Avenir Next", "SF Pro Display", "Segoe UI", sans-serif;',
   "  --va-bg: #0d141b;",
   "  --va-surface: rgba(6, 11, 16, 0.78);",
@@ -560,30 +562,52 @@ export const renderContent = (payload: VisualAidPayload) => {
 const renderWorkspaceTabs = (
   workspaceState: VisualAidState["workspaceState"],
   selectedWorkspaceId: string | null,
-) =>
-  workspaceState && workspaceState.workspaces.length > 1
-    ? `
-      <nav class="workspace-tabs" aria-label="Workspaces">
-        ${workspaceState.workspaces
-          .map((workspace) => {
-            const isActive = workspace.id === selectedWorkspaceId;
+) => {
+  if (!workspaceState || workspaceState.workspaces.length === 0) {
+    return "";
+  }
 
-            return `
-              <button
-                class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
-                type="button"
-                data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
-                aria-pressed="${isActive ? "true" : "false"}"
-              >
-                <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
-                <span class="workspace-tab__path">${escapeHtml(workspace.cwd)}</span>
-              </button>
-            `;
-          })
-          .join("")}
-      </nav>
-    `
-    : "";
+  if (workspaceState.workspaces.length === 1) {
+    const workspace = workspaceState.workspaces[0];
+
+    if (!workspace) {
+      return "";
+    }
+
+    return `
+      <div class="workspace-switcher workspace-switcher--single" aria-label="Workspace">
+        <span
+          class="workspace-pill"
+          title="${escapeHtmlAttribute(workspace.cwd)}"
+        >
+          ${escapeHtml(workspace.label)}
+        </span>
+      </div>
+    `;
+  }
+
+  return `
+    <nav class="workspace-switcher" aria-label="Workspaces">
+      ${workspaceState.workspaces
+        .map((workspace) => {
+          const isActive = workspace.id === selectedWorkspaceId;
+
+          return `
+            <button
+              class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
+              type="button"
+              data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+              aria-pressed="${isActive ? "true" : "false"}"
+              title="${escapeHtmlAttribute(workspace.cwd)}"
+            >
+              <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
+            </button>
+          `;
+        })
+        .join("")}
+    </nav>
+  `;
+};
 
 const renderHistory = (
   session: VisualAidState["session"],
@@ -609,6 +633,80 @@ const renderHistory = (
       `;
     })
     .join("");
+
+const renderHistorySheet = (
+  session: VisualAidState["session"],
+  selectedIndex: number | null,
+  historyOpen: boolean,
+) => {
+  const history = renderHistory(session, selectedIndex);
+
+  return `
+    <div
+      class="history-overlay${historyOpen ? " history-overlay--open" : ""}"
+      aria-hidden="${historyOpen ? "false" : "true"}"
+    >
+      <button
+        class="history-overlay__backdrop"
+        type="button"
+        data-history-dismiss
+        aria-label="Close recent payloads"
+      ></button>
+      <aside
+        id="history-sheet"
+        class="history-sheet${historyOpen ? " history-sheet--open" : ""}"
+        aria-label="Recent payloads"
+      >
+        <div class="history-sheet__header">
+          <div>
+            <p class="panel__label">Recent Payloads</p>
+            <h2>${session.items.length} item${session.items.length === 1 ? "" : "s"}</h2>
+          </div>
+          <button class="history-sheet__close" type="button" data-history-dismiss>
+            Done
+          </button>
+        </div>
+        <div class="history-list">
+          ${history || '<div class="empty-state empty-state--compact">History is empty.</div>'}
+        </div>
+      </aside>
+    </div>
+  `;
+};
+
+const renderDocumentToolbar = (
+  state: VisualAidState,
+  current: VisualAidState["session"]["items"][number],
+  selectedWorkspaceId: string | null,
+) => {
+  const historyOpen = state.historyOpen === true;
+
+  return `
+    <header class="document-toolbar">
+      <div class="document-toolbar__start">
+        ${renderWorkspaceTabs(state.workspaceState, selectedWorkspaceId)}
+      </div>
+      <div class="document-toolbar__center">
+        <div class="document-toolbar__title-row">
+          <h2 class="document-toolbar__title">${escapeHtml(current.title ?? "Untitled Payload")}</h2>
+          <span class="format-chip">${escapeHtml(formatLabels[current.format])}</span>
+        </div>
+      </div>
+      <div class="document-toolbar__end">
+        <button
+          class="history-toggle${historyOpen ? " history-toggle--active" : ""}"
+          type="button"
+          data-history-toggle
+          aria-expanded="${historyOpen ? "true" : "false"}"
+          aria-controls="history-sheet"
+        >
+          <span>Recents</span>
+          <span class="history-toggle__count">${state.session.items.length}</span>
+        </button>
+      </div>
+    </header>
+  `;
+};
 
 const renderSplash = (status: string) => `
   <main class="splash-layout">
@@ -648,63 +746,31 @@ const renderSplash = (status: string) => `
 
 export const renderAppHtml = (state: VisualAidState) => {
   const selectedWorkspaceId =
-    state.selectedWorkspaceId ?? state.workspaceState?.activeWorkspaceId ?? null;
-  const selectedIndex = resolveSelectedIndex(state.session, state.selectedIndex);
+    state.selectedWorkspaceId ??
+    state.workspaceState?.activeWorkspaceId ??
+    null;
+  const selectedIndex = resolveSelectedIndex(
+    state.session,
+    state.selectedIndex,
+  );
   const current =
-    selectedIndex === null ? null : state.session.items[selectedIndex] ?? null;
-  const workspaceTabs = renderWorkspaceTabs(state.workspaceState, selectedWorkspaceId);
-  const history = renderHistory(state.session, selectedIndex);
+    selectedIndex === null
+      ? null
+      : (state.session.items[selectedIndex] ?? null);
+  const historyOpen = state.historyOpen === true;
 
   return `
-    <div class="shell${current ? "" : " shell--splash"}">
+    <div class="shell${current ? " shell--document" : " shell--splash"}">
       <div class="app-frame">
-        <div class="app-chrome">
-          <div class="app-brand" aria-label="Application name">
-            <span class="app-brand__mark">VA</span>
-            <div class="app-brand__copy">
-              <strong class="app-brand__name">${appDisplayName}</strong>
-              <span class="app-brand__meta">Structured output surface</span>
-            </div>
-          </div>
-          <div class="app-status">
-            <span class="app-status__label">Status</span>
-            <strong>${escapeHtml(state.status)}</strong>
-          </div>
-        </div>
-        ${workspaceTabs}
         ${
           current
             ? `
-              <main class="layout">
-                <section class="panel panel--viewer">
-                  <div class="panel__header">
-                    <div>
-                      <p class="panel__label">Current Payload</p>
-                      <h2>${escapeHtml(current.title ?? "Untitled Payload")}</h2>
-                    </div>
-                    <span class="format-chip">${escapeHtml(formatLabels[current.format])}</span>
-                  </div>
-                  <p class="panel__summary">
-                    ${escapeHtml(
-                      current.summary ??
-                        "Dispatch a visual-aid.show payload to replace or append content here.",
-                    )}
-                  </p>
+              ${renderDocumentToolbar(state, current, selectedWorkspaceId)}
+              <main class="document-stage">
+                <section class="viewer-surface" aria-label="Current payload">
                   ${renderContent(current)}
                 </section>
-                <aside class="sidebar">
-                  <section class="panel">
-                    <div class="panel__header">
-                      <div>
-                        <p class="panel__label">Payload History</p>
-                        <h2>${state.session.items.length} item${state.session.items.length === 1 ? "" : "s"}</h2>
-                      </div>
-                    </div>
-                    <div class="history-list">
-                      ${history || '<div class="empty-state empty-state--compact">History is empty.</div>'}
-                    </div>
-                  </section>
-                </aside>
+                ${renderHistorySheet(state.session, selectedIndex, historyOpen)}
               </main>
             `
             : renderSplash(state.status)
