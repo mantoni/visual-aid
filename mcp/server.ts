@@ -15,12 +15,14 @@ import {
   applyWorkspaceSession,
   readWorkspaceState,
   resolveRegistryPath,
+  resolveWorkspaceCwd,
   writeWorkspaceState,
 } from "./workspace.js";
 
-const cwd = process.cwd();
-const sessionPath = resolveSessionPath(cwd);
-const registryPath = resolveRegistryPath(cwd);
+const serverCwd = process.cwd();
+const workspaceCwd = resolveWorkspaceCwd(serverCwd);
+const sessionPath = resolveSessionPath(workspaceCwd);
+const registryPath = resolveRegistryPath(workspaceCwd);
 
 const textResult = (text: string, isError = false) => ({
   content: [{ type: "text" as const, text }],
@@ -57,7 +59,7 @@ const persistWorkspaceState = async (session: Awaited<ReturnType<typeof readSess
 
   await writeWorkspaceState(
     registryPath,
-    applyWorkspaceSession(workspaceState, cwd, sessionPath, session),
+    applyWorkspaceSession(workspaceState, workspaceCwd, sessionPath, session),
   );
 };
 
@@ -127,7 +129,7 @@ server.registerTool(
       "Launch the visual-aid desktop app or focus an existing instance.",
   },
   async () => {
-    const launched = await maybeLaunchApp();
+    const launched = await maybeLaunchApp(serverCwd);
     const now = new Date().toISOString();
     const session = await readSession(sessionPath);
     const next = applyOpen(session, now);
@@ -152,7 +154,7 @@ server.registerTool(
     inputSchema: visualAidPayloadSchema,
   },
   async (payload) => {
-    const launched = await maybeLaunchApp();
+    const launched = await maybeLaunchApp(serverCwd);
     const now = new Date().toISOString();
     const session = await readSession(sessionPath);
     const next = applyShow(session, payload, now);

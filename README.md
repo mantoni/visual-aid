@@ -64,6 +64,7 @@ The baseline document set is:
 - [docs/specs/0009-persisted-session-restore.md](docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
 - [docs/specs/0010-workspace-tabs.md](docs/specs/0010-workspace-tabs.md): first-pass single-window workspace tab behavior
 - [docs/specs/0011-github-release-distribution.md](docs/specs/0011-github-release-distribution.md): release packaging and GitHub Releases publishing behavior
+- [docs/specs/0012-cross-workspace-source-testing.md](docs/specs/0012-cross-workspace-source-testing.md): using this source checkout from another local workspace
 - [docs/decisions/README.md](docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
@@ -82,6 +83,7 @@ The baseline document set is:
 - [docs/decisions/0015-richer-markdown-rendering.md](docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
 - [docs/decisions/0016-json-payload-renderer.md](docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
 - [docs/decisions/0017-github-release-distribution.md](docs/decisions/0017-github-release-distribution.md): define GitHub Actions and GitHub Releases as the first packaged distribution path
+- [docs/decisions/0018-source-checkout-cross-workspace-testing.md](docs/decisions/0018-source-checkout-cross-workspace-testing.md): separate source checkout location from target workspace identity during local testing
 
 ## Documentation Rules
 
@@ -97,12 +99,15 @@ The canonical local dogfood flow is:
 2. Point Codex `config.toml` at that same session file. Run `npm start -- --print-codex-config` to print the exact MCP config block for the current checkout.
 3. Use `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` through Codex against that shared session.
 
+When you want to test from another local project while keeping this checkout as the source of truth, pass `--workspace-cwd /absolute/path/to/other-project` to both `npm start` and `npm start -- --print-codex-config`.
+
 See [docs/dogfooding.md](docs/dogfooding.md) for the concise setup and quick test sequence.
 
 Useful commands:
 
 - `npm start`: canonical local dogfood entrypoint for the app
 - `npm start -- --print-codex-config`: print the exact Codex MCP config block for the current checkout
+- `npm start -- --workspace-cwd /absolute/path/to/other-project`: launch the dev app against another workspace's session file
 - `npm run check`: type-check the project
 - `npm test`: run the automated test suite
 - `npm run verify`: run type checks, tests, and frontend build together
@@ -115,8 +120,10 @@ Useful commands:
 Environment variables:
 
 - `VISUAL_AID_SESSION_PATH`: override the JSON session file path for manual MCP or app runs; `npm start` uses `.visual-aid/dev-session.json`
+- `VISUAL_AID_WORKSPACE_CWD`: override the workspace identity used for registry and tab labeling
 - `VISUAL_AID_REGISTRY_PATH`: override the shared workspace registry path used for multi-workspace session discovery
 - `VISUAL_AID_OPEN_COMMAND`: explicit command used by `visual-aid.open`
 - `VISUAL_AID_APP_PATH`: explicit app bundle path used by `visual-aid.open`
+- `VISUAL_AID_PREFER_DEBUG_APP`: when set to `1`, prefer the local debug build during launch auto-detection
 
 If no launch override is configured, the MCP server will try to auto-discover a local macOS app bundle or binary under `src-tauri/target/`.

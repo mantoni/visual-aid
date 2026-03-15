@@ -25,6 +25,11 @@ export const workspaceIdForCwd = (cwd: string) => cwd;
 
 export const workspaceLabelForCwd = (cwd: string) => basename(cwd) || cwd;
 
+export const resolveWorkspaceCwd = (
+  cwd = process.cwd(),
+  env: NodeJS.ProcessEnv = process.env,
+) => env.VISUAL_AID_WORKSPACE_CWD ?? cwd;
+
 export const resolveRegistryPath = (
   cwd = process.cwd(),
   env: NodeJS.ProcessEnv = process.env,

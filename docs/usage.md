@@ -22,6 +22,8 @@ The default local workflow uses `.visual-aid/dev-session.json` as that shared se
 
 The printed Codex config block is the safest way to avoid mismatched session paths.
 
+If you want another local project to use this source checkout temporarily, pass `--workspace-cwd /absolute/path/to/other-project` to both `npm start` and `npm start -- --print-codex-config`. That keeps the server code here while moving the shared session file and workspace identity to the other project.
+
 If you are using a packaged app instead of a source checkout, point `VISUAL_AID_APP_PATH` at the installed app bundle or executable when you want `visual-aid.open` to launch that packaged build explicitly.
 
 ## MCP Tools
@@ -67,6 +69,13 @@ Print the matching Codex config:
 
 ```sh
 npm start -- --print-codex-config
+```
+
+Or target another workspace while still using this checkout as the server source:
+
+```sh
+npm start -- --workspace-cwd /absolute/path/to/other-project
+npm start -- --print-codex-config --workspace-cwd /absolute/path/to/other-project
 ```
 
 Then call these tools from your MCP client:
@@ -118,6 +127,12 @@ If you need to run the MCP server manually outside Codex, point it at the same d
 
 ```fish
 env VISUAL_AID_SESSION_PATH=(pwd)/.visual-aid/dev-session.json npx tsx mcp/server.ts
+```
+
+For cross-workspace testing, also set `VISUAL_AID_WORKSPACE_CWD` to the target project and prefer the debug build from this checkout:
+
+```sh
+env VISUAL_AID_SESSION_PATH=/absolute/path/to/other-project/.visual-aid/session.json VISUAL_AID_WORKSPACE_CWD=/absolute/path/to/other-project VISUAL_AID_PREFER_DEBUG_APP=1 npx tsx mcp/server.ts
 ```
 
 ## Related Docs

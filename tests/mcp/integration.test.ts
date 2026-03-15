@@ -34,6 +34,7 @@ const createTransport = (
   cwd: string,
   sessionPath: string,
   registryPath: string,
+  envOverrides: NodeJS.ProcessEnv = {},
 ) =>
   new StdioClientTransport({
     command: process.execPath,
@@ -45,6 +46,7 @@ const createTransport = (
       VISUAL_AID_SESSION_PATH: sessionPath,
       VISUAL_AID_REGISTRY_PATH: registryPath,
       VISUAL_AID_OPEN_COMMAND: "true",
+      ...envOverrides,
     },
     stderr: "pipe",
   });
@@ -206,5 +208,36 @@ describe("MCP stdio integration spec", () => {
 
     expect(result.isError).toBe(true);
     expect(firstTextContent(result.content)).toContain("Input validation error");
+  });
+
+  it("VXT-WORKSPACE-002 workspace overrides attribute registry updates to the target project", async () => {
+    const targetWorkspace = join(root, "target-project");
+
+    if (transport) {
+      await transport.close();
+    }
+
+    client = createClient();
+    transport = createTransport(process.cwd(), sessionPath, registryPath, {
+      VISUAL_AID_WORKSPACE_CWD: targetWorkspace,
+    });
+    await client.connect(transport);
+
+    await client.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "markdown",
+        content: "# External Workspace",
+      },
+    });
+
+    const workspaceState = JSON.parse(
+      await readFile(registryPath, "utf8"),
+    ) as VisualAidWorkspaceState;
+
+    expect(workspaceState.activeWorkspaceId).toBe(targetWorkspace);
+    expect(workspaceState.workspaces[0]?.cwd).toBe(targetWorkspace);
+    expect(workspaceState.workspaces[0]?.label).toBe("target-project");
   });
 });

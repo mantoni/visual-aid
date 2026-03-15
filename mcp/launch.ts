@@ -43,6 +43,7 @@ export const detectLaunchTarget = async (
     join(".visual-aid", "dev-session.json"),
   );
   const prefersDebugBinary =
+    env.VISUAL_AID_PREFER_DEBUG_APP === "1" ||
     typeof env.VISUAL_AID_SESSION_PATH === "string" &&
     normalize(env.VISUAL_AID_SESSION_PATH).endsWith(canonicalDogfoodSessionSuffix);
 

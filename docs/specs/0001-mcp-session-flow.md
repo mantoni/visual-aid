@@ -81,6 +81,13 @@ Given an explicit app bundle path and detectable local app artifacts
 When launch discovery runs
 Then the explicit app bundle path is selected
 
+### VAS-LAUNCH-004 Explicit debug preference can force the debug app target
+
+Given a non-canonical session path and both debug and release local app artifacts
+And `VISUAL_AID_PREFER_DEBUG_APP` is set to `1`
+When launch discovery runs
+Then the debug binary is selected before the release artifacts
+
 ### VAS-SINGLE-INSTANCE-001 Duplicate app launches focus the existing main window
 
 Given the app is already running for the project
@@ -92,5 +99,5 @@ And the project does not keep multiple app windows open
 
 - `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-CLEAR-001`
 - `tests/mcp/integration.test.ts`: `VAS-SHOW-003`
-- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`, `VAS-LAUNCH-003`
+- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`, `VAS-LAUNCH-003`, `VAS-LAUNCH-004`
 - `src-tauri/src/main.rs`: `VAS-SINGLE-INSTANCE-001`

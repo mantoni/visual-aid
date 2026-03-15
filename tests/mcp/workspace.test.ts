@@ -5,6 +5,7 @@ import {
   applyWorkspaceSession,
   emptyWorkspaceState,
   resolveRegistryPath,
+  resolveWorkspaceCwd,
 } from "../../mcp/workspace.js";
 
 describe("MCP workspace registry", () => {
@@ -76,5 +77,13 @@ describe("MCP workspace registry", () => {
         VISUAL_AID_REGISTRY_PATH: "/tmp/visual-aid-registry.json",
       }),
     ).toBe("/tmp/visual-aid-registry.json");
+  });
+
+  it("VXT-WORKSPACE-001 workspace cwd honors the explicit environment override", () => {
+    expect(
+      resolveWorkspaceCwd("/tmp/visual-aid", {
+        VISUAL_AID_WORKSPACE_CWD: "/tmp/project-one",
+      }),
+    ).toBe("/tmp/project-one");
   });
 });

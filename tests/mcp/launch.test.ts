@@ -117,4 +117,40 @@ describe("MCP launch spec", () => {
       source: "VISUAL_AID_APP_PATH",
     });
   });
+
+  it("VAS-LAUNCH-004 explicit debug preference uses the debug binary even for non-canonical session paths", async () => {
+    const root = join(
+      process.cwd(),
+      ".tmp-tests",
+      `launch-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    );
+    tempRoots.push(root);
+
+    await mkdir(
+      join(
+        root,
+        "src-tauri",
+        "target",
+        "release",
+        "bundle",
+        "macos",
+        "visual-aid.app",
+      ),
+      { recursive: true },
+    );
+    await mkdir(join(root, "src-tauri", "target", "debug"), { recursive: true });
+    const { writeFile } = await import("node:fs/promises");
+    await writeFile(join(root, "src-tauri", "target", "debug", "visual-aid"), "");
+
+    const target = await detectLaunchTarget(root, {
+      VISUAL_AID_PREFER_DEBUG_APP: "1",
+      VISUAL_AID_SESSION_PATH: "/tmp/other-project/.visual-aid/session.json",
+    });
+
+    expect(target).toEqual({
+      kind: "binary",
+      value: join(root, "src-tauri", "target", "debug", "visual-aid"),
+      source: "detected debug binary",
+    });
+  });
 });

@@ -1,0 +1,43 @@
+# Spec 0012: Cross-Workspace Source Testing
+
+## Purpose
+
+Define how a `visual-aid` source checkout can serve MCP traffic for another workspace during local testing.
+
+Related decisions:
+
+- [0014-single-window-workspace-tabs.md](../decisions/0014-single-window-workspace-tabs.md)
+- [0018-source-checkout-cross-workspace-testing.md](../decisions/0018-source-checkout-cross-workspace-testing.md)
+
+## Preconditions
+
+- The `visual-aid` source checkout remains the place where the MCP server code runs from.
+- Another local workspace wants to use that source checkout for testing.
+- The desktop app and MCP server still communicate through a shared session file.
+
+## Invariants
+
+- The source checkout and the target workspace may differ.
+- Workspace identity in the registry follows the target workspace, not the source checkout.
+- Cross-workspace source testing keeps the same shared registry model and single-window workspace tabs.
+
+## Scenarios
+
+### VXT-WORKSPACE-001 Workspace cwd honors the explicit environment override
+
+Given the MCP server process runs from the `visual-aid` source checkout
+When `VISUAL_AID_WORKSPACE_CWD` is set to another workspace path
+Then workspace identity resolves to that override path
+
+### VXT-WORKSPACE-002 Workspace overrides attribute registry updates to the target project
+
+Given the MCP server process runs from the `visual-aid` source checkout
+And `VISUAL_AID_WORKSPACE_CWD` points at another workspace path
+When `visual-aid.show` records a payload
+Then the workspace registry stores that target workspace path as the active workspace
+And the workspace label is derived from the target workspace path
+
+## Test Mapping
+
+- `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-001`
+- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`

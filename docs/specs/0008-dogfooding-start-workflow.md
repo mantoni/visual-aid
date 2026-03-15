@@ -17,8 +17,8 @@ Related decisions:
 
 ## Invariants
 
-- `npm start` creates or reuses the repository-local `.visual-aid/dev-session.json`.
-- `npm start` launches `tauri:dev` with `VISUAL_AID_SESSION_PATH` set to that canonical dogfood session path.
+- `npm start` without overrides creates or reuses the repository-local `.visual-aid/dev-session.json`.
+- `npm start` launches `tauri:dev` with `VISUAL_AID_SESSION_PATH` set to the resolved target session path.
 - `npm start` does not start a competing local MCP server process.
 - `npm start -- --print-codex-config` prints the matching Codex MCP config block without launching the app.
 
@@ -59,6 +59,21 @@ When `npm start -- --help` runs
 Then the output describes the dogfood workflow
 And it includes the fish command for manually running `npx tsx mcp/server.ts` against `.visual-aid/dev-session.json`
 
+### VDF-START-006 npm start can target another workspace session file
+
+Given the repository root and another workspace path
+When `npm start -- --workspace-cwd /absolute/path/to/other-project` runs
+Then `/absolute/path/to/other-project/.visual-aid/session.json` is created when missing
+And `tauri:dev` receives `VISUAL_AID_SESSION_PATH` for that external workspace session
+
+### VDF-START-007 printed Codex config can target another workspace while keeping the source checkout cwd
+
+Given the repository root and another workspace path
+When `npm start -- --print-codex-config --workspace-cwd /absolute/path/to/other-project` runs
+Then the output keeps `cwd` pointed at the `visual-aid` source checkout
+And the env block includes `VISUAL_AID_SESSION_PATH` for the external workspace session
+And the env block includes `VISUAL_AID_WORKSPACE_CWD` for `/absolute/path/to/other-project`
+
 ## Test Mapping
 
-- `tests/scripts/start.test.ts`: `VDF-START-001`, `VDF-START-002`, `VDF-START-003`, `VDF-START-004`, `VDF-START-005`
+- `tests/scripts/start.test.ts`: `VDF-START-001`, `VDF-START-002`, `VDF-START-003`, `VDF-START-004`, `VDF-START-005`, `VDF-START-006`, `VDF-START-007`
