@@ -30,7 +30,7 @@ The application is expected to:
 
 The first renderer pass is format-aware without depending on heavyweight external renderer libraries.
 
-- Markdown is rendered into simple semantic HTML for headings, paragraphs, lists, tables, links, syntax-highlighted fenced code blocks, embedded Mermaid fences, and embedded diff fences.
+- Markdown is rendered into simple semantic HTML for headings, paragraphs, lists, tables, links, sanitized raw HTML snippets, syntax-highlighted fenced code blocks, embedded Mermaid fences, and embedded diff fences.
 - Source code is rendered as a dedicated syntax-highlighted code viewer with an optional language label.
 - JSON is rendered as a parsed tree view with a raw fallback for inspection.
 - Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.

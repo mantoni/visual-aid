@@ -91,6 +91,7 @@ The baseline document set is:
 - [docs/decisions/0023-source-code-rendering.md](docs/decisions/0023-source-code-rendering.md): add syntax-highlighted source-code payloads and highlighted Markdown fenced code blocks
 - [docs/decisions/0024-embedded-mermaid-in-markdown.md](docs/decisions/0024-embedded-mermaid-in-markdown.md): render Mermaid fences inside Markdown as embedded diagrams with source fallback
 - [docs/decisions/0025-embedded-diff-in-markdown.md](docs/decisions/0025-embedded-diff-in-markdown.md): render diff fences inside Markdown with the structured diff viewer
+- [docs/decisions/0026-sanitized-html-in-markdown.md](docs/decisions/0026-sanitized-html-in-markdown.md): render sanitized raw HTML snippets inside Markdown while keeping standalone HTML isolated
 
 ## Documentation Rules
 

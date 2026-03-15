@@ -272,6 +272,43 @@ describe("Renderer output spec", () => {
     );
   });
 
+  it("VFR-MARKDOWN-006 markdown raw html snippets render as sanitized html", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T13:20:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Inline HTML",
+              content: [
+                "Status: <strong>ready</strong> and <span class=\"va-inline\">visible</span>.",
+                "",
+                "<div class=\"va-callout\"><em>Sanitized block HTML</em></div>",
+                "",
+                "<script>window.__visualAidScriptRan = true;</script>",
+              ].join("\n"),
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-markdown strong")?.textContent).toBe("ready");
+    expect(body.querySelector(".payload-markdown .va-inline")?.textContent).toBe(
+      "visible",
+    );
+    expect(body.querySelector(".payload-markdown .va-callout em")?.textContent).toBe(
+      "Sanitized block HTML",
+    );
+    expect(body.querySelector(".payload-markdown script")).toBeNull();
+  });
+
   it("VFR-MARKDOWN-003 markdown mermaid fences render embedded mermaid frames", () => {
     const body = renderDocument(
       renderAppHtml({

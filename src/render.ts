@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import type { VisualAidPayload } from "./bridge";
 import hljs from "highlight.js/lib/core";
 import bash from "highlight.js/lib/languages/bash";
@@ -239,7 +240,7 @@ const renderMermaid = (
 };
 
 const markdownRenderer = new MarkdownIt({
-  html: false,
+  html: true,
   linkify: true,
 });
 
@@ -299,7 +300,11 @@ markdownRenderer.renderer.rules.link_open = (
 };
 
 const renderMarkdown = (content: string) =>
-  `<div class="payload-markdown">${markdownRenderer.render(content)}</div>`;
+  `<div class="payload-markdown">${DOMPurify.sanitize(markdownRenderer.render(content), {
+    ADD_ATTR: ["rel", "target"],
+    FORBID_ATTR: ["style"],
+    FORBID_TAGS: ["iframe", "script", "style"],
+  })}</div>`;
 
 const renderExcalidraw = (content: string) => {
   let parsed: unknown = null;

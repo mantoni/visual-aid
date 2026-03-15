@@ -17,10 +17,12 @@ Markdown rendering moves from a hand-rolled subset parser to a richer Markdown p
 Specifically:
 
 - Markdown keeps rendering directly in the host UI rather than an isolated iframe
-- raw HTML inside Markdown is escaped rather than executed or injected
+- raw HTML inside Markdown is controlled by the Markdown renderer rather than becoming unrestricted host-DOM injection
 - the renderer supports richer document structure including ordered lists, blockquotes, tables, links, and fenced code blocks
 - fenced code blocks may surface the declared language label in the UI
 - Markdown may render some fenced languages, such as `mermaid` and `diff`, through richer embedded viewers instead of plain code blocks
+
+The raw-HTML-specific portion of this decision is superseded by [0026-sanitized-html-in-markdown.md](0026-sanitized-html-in-markdown.md).
 
 ## Consequences
 
