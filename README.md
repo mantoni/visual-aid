@@ -62,6 +62,7 @@ The baseline document set is:
 - [docs/specs/0007-mcp-diagnostics.md](docs/specs/0007-mcp-diagnostics.md): diagnostic tool and resource behavior for host integration
 - [docs/specs/0008-dogfooding-start-workflow.md](docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
 - [docs/specs/0009-persisted-session-restore.md](docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
+- [docs/specs/0010-workspace-tabs.md](docs/specs/0010-workspace-tabs.md): first-pass single-window workspace tab behavior
 - [docs/decisions/README.md](docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
