@@ -1,6 +1,6 @@
 {
   "name": "visual-aid",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A Tauri visual aid that coding agents can launch and send structured data to over MCP.",
   "type": "module",
