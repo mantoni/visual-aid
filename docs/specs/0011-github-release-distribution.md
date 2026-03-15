@@ -21,6 +21,7 @@ Related decisions:
 - Release automation publishes the bundles to a GitHub Release whose tag matches the requested app version.
 - Manual release runs can stage a draft or pre-release without requiring a second workflow definition.
 - `npm version` keeps the tracked release version files aligned before maintainers push a release tag.
+- `npm version` stages `src-tauri/Cargo.lock` when the version bump changes the Rust lockfile.
 - The published release process remains source-of-truth documentation for how packaged installers are produced.
 
 ## Scenarios
@@ -37,6 +38,7 @@ And it plans bundled artifacts for macOS, Linux, and Windows
 Given a maintainer runs `npm version patch`
 When the npm version lifecycle completes
 Then `package.json`, `packages/visual-aid/package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` all contain the same bumped version
+And the npm version workflow stages `src-tauri/Cargo.lock` when the lockfile changes
 And the resulting commit and `v<version>` tag are ready to push for release publishing
 
 ### VRD-PUBLISH-001 Tagged releases publish installers to GitHub Releases

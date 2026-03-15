@@ -13,6 +13,7 @@ import {
   readRepositoryVersion,
   resolveReleaseVersion,
 } from "../../scripts/release.js";
+import rootPackageJson from "../../package.json";
 import {
   runVersionSync,
   syncRepositoryVersionFiles,
@@ -188,6 +189,10 @@ describe("release planning", () => {
     expect(stdout.text()).toBe(
       "Synced release version 2.0.0 to packages/visual-aid/package.json, src-tauri/tauri.conf.json, src-tauri/Cargo.toml\n",
     );
+  });
+
+  it("VRD-BUILD-002 npm version stages Cargo.lock when the Rust lockfile changes", () => {
+    expect(rootPackageJson.scripts.version).toContain("src-tauri/Cargo.lock");
   });
 
   it("release planning rejects version mismatches from the standalone MCP package metadata", async () => {

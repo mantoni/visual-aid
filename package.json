@@ -18,7 +18,7 @@
     "verify": "npm run check && npm run test && npm run build && npm run build:mcp-package",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "version": "tsx scripts/version.ts && git add package.json package-lock.json packages/visual-aid/package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml"
+    "version": "tsx scripts/version.ts && git add package.json package-lock.json packages/visual-aid/package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock"
   },
   "keywords": [
     "tauri",

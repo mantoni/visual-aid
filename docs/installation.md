@@ -81,7 +81,7 @@ Tauri will place the resulting bundles under `src-tauri/target/`.
 
 Maintainers publish packaged installers through the repository release workflow:
 
-1. Run `npm version patch`, `npm version minor`, or `npm version major` to bump `package.json` and sync `packages/visual-aid/package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`.
+1. Run `npm version patch`, `npm version minor`, or `npm version major` to bump `package.json`, sync `packages/visual-aid/package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`, and stage `src-tauri/Cargo.lock` when the Rust lockfile changes.
 2. Push the generated release commit and tag with `git push --follow-tags` to publish the stable release automatically.
 3. Or push the version commit and start the `Release` workflow manually to stage a draft or pre-release from the current checkout.
 
