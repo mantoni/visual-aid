@@ -63,6 +63,7 @@ The baseline document set is:
 - [docs/specs/0008-dogfooding-start-workflow.md](docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
 - [docs/specs/0009-persisted-session-restore.md](docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
 - [docs/specs/0010-workspace-tabs.md](docs/specs/0010-workspace-tabs.md): first-pass single-window workspace tab behavior
+- [docs/specs/0011-github-release-distribution.md](docs/specs/0011-github-release-distribution.md): release packaging and GitHub Releases publishing behavior
 - [docs/decisions/README.md](docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
@@ -80,6 +81,7 @@ The baseline document set is:
 - [docs/decisions/0014-single-window-workspace-tabs.md](docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
 - [docs/decisions/0015-richer-markdown-rendering.md](docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
 - [docs/decisions/0016-json-payload-renderer.md](docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
+- [docs/decisions/0017-github-release-distribution.md](docs/decisions/0017-github-release-distribution.md): define GitHub Actions and GitHub Releases as the first packaged distribution path
 
 ## Documentation Rules
 
