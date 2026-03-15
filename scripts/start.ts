@@ -59,14 +59,19 @@ const renderTomlInlineTable = (values: Record<string, string>) =>
 export const renderCodexConfig = (
   cwd = process.cwd(),
 ) => {
-  const tsxPath = join(cwd, "node_modules", "tsx", "dist", "cli.mjs");
+  const tsxCommandPath = join(
+    cwd,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "tsx.cmd" : "tsx",
+  );
   const serverPath = join(cwd, "mcp", "server.ts");
 
   return [
     [
       "[mcp_servers.visual-aid]",
-      `command = ${quoteTomlString(process.execPath)}`,
-      `args = [${quoteTomlString(tsxPath)}, ${quoteTomlString(serverPath)}]`,
+      `command = ${quoteTomlString(tsxCommandPath)}`,
+      `args = [${quoteTomlString(serverPath)}]`,
       `env = ${renderTomlInlineTable({ VISUAL_AID_PREFER_DEBUG_APP: "1" })}`,
     ].join("\n"),
   ].join("\n");

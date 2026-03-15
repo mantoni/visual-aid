@@ -169,6 +169,7 @@ describe("Dogfooding start workflow spec", () => {
 
     expect(exitCode).toBe(0);
     expect(stdout.text()).toBe(`${renderCodexConfig(root)}\n`);
+    expect(stdout.text()).not.toContain(process.execPath);
     expect(calls).toHaveLength(0);
   });
 

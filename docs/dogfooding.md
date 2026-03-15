@@ -34,8 +34,8 @@ Expected shape:
 
 ```toml
 [mcp_servers.visual-aid]
-command = "/absolute/path/to/node"
-args = ["/absolute/path/to/visual-aid/node_modules/tsx/dist/cli.mjs", "/absolute/path/to/visual-aid/mcp/server.ts"]
+command = "/absolute/path/to/visual-aid/node_modules/.bin/tsx"
+args = ["/absolute/path/to/visual-aid/mcp/server.ts"]
 env = { VISUAL_AID_PREFER_DEBUG_APP = "1" }
 ```
 

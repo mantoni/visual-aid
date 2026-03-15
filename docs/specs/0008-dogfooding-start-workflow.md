@@ -51,6 +51,7 @@ Given the repository root
 When `npm start -- --print-codex-config` runs
 Then the output contains a `mcp_servers.visual-aid` block
 And the block points Codex at this checkout's MCP server entrypoint
+And the block invokes the local `tsx` executable directly instead of resolving `node`
 And the block does not pin Codex to a single workspace session path
 
 ### VDF-START-005 Help output includes the manual fish fallback command
