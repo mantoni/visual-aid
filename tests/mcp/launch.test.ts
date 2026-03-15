@@ -84,4 +84,37 @@ describe("MCP launch spec", () => {
       source: "detected debug binary",
     });
   });
+
+  it("VAS-LAUNCH-003 explicit app bundle paths take priority over auto-detection", async () => {
+    const root = join(
+      process.cwd(),
+      ".tmp-tests",
+      `launch-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    );
+    tempRoots.push(root);
+
+    await mkdir(
+      join(
+        root,
+        "src-tauri",
+        "target",
+        "release",
+        "bundle",
+        "macos",
+        "visual-aid.app",
+      ),
+      { recursive: true },
+    );
+
+    const explicitBundlePath = "/Applications/visual-aid.app";
+    const target = await detectLaunchTarget(root, {
+      VISUAL_AID_APP_PATH: explicitBundlePath,
+    });
+
+    expect(target).toEqual({
+      kind: "bundle",
+      value: explicitBundlePath,
+      source: "VISUAL_AID_APP_PATH",
+    });
+  });
 });

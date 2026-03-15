@@ -75,6 +75,12 @@ And both debug and release local app artifacts are detectable
 When launch discovery runs
 Then the debug binary is selected before the release artifacts
 
+### VAS-LAUNCH-003 Explicit app bundle paths take priority over auto-detection
+
+Given an explicit app bundle path and detectable local app artifacts
+When launch discovery runs
+Then the explicit app bundle path is selected
+
 ### VAS-SINGLE-INSTANCE-001 Duplicate app launches focus the existing main window
 
 Given the app is already running for the project
@@ -86,5 +92,5 @@ And the project does not keep multiple app windows open
 
 - `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-CLEAR-001`
 - `tests/mcp/integration.test.ts`: `VAS-SHOW-003`
-- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`
+- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`, `VAS-LAUNCH-003`
 - `src-tauri/src/main.rs`: `VAS-SINGLE-INSTANCE-001`
