@@ -1,7 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    collections::HashMap,
     env, fs,
     io::ErrorKind,
     path::{Path, PathBuf},
@@ -24,8 +23,8 @@ struct VisualAidPayload {
     id: Option<String>,
     title: Option<String>,
     summary: Option<String>,
+    language: Option<String>,
     mode: Option<String>,
-    metadata: Option<HashMap<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -577,8 +576,8 @@ mod tests {
                 id: None,
                 title: Some("Persisted Session".to_string()),
                 summary: None,
+                language: None,
                 mode: Some("replace".to_string()),
-                metadata: None,
             }],
         }
     }
@@ -662,8 +661,8 @@ mod tests {
                         id: None,
                         title: Some("Recovered Session".to_string()),
                         summary: None,
+                        language: None,
                         mode: Some("replace".to_string()),
-                        metadata: None,
                     }],
                 },
             }],
@@ -725,8 +724,8 @@ mod tests {
                         id: None,
                         title: Some("Persisted Session".to_string()),
                         summary: None,
+                        language: None,
                         mode: Some("replace".to_string()),
-                        metadata: None,
                     }],
                 },
             }],
@@ -777,8 +776,8 @@ mod tests {
                 id: None,
                 title: Some("Persisted Session".to_string()),
                 summary: None,
+                language: None,
                 mode: Some("replace".to_string()),
-                metadata: None,
             }],
         };
 

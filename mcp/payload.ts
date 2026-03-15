@@ -18,17 +18,17 @@ export const visualAidPayloadSchema = z.object({
   id: z.string().min(1).optional(),
   title: z.string().min(1).optional(),
   summary: z.string().min(1).optional(),
+  language: z.string().min(1).optional(),
   mode: visualAidModeSchema,
-  metadata: z.record(z.string(), z.unknown()).optional(),
-});
+}).strict();
 
 export const visualAidWorkspaceOverrideSchema = z.object({
   cwd: z.string().min(1).optional(),
-});
+}).strict();
 
 export const visualAidShowArgumentsSchema = visualAidPayloadSchema.extend({
   cwd: z.string().min(1).optional(),
-});
+}).strict();
 
 export type VisualAidPayload = z.infer<typeof visualAidPayloadSchema>;
 export type VisualAidShowArguments = z.infer<

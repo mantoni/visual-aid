@@ -93,6 +93,7 @@ The baseline document set is:
 - [docs/decisions/0026-sanitized-html-in-markdown.md](docs/decisions/0026-sanitized-html-in-markdown.md): render sanitized raw HTML snippets inside Markdown while keeping standalone HTML isolated
 - [docs/decisions/0027-remove-excalidraw-format.md](docs/decisions/0027-remove-excalidraw-format.md): remove Excalidraw as a first-class payload format
 - [docs/decisions/0028-app-shell-splash-and-theme.md](docs/decisions/0028-app-shell-splash-and-theme.md): define the branded splash state, app chrome, and adaptive light/dark shell theming
+- [docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md](docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md): remove arbitrary payload metadata in favor of explicit fields
 
 ## Documentation Rules
 

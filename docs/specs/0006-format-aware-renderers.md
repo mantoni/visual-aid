@@ -9,6 +9,7 @@ Related decisions:
 - [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
 - [0006-initial-format-aware-renderers.md](../decisions/0006-initial-format-aware-renderers.md)
 - [0023-source-code-rendering.md](../decisions/0023-source-code-rendering.md)
+- [0029-explicit-payload-fields-no-arbitrary-metadata.md](../decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md)
 
 ## Preconditions
 
@@ -72,7 +73,7 @@ And unsafe elements such as scripts are removed rather than executed
 
 ### VFR-CODE-001 Source code payloads render with syntax highlighting
 
-Given a source code payload with a declared language
+Given a source code payload with an explicit `language` field
 When the renderer output is generated
 Then the payload is rendered in a dedicated code viewer
 And the source code is syntax highlighted with the language label visible

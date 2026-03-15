@@ -206,7 +206,6 @@ p {
 
 .app-brand__meta,
 .history-item__meta,
-.metadata-empty,
 .empty-state {
   color: var(--text-muted);
 }

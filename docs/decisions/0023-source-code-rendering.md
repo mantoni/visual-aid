@@ -18,7 +18,7 @@ Specifically:
 
 - `visual-aid.show` accepts `format: "code"` as a first-class payload type
 - the source code renderer displays code in a dedicated code viewer instead of a generic pre block
-- source code payloads may supply `metadata.language` to control the syntax highlighter and visible label
+- source code payloads may supply `language` to control the syntax highlighter and visible label
 - Markdown fenced code blocks use the same syntax highlighting path, while still rendering inside the Markdown document view
 - when no language is supplied, the renderer may fall back to automatic language detection or plain escaped code
 
@@ -34,4 +34,4 @@ Costs and constraints:
 
 - the frontend now depends on a dedicated syntax-highlighting library
 - highlighting accuracy depends on declared languages or the quality of automatic detection
-- `metadata.language` remains advisory rather than becoming a strict schema field
+- `language` remains advisory rather than becoming a strict per-format schema branch

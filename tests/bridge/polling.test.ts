@@ -78,7 +78,7 @@ describe("Desktop bridge spec", () => {
     expect(stopListening).toHaveBeenCalledTimes(1);
   });
 
-  it("VAB-BRIDGE-003 bridge treats reordered metadata keys as the same snapshot", async () => {
+  it("VAB-BRIDGE-003 bridge treats reordered payload keys as the same snapshot", async () => {
     const firstWorkspaceState: VisualAidWorkspaceState = {
       activeWorkspaceId: "/tmp/example",
       workspaces: [
@@ -95,10 +95,8 @@ describe("Desktop bridge spec", () => {
                 version: 1,
                 format: "mermaid",
                 content: "graph TD\nA-->B",
-                metadata: {
-                  source: "manual-test",
-                  checkedAt: "2026-03-14T10:22:30+01:00",
-                },
+                title: "Graph",
+                summary: "Mermaid preview",
               },
             ],
           },
@@ -118,13 +116,11 @@ describe("Desktop bridge spec", () => {
             lastAction: "show",
             items: [
               {
-                version: 1,
-                format: "mermaid",
+                summary: "Mermaid preview",
                 content: "graph TD\nA-->B",
-                metadata: {
-                  checkedAt: "2026-03-14T10:22:30+01:00",
-                  source: "manual-test",
-                },
+                format: "mermaid",
+                title: "Graph",
+                version: 1,
               },
             ],
           },

@@ -131,9 +131,7 @@ Source code:
   "format": "code",
   "title": "render.ts",
   "content": "export const status = 'ok';",
-  "metadata": {
-    "language": "typescript"
-  }
+  "language": "typescript"
 }
 ```
 

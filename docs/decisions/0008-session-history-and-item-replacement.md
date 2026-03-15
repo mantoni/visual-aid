@@ -24,7 +24,7 @@ Specifically:
 
 - the newest session item is selected by default whenever the session changes
 - the user may select an older history item locally in the renderer UI
-- the current payload panel and metadata panel reflect the selected history item
+- the current payload panel reflects the selected history item while the history sidebar remains available for navigation
 
 The session item lifecycle for `visual-aid.show` is:
 

@@ -38,9 +38,9 @@ Given a desktop bridge with an unchanged session snapshot
 When the host delivers the next session update
 Then the session listener is not invoked again
 
-### VAB-BRIDGE-003 Bridge ignores metadata key reordering for unchanged sessions
+### VAB-BRIDGE-003 Bridge ignores payload key reordering for unchanged sessions
 
-Given a desktop bridge with the same session content but different metadata key order
+Given a desktop bridge with the same session content but different payload key order
 When the host delivers the next session update
 Then the session listener is not invoked again
 

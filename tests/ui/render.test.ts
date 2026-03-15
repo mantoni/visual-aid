@@ -47,9 +47,7 @@ describe("Renderer output spec", () => {
       format: "code",
       title: "Code Example",
       content: "export const status = 'ok';",
-      metadata: {
-        language: "typescript",
-      },
+      language: "typescript",
     });
     const body = renderDocument(renderAppHtml(state));
 
@@ -108,6 +106,33 @@ describe("Renderer output spec", () => {
     expect(items[0]?.textContent).toContain("Second");
     expect(items[0]?.classList.contains("history-item--active")).toBe(true);
     expect(items[1]?.textContent).toContain("First");
+  });
+
+  it("VAR-LAYOUT-001 payload sessions show viewer and history without a metadata panel", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T10:00:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Layout Example",
+              content: "# Layout",
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".panel--viewer")).not.toBeNull();
+    expect(body.querySelector(".history-list")).not.toBeNull();
+    expect(body.textContent).not.toContain("Metadata");
+    expect(body.textContent).not.toContain("Envelope Details");
   });
 
   it("VWT-TABS-001 multiple workspaces render as tabs", () => {
@@ -400,9 +425,7 @@ describe("Renderer output spec", () => {
               format: "code",
               title: "Renderer",
               content: "export const status = 'ok';",
-              metadata: {
-                language: "typescript",
-              },
+              language: "typescript",
             },
           ],
         },
@@ -586,34 +609,4 @@ describe("Renderer output spec", () => {
     expect(body.querySelector(".payload-markdown h1")?.textContent).toBe("Older");
   });
 
-  it("VAR-META-001 metadata renders in a stable key order", () => {
-    const body = renderDocument(
-      renderAppHtml({
-        session: {
-          openedAt: null,
-          lastAction: "show",
-          updatedAt: "2026-03-14T09:50:00.000Z",
-          items: [
-            {
-              version: 1,
-              format: "mermaid",
-              title: "Metadata Example",
-              content: "graph TD\nA-->B",
-              metadata: {
-                source: "manual-test",
-                checkedAt: "2026-03-14T10:22:30+01:00",
-              },
-            },
-          ],
-        },
-        status: "Received Mermaid payload",
-        selectedIndex: 0,
-      }),
-    );
-
-    expect(body.querySelector(".payload-pre--meta code")?.textContent).toBe(`{
-  "checkedAt": "2026-03-14T10:22:30+01:00",
-  "source": "manual-test"
-}`);
-  });
 });

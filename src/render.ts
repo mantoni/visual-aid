@@ -47,22 +47,6 @@ type MarkdownRendererLike = {
   renderToken(tokens: MarkdownToken[], idx: number, options: unknown): string;
 };
 
-const sortObjectKeys = (value: unknown): unknown => {
-  if (Array.isArray(value)) {
-    return value.map((item) => sortObjectKeys(item));
-  }
-
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, nested]) => [key, sortObjectKeys(nested)]),
-    );
-  }
-
-  return value;
-};
-
 const codeLanguages = {
   bash,
   css,
@@ -146,9 +130,7 @@ const renderHighlightedCodeBlock = (
 };
 
 const codeLanguageFromPayload = (payload: VisualAidPayload) =>
-  typeof payload.metadata?.language === "string"
-    ? payload.metadata.language
-    : null;
+  typeof payload.language === "string" ? payload.language : null;
 
 const renderCode = (payload: VisualAidPayload) => {
   const explicitLanguage = codeLanguageFromPayload(payload);
@@ -575,16 +557,6 @@ export const renderContent = (payload: VisualAidPayload) => {
   return `<pre class="payload-pre"><code>${escapeHtml(payload.content)}</code></pre>`;
 };
 
-export const renderMetadata = (payload: VisualAidPayload) => {
-  if (!payload.metadata || Object.keys(payload.metadata).length === 0) {
-    return '<p class="metadata-empty">No metadata supplied.</p>';
-  }
-
-  return `<pre class="payload-pre payload-pre--meta"><code>${escapeHtml(
-    JSON.stringify(sortObjectKeys(payload.metadata), null, 2),
-  )}</code></pre>`;
-};
-
 const renderWorkspaceTabs = (
   workspaceState: VisualAidState["workspaceState"],
   selectedWorkspaceId: string | null,
@@ -731,15 +703,6 @@ export const renderAppHtml = (state: VisualAidState) => {
                     <div class="history-list">
                       ${history || '<div class="empty-state empty-state--compact">History is empty.</div>'}
                     </div>
-                  </section>
-                  <section class="panel">
-                    <div class="panel__header">
-                      <div>
-                        <p class="panel__label">Metadata</p>
-                        <h2>Envelope Details</h2>
-                      </div>
-                    </div>
-                    ${renderMetadata(current)}
                   </section>
                 </aside>
               </main>

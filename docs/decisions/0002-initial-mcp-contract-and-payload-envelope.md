@@ -33,8 +33,8 @@ The initial payload envelope for `visual-aid.show` will be:
   "id": "optional-stable-id",
   "title": "Optional title",
   "summary": "Optional summary",
+  "language": "optional-language-hint",
   "mode": "replace",
-  "metadata": {}
 }
 ```
 
@@ -45,8 +45,8 @@ Field rules:
 - `content` is required and contains the raw payload to render
 - `id` is optional and can be used to replace or track a rendered item
 - `title` and `summary` are optional user-facing descriptors
+- `language` is optional and reserved for explicit format-specific hints such as source-code highlighting
 - `mode` is optional and initially supports `replace` and `append`
-- `metadata` is optional and reserved for structured renderer-specific data
 
 Initial supported `format` values are:
 
@@ -58,6 +58,8 @@ Initial supported `format` values are:
 
 The contract later added a dedicated `code` format in
 [0023-source-code-rendering.md](0023-source-code-rendering.md).
+Arbitrary payload metadata was removed later in
+[0029-explicit-payload-fields-no-arbitrary-metadata.md](0029-explicit-payload-fields-no-arbitrary-metadata.md).
 Excalidraw support was removed later in
 [0027-remove-excalidraw-format.md](0027-remove-excalidraw-format.md).
 
@@ -71,7 +73,7 @@ Positive consequences:
 
 Costs and constraints:
 
-- some future formats may require richer metadata than this first envelope provides
+- future renderer-specific hints require explicit contract updates instead of arbitrary metadata
 - detailed append behavior and item replacement semantics are defined later in [0008-session-history-and-item-replacement.md](0008-session-history-and-item-replacement.md)
 - future incompatible changes will require a schema version increment and a new decision record
 

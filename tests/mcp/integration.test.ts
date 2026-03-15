@@ -174,9 +174,7 @@ describe("MCP stdio integration spec", () => {
         version: 1,
         format: "code",
         content: "export const status = 'ok';",
-        metadata: {
-          language: "typescript",
-        },
+        language: "typescript",
         mode: "replace",
       },
     });
@@ -188,9 +186,7 @@ describe("MCP stdio integration spec", () => {
     expect(session.lastAction).toBe("show");
     expect(session.items).toHaveLength(1);
     expect(session.items[0]?.format).toBe("code");
-    expect(session.items[0]?.metadata).toEqual({
-      language: "typescript",
-    });
+    expect(session.items[0]?.language).toBe("typescript");
   });
 
   it("VAS-SHOW-003 append mode updates an existing item when the payload id matches", async () => {
@@ -232,6 +228,25 @@ describe("MCP stdio integration spec", () => {
         version: 1,
         format: "unsupported-format",
         content: "# Invalid",
+      },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(firstTextContent(result.content)).toContain(
+      "Input validation error",
+    );
+  });
+
+  it("VAI-VALIDATION-002 unexpected payload fields are rejected", async () => {
+    const result = await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "code",
+        content: "export const status = 'ok';",
+        metadata: {
+          language: "typescript",
+        },
       },
     });
 

@@ -84,8 +84,8 @@ Optional fields:
 - `id`: stable identifier for updates or replacement within session history
 - `title`: short user-facing label
 - `summary`: short human-readable description
+- `language`: optional syntax-highlighting hint for source code payloads
 - `mode`: render intent, initially `replace` or `append`
-- `metadata`: format-specific or workflow-specific structured metadata
 
 This keeps transport consistent while allowing renderers to branch on `format`.
 

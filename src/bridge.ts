@@ -17,8 +17,8 @@ export type VisualAidPayload = {
   id?: string;
   title?: string;
   summary?: string;
+  language?: string;
   mode?: VisualAidMode;
-  metadata?: Record<string, unknown>;
 };
 
 export type VisualAidSession = {

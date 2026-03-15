@@ -2,13 +2,14 @@
 
 ## Purpose
 
-Define the visible renderer behavior for the splash state, current payload area, history list, and metadata panel.
+Define the visible renderer behavior for the splash state, current payload area, and history list.
 
 Related decisions:
 
 - [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
 - [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
 - [0011-isolated-html-fragments.md](../decisions/0011-isolated-html-fragments.md)
+- [0029-explicit-payload-fields-no-arbitrary-metadata.md](../decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md)
 
 ## Preconditions
 
@@ -22,7 +23,6 @@ Related decisions:
 - The current payload panel reflects the selected session item.
 - History is shown in reverse chronological order with the selected item marked active.
 - HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
-- Metadata is rendered in a stable JSON key order for the selected payload.
 
 ## Scenarios
 
@@ -62,6 +62,14 @@ When the renderer output is generated
 Then the first history item corresponds to the newest payload
 And that history item has the active state class
 
+### VAR-LAYOUT-001 Payload sessions show viewer and history without a metadata panel
+
+Given a renderer state with a current payload
+When the renderer output is generated
+Then the payload viewer panel is visible
+And the history panel is visible
+And no metadata panel is rendered
+
 ### VAR-HISTORY-002 The current payload reflects the selected history item
 
 Given a renderer state with multiple session items and the older item selected
@@ -69,13 +77,6 @@ When the renderer output is generated
 Then the current payload title matches the selected older item
 And the matching history item has the active state class
 
-### VAR-META-001 Metadata renders in a stable key order
-
-Given a renderer state with payload metadata
-When the renderer output is generated
-Then the metadata panel renders JSON for the selected payload
-And the metadata keys appear in a stable sorted order
-
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-HISTORY-002`, `VAR-META-001`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`

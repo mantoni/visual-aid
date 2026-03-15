@@ -39,9 +39,6 @@ export const samplePayload: VisualAidPayload = {
     "- history: newest payloads stay visible in the sidebar",
     "- recovery: the desktop host keeps the last good session snapshot",
   ].join("\n"),
-  metadata: {
-    source: "bootstrap",
-  },
 };
 
 const sampleWorkspaceState = (

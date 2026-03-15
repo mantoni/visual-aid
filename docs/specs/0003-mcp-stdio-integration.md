@@ -9,6 +9,7 @@ Related decisions:
 - [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
 - [0004-initial-file-based-session-bridge.md](../decisions/0004-initial-file-based-session-bridge.md)
 - [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
+- [0029-explicit-payload-fields-no-arbitrary-metadata.md](../decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md)
 
 ## Preconditions
 
@@ -56,6 +57,7 @@ And the session `lastAction` is `show`
 Given a connected MCP client and an empty session path
 When the client calls `visual-aid.show` with a valid source code payload
 Then the session file contains exactly one source code item
+And the source code item keeps the explicit `language` field when supplied
 And the session `lastAction` is `show`
 
 ### VAI-VALIDATION-001 Invalid show payloads are rejected
@@ -65,6 +67,13 @@ When the client calls `visual-aid.show` with an unsupported format
 Then the result is marked as an error
 And the returned text mentions input validation
 
+### VAI-VALIDATION-002 Unexpected payload fields are rejected
+
+Given a connected MCP client
+When the client calls `visual-aid.show` with an undocumented extra field
+Then the result is marked as an error
+And the returned text mentions input validation
+
 ## Test Mapping
 
-- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-SHOW-003`, `VAI-VALIDATION-001`
+- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-SHOW-003`, `VAI-VALIDATION-001`, `VAI-VALIDATION-002`
