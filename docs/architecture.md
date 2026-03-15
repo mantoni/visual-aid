@@ -35,7 +35,7 @@ The first renderer pass is format-aware without depending on heavyweight externa
 - JSON is rendered as a parsed tree view with a raw fallback for inspection.
 - Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.
 - Mermaid is rendered as a diagram when possible, with the source kept available as a fallback and inspection surface.
-- HTML is rendered as fragment-oriented content inside a sandboxed isolated payload surface with app-provided base styles.
+- HTML is rendered as fragment-oriented content inside a sandboxed isolated payload surface with app-provided base styles, with an optional wireframe presentation for low-fidelity fragments.
 - The renderer uses a single main viewer with a compact workspace switcher in the toolbar, a toggleable reverse-chronological recents sheet for the selected workspace, and a branded splash surface when the active workspace has no rendered payloads.
 
 This keeps the early renderer surface explicit and testable while leaving room for richer format-specific engines later.
@@ -86,6 +86,7 @@ Optional fields:
 - `title`: short user-facing label
 - `summary`: short human-readable description
 - `language`: optional syntax-highlighting hint for source code payloads
+- `presentation`: optional renderer-owned presentation hint, initially `default` or `wireframe` for HTML payloads
 - `mode`: render intent, initially `replace` or `append`
 
 This keeps transport consistent while allowing renderers to branch on `format`.

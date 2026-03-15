@@ -10,6 +10,7 @@ Related decisions:
 - [0006-initial-format-aware-renderers.md](../decisions/0006-initial-format-aware-renderers.md)
 - [0023-source-code-rendering.md](../decisions/0023-source-code-rendering.md)
 - [0029-explicit-payload-fields-no-arbitrary-metadata.md](../decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md)
+- [0032-html-wireframe-presentation.md](../decisions/0032-html-wireframe-presentation.md)
 
 ## Preconditions
 
@@ -27,6 +28,7 @@ Related decisions:
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
 - Mermaid payloads follow the active shell theme when the diagram is rendered.
 - HTML payloads render as isolated fragment markup inside a sandboxed iframe surface.
+- HTML payloads may opt into an app-owned `wireframe` presentation for low-fidelity structural previews.
 
 ## Scenarios
 
@@ -100,6 +102,15 @@ When the renderer output is generated
 Then the UI shows that the payload could not be parsed
 And the raw JSON text remains visible for inspection
 
+### VFR-HTML-001 HTML wireframe payloads use app-owned structural styling
+
+Given an html payload whose `presentation` is `wireframe`
+When the renderer output is generated
+Then the iframe document uses the app-owned wireframe presentation styles
+And the fragment keeps the original markup structure for inspection
+And helper classes such as `va-stack`, `va-grid`, `va-sidebar`, `va-cluster`, and `va-spread` are available for lightweight layout
+And repeated inner wrappers stay visually quieter than major semantic regions
+
 ### VFR-MERMAID-001 Mermaid payloads render as diagrams when rendering succeeds
 
 Given a mermaid payload
@@ -138,5 +149,5 @@ And wide diagrams keep a larger natural width instead of shrinking labels to fit
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-005`, `VFR-MARKDOWN-006`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-005`, `VFR-MARKDOWN-006`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-HTML-001`
 - `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`, `VFR-MERMAID-003`, `VFR-MERMAID-004`, `VFR-MERMAID-005`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-004`

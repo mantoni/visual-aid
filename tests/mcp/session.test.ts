@@ -30,6 +30,14 @@ const replacementPayload: VisualAidPayload = {
   mode: "append",
 };
 
+const wireframePayload: VisualAidPayload = {
+  version: 1,
+  format: "html",
+  content: "<main><section>Wireframe</section></main>",
+  presentation: "wireframe",
+  mode: "replace",
+};
+
 describe("MCP session spec", () => {
   it("VAS-OPEN-001 records open on an empty session", () => {
     const now = "2026-03-13T16:00:00.000Z";
@@ -80,6 +88,18 @@ describe("MCP session spec", () => {
     expect(next.items[0]?.id).toBe("plan");
     expect(next.items[0]?.format).toBe("html");
     expect(next.items.at(-1)?.content).toBe("<article>Updated</article>");
+  });
+
+  it("VAS-SHOW-004 html payloads keep explicit presentation hints", () => {
+    const next = applyShow(
+      emptySession(),
+      wireframePayload,
+      "2026-03-13T16:04:30.000Z",
+    );
+
+    expect(next.items).toHaveLength(1);
+    expect(next.items[0]?.format).toBe("html");
+    expect(next.items[0]?.presentation).toBe("wireframe");
   });
 
   it("VAS-CLEAR-001 clear removes all items", () => {

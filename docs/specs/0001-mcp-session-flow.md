@@ -56,6 +56,14 @@ When `visual-aid.show` receives an html payload in `append` mode with the same `
 Then the session still contains one item with `id` `plan`
 And the newest item format is `html`
 
+### VAS-SHOW-004 HTML payloads keep explicit presentation hints
+
+Given an empty session
+When `visual-aid.show` receives an html payload with `presentation` set to `wireframe`
+Then the session contains exactly one item
+And the item format is `html`
+And the item presentation is `wireframe`
+
 ### VAS-CLEAR-001 Clear removes all items
 
 Given a session with rendered items
@@ -108,7 +116,7 @@ And the project does not keep multiple app windows open
 
 ## Test Mapping
 
-- `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-CLEAR-001`
+- `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-SHOW-004`, `VAS-CLEAR-001`
 - `tests/mcp/integration.test.ts`: `VAS-SHOW-003`
 - `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`, `VAS-LAUNCH-003`, `VAS-LAUNCH-004`, `VAS-LAUNCH-005`
 - `src-tauri/src/main.rs`: `VAS-SINGLE-INSTANCE-001`

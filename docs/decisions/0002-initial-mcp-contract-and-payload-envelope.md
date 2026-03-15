@@ -34,6 +34,7 @@ The initial payload envelope for `visual-aid.show` will be:
   "title": "Optional title",
   "summary": "Optional summary",
   "language": "optional-language-hint",
+  "presentation": "optional-renderer-presentation",
   "mode": "replace",
 }
 ```
@@ -46,6 +47,7 @@ Field rules:
 - `id` is optional and can be used to replace or track a rendered item
 - `title` and `summary` are optional user-facing descriptors
 - `language` is optional and reserved for explicit format-specific hints such as source-code highlighting
+- `presentation` is optional and reserved for explicit renderer-owned presentation hints
 - `mode` is optional and initially supports `replace` and `append`
 
 Initial supported `format` values are:
@@ -60,6 +62,8 @@ The contract later added a dedicated `code` format in
 [0023-source-code-rendering.md](0023-source-code-rendering.md).
 Arbitrary payload metadata was removed later in
 [0029-explicit-payload-fields-no-arbitrary-metadata.md](0029-explicit-payload-fields-no-arbitrary-metadata.md).
+Named renderer presentation hints were added later in
+[0032-html-wireframe-presentation.md](0032-html-wireframe-presentation.md).
 Excalidraw support was removed later in
 [0027-remove-excalidraw-format.md](0027-remove-excalidraw-format.md).
 

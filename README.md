@@ -96,6 +96,7 @@ The baseline document set is:
 - [docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md](docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md): remove arbitrary payload metadata in favor of explicit fields
 - [docs/decisions/0030-document-style-active-shell.md](docs/decisions/0030-document-style-active-shell.md): shift active payload sessions to a content-first document shell with toggleable recents
 - [docs/decisions/0031-workspace-tab-close-deletes-session.md](docs/decisions/0031-workspace-tab-close-deletes-session.md): make tab close delete workspace session state, including the last visible tab
+- [docs/decisions/0032-html-wireframe-presentation.md](docs/decisions/0032-html-wireframe-presentation.md): add an explicit HTML wireframe presentation for low-fidelity fragment previews
 
 ## Documentation Rules
 

@@ -10,6 +10,7 @@ Related decisions:
 - [0004-initial-file-based-session-bridge.md](../decisions/0004-initial-file-based-session-bridge.md)
 - [0005-documentation-integrated-testing.md](../decisions/0005-documentation-integrated-testing.md)
 - [0029-explicit-payload-fields-no-arbitrary-metadata.md](../decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md)
+- [0032-html-wireframe-presentation.md](../decisions/0032-html-wireframe-presentation.md)
 
 ## Preconditions
 
@@ -60,6 +61,14 @@ Then the session file contains exactly one source code item
 And the source code item keeps the explicit `language` field when supplied
 And the session `lastAction` is `show`
 
+### VAI-SHOW-004 Show accepts HTML wireframe payloads through a real MCP call
+
+Given a connected MCP client and an empty session path
+When the client calls `visual-aid.show` with a valid html payload whose `presentation` is `wireframe`
+Then the session file contains exactly one html item
+And the html item keeps the explicit `presentation` field when supplied
+And the session `lastAction` is `show`
+
 ### VAI-VALIDATION-001 Invalid show payloads are rejected
 
 Given a connected MCP client
@@ -74,6 +83,13 @@ When the client calls `visual-aid.show` with an undocumented extra field
 Then the result is marked as an error
 And the returned text mentions input validation
 
+### VAI-VALIDATION-003 Unsupported presentation values are rejected
+
+Given a connected MCP client
+When the client calls `visual-aid.show` with an unsupported `presentation` value
+Then the result is marked as an error
+And the returned text mentions input validation
+
 ## Test Mapping
 
-- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-SHOW-003`, `VAI-VALIDATION-001`, `VAI-VALIDATION-002`
+- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-SHOW-003`, `VAI-SHOW-004`, `VAI-VALIDATION-001`, `VAI-VALIDATION-002`, `VAI-VALIDATION-003`

@@ -9,6 +9,7 @@ type VisualAidFormat =
   | "mermaid"
   | "html";
 type VisualAidMode = "replace" | "append";
+type VisualAidPresentation = "default" | "wireframe";
 
 export type VisualAidPayload = {
   version: 1;
@@ -18,6 +19,7 @@ export type VisualAidPayload = {
   title?: string;
   summary?: string;
   language?: string;
+  presentation?: VisualAidPresentation;
   mode?: VisualAidMode;
 };
 

@@ -10,6 +10,9 @@ export const visualAidFormatSchema = z.enum([
 ]);
 
 export const visualAidModeSchema = z.enum(["replace", "append"]).optional();
+export const visualAidPresentationSchema = z
+  .enum(["default", "wireframe"])
+  .optional();
 
 export const visualAidPayloadSchema = z.object({
   version: z.literal(1),
@@ -19,6 +22,7 @@ export const visualAidPayloadSchema = z.object({
   title: z.string().min(1).optional(),
   summary: z.string().min(1).optional(),
   language: z.string().min(1).optional(),
+  presentation: visualAidPresentationSchema,
   mode: visualAidModeSchema,
 }).strict();
 

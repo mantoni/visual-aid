@@ -45,6 +45,26 @@ declare global {
 
 type AppTheme = "dark" | "light";
 
+const validFormats = new Set<VisualAidPayload["format"]>([
+  "markdown",
+  "code",
+  "json",
+  "diff",
+  "mermaid",
+  "html",
+]);
+const validModes = new Set<NonNullable<VisualAidPayload["mode"]>>([
+  "replace",
+  "append",
+]);
+const validPresentations = new Set<NonNullable<VisualAidPayload["presentation"]>>([
+  "default",
+  "wireframe",
+]);
+
+const isOptionalString = (value: unknown) =>
+  value === undefined || (typeof value === "string" && value.length > 0);
+
 const isPayload = (value: unknown): value is VisualAidPayload => {
   if (!value || typeof value !== "object") {
     return false;
@@ -54,7 +74,18 @@ const isPayload = (value: unknown): value is VisualAidPayload => {
   return (
     payload.version === 1 &&
     typeof payload.format === "string" &&
-    typeof payload.content === "string"
+    validFormats.has(payload.format as VisualAidPayload["format"]) &&
+    typeof payload.content === "string" &&
+    isOptionalString(payload.id) &&
+    isOptionalString(payload.title) &&
+    isOptionalString(payload.summary) &&
+    isOptionalString(payload.language) &&
+    (payload.mode === undefined ||
+      validModes.has(payload.mode as NonNullable<VisualAidPayload["mode"]>)) &&
+    (payload.presentation === undefined ||
+      validPresentations.has(
+        payload.presentation as NonNullable<VisualAidPayload["presentation"]>,
+      ))
   );
 };
 

@@ -151,6 +151,38 @@ describe("Renderer output spec", () => {
     expect(container?.classList.contains("payload-html--loading")).toBe(false);
   });
 
+  it("VFR-HTML-001 html wireframe payloads use app-owned wireframe styles", () => {
+    const state = createInitialState(false, {
+      version: 1,
+      format: "html",
+      title: "Wireframe Example",
+      presentation: "wireframe",
+      content: [
+        "<header class='va-row'><strong>Brand</strong><button>Sign in</button></header>",
+        "<main class='va-stack'>",
+        "  <section class='va-grid va-grid--3'>",
+        "    <article class='va-card'><h2>One</h2></article>",
+        "  </section>",
+        "</main>",
+      ].join(""),
+    });
+    const body = renderDocument(renderAppHtml(state));
+    const container = body.querySelector<HTMLElement>(".payload-html");
+    const frame = body.querySelector<HTMLIFrameElement>(".payload-html__frame");
+    const srcdoc = frame?.getAttribute("srcdoc") ?? "";
+
+    expect(container?.dataset.presentation).toBe("wireframe");
+    expect(srcdoc).toContain("payload-html-fragment--wireframe");
+    expect(srcdoc).toContain('content: "Header";');
+    expect(srcdoc).not.toContain('content: "Section";');
+    expect(srcdoc).toContain(".va-grid--3 {");
+    expect(srcdoc).toContain(".va-spread {");
+    expect(srcdoc).toContain('content: "Media";');
+    expect(srcdoc).toContain(
+      "<header class='va-row'><strong>Brand</strong><button>Sign in</button></header>",
+    );
+  });
+
   it("VAR-HISTORY-001 history is reverse chronological with the newest item active", () => {
     const html = renderAppHtml({
       session: {

@@ -221,6 +221,26 @@ describe("MCP stdio integration spec", () => {
     expect(session.items[0]?.format).toBe("html");
   });
 
+  it("VAI-SHOW-004 show accepts html wireframe payloads through a real MCP call", async () => {
+    await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "html",
+        content: "<main><section>Wireframe</section></main>",
+        presentation: "wireframe",
+      },
+    });
+
+    const session = JSON.parse(
+      await readFile(sessionPath, "utf8"),
+    ) as VisualAidSession;
+
+    expect(session.items).toHaveLength(1);
+    expect(session.items[0]?.format).toBe("html");
+    expect(session.items[0]?.presentation).toBe("wireframe");
+  });
+
   it("VAI-VALIDATION-001 invalid show payloads are rejected", async () => {
     const result = await client!.callTool({
       name: "visual-aid.show",
@@ -247,6 +267,23 @@ describe("MCP stdio integration spec", () => {
         metadata: {
           language: "typescript",
         },
+      },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(firstTextContent(result.content)).toContain(
+      "Input validation error",
+    );
+  });
+
+  it("VAI-VALIDATION-003 unsupported presentation values are rejected", async () => {
+    const result = await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "html",
+        content: "<main>Invalid</main>",
+        presentation: "mockup",
       },
     });
 

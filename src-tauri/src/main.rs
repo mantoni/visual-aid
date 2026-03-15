@@ -24,6 +24,7 @@ struct VisualAidPayload {
     title: Option<String>,
     summary: Option<String>,
     language: Option<String>,
+    presentation: Option<String>,
     mode: Option<String>,
 }
 
@@ -692,6 +693,7 @@ mod tests {
                 title: Some("Persisted Session".to_string()),
                 summary: None,
                 language: None,
+                presentation: None,
                 mode: Some("replace".to_string()),
             }],
         }
@@ -767,6 +769,63 @@ mod tests {
     }
 
     #[test]
+    fn vps_persist_002_live_workspace_state_keeps_payload_presentation_fields() {
+        let root = temp_root();
+        let registry_path = root.join("registry.json");
+        let session_path = root.join(".visual-aid").join("session.json");
+        let registry_state = registry_state("/tmp/project", &session_path);
+        let workspace_state = VisualAidWorkspaceState {
+            active_workspace_id: Some("/tmp/project".to_string()),
+            workspaces: vec![super::VisualAidWorkspace {
+                id: "/tmp/project".to_string(),
+                cwd: "/tmp/project".to_string(),
+                label: "project".to_string(),
+                session_path: session_path.to_string_lossy().into_owned(),
+                session: VisualAidSession {
+                    opened_at: Some("2026-03-14T10:45:00.000Z".to_string()),
+                    last_action: "show".to_string(),
+                    updated_at: Some("2026-03-14T10:46:00.000Z".to_string()),
+                    items: vec![super::VisualAidPayload {
+                        version: 1,
+                        format: "html".to_string(),
+                        content: "<section>Wireframe</section>".to_string(),
+                        id: None,
+                        title: Some("Wireframe".to_string()),
+                        summary: None,
+                        language: None,
+                        presentation: Some("wireframe".to_string()),
+                        mode: Some("replace".to_string()),
+                    }],
+                },
+            }],
+        };
+
+        fs::create_dir_all(session_path.parent().expect("session parent"))
+            .expect("create temp root");
+        fs::write(
+            &session_path,
+            serde_json::to_string_pretty(&workspace_state.workspaces[0].session)
+                .expect("serialize session"),
+        )
+        .expect("write session");
+        fs::write(
+            &registry_path,
+            serde_json::to_string_pretty(&registry_state).expect("serialize registry state"),
+        )
+        .expect("write registry state");
+
+        let loaded = read_workspace_state(Some(registry_path.to_string_lossy().into_owned()))
+            .expect("load live workspace state");
+
+        assert_eq!(
+            loaded.workspaces[0].session.items[0].presentation.as_deref(),
+            Some("wireframe")
+        );
+
+        cleanup(&root);
+    }
+
+    #[test]
     fn vps_restore_001_missing_live_sessions_fall_back_to_the_persisted_snapshot() {
         let root = temp_root();
         let registry_path = root.join("registry.json");
@@ -790,6 +849,7 @@ mod tests {
                         title: Some("Recovered Session".to_string()),
                         summary: None,
                         language: None,
+                        presentation: None,
                         mode: Some("replace".to_string()),
                     }],
                 },
@@ -853,6 +913,7 @@ mod tests {
                         title: Some("Persisted Session".to_string()),
                         summary: None,
                         language: None,
+                        presentation: None,
                         mode: Some("replace".to_string()),
                     }],
                 },
@@ -1064,6 +1125,7 @@ mod tests {
                 title: Some("Persisted Session".to_string()),
                 summary: None,
                 language: None,
+                presentation: None,
                 mode: Some("replace".to_string()),
             }],
         };
