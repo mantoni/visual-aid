@@ -31,7 +31,7 @@ This keeps the MCP payload envelope and session model unchanged while improving 
 Positive consequences:
 
 - architecture and flow diagrams become directly inspectable in the app
-- Mermaid payloads better match the product promise of a visual aid rather than a text viewer
+- Mermaid payloads better match the product promise of Visual AId rather than a text viewer
 - failures remain debuggable because the source is still present in the UI
 
 Costs and constraints:

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The project initially supported multiple payload formats, but a single preformatted fallback was too weak to provide meaningful visual aid across markdown, JSON, diff, mermaid, and HTML.
+The project initially supported multiple payload formats, but a single preformatted fallback was too weak to provide meaningful Visual AId rendering across markdown, JSON, diff, mermaid, and HTML.
 
 At the same time, introducing full rendering libraries for every format this early would add complexity faster than the project can validate.
 

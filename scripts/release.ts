@@ -144,7 +144,7 @@ export const createReleasePlan = ({
 }): ReleasePlan => ({
   version: normalizeVersion(version),
   tag: versionTag(version),
-  releaseName: `visual-aid v${normalizeVersion(version)}`,
+  releaseName: `Visual AId v${normalizeVersion(version)}`,
   draft,
   prerelease,
   platforms: RELEASE_PLATFORMS,

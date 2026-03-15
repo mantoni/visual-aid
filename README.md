@@ -2,13 +2,13 @@
 
 ## Purpose
 
-`visual-aid` is a Tauri application that gives coding agents a dedicated way to present structured information to users as visual output.
+`visual-aid` is the source repository for Visual AId, a Tauri application that gives coding agents a dedicated way to present structured information to users as visual output.
 
 Agents should be able to launch the app and send it structured payloads over MCP. The app then renders those payloads in a form that is easy for a user to inspect and understand.
 
 ## What The App Should Support
 
-The visual aid is intended for structured formats such as:
+Visual AId is intended for structured formats such as:
 
 - Markdown
 - Source code
@@ -25,7 +25,7 @@ Instead of forcing every piece of agent-generated content into plain terminal te
 
 That means an agent can:
 
-1. Launch the visual aid.
+1. Launch Visual AId.
 2. Send structured data to it through MCP.
 3. Let the app render an appropriate visual representation for the user.
 

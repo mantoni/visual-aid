@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Explain how to use `visual-aid` as a local desktop surface for structured agent output.
+Explain how to use Visual AId as a local desktop surface for structured agent output.
 
 ## Mental Model
 
-`visual-aid` has three moving parts:
+Visual AId has three moving parts:
 
 - the desktop app, which renders payloads
 - the MCP server, which accepts `visual-aid.*` tool calls
@@ -28,11 +28,11 @@ If the launcher starts the server from the wrong directory, pass `cwd` in the to
 
 If you are using a packaged app instead of a source checkout, point `VISUAL_AID_APP_PATH` at the installed app bundle or executable when you want `visual-aid.open` to launch that packaged build explicitly.
 
-Auto-detected debug binaries are only launched when the Tauri dev server is reachable. Without a live `npm start` or `npm run tauri:dev` session, `visual-aid` falls back to packaged artifacts instead of opening a blank dev window.
+Auto-detected debug binaries are only launched when the Tauri dev server is reachable. Without a live `npm start` or `npm run tauri:dev` session, Visual AId falls back to packaged artifacts instead of opening a blank dev window.
 
 ## MCP Tools
 
-`visual-aid` exposes four tools:
+Visual AId exposes four tools:
 
 - `visual-aid.status`: show MCP, session, and workspace-resolution diagnostics
 - `visual-aid.open`: launch or focus the app
@@ -45,7 +45,7 @@ to force a specific workspace for that tool call.
 The server also exposes readable resources for discovery:
 
 - `visual-aid://status`: machine-readable JSON diagnostics
-- `visual-aid://usage`: markdown guidance for arbitrary agents that need to understand when to use `visual-aid` and how to call `visual-aid.show`
+- `visual-aid://usage`: markdown guidance for arbitrary agents that need to understand when to use Visual AId and how to call `visual-aid.show`
 
 ## Common Payload Types
 
@@ -61,7 +61,7 @@ The app currently supports:
 When multiple working directories send payloads through the shared registry, the app keeps them in one window and shows each working directory as a top-level tab.
 Closing a workspace tab deletes that workspace's session file and removes it from the shared registry, including when it is the last visible tab.
 
-Use `visual-aid` when the artifact is easier to inspect visually than in terminal text alone, such as:
+Use Visual AId when the artifact is easier to inspect visually than in terminal text alone, such as:
 
 - plans and long explanations in Markdown
 - standalone source files or snippets

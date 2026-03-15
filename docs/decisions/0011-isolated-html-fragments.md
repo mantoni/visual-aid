@@ -10,7 +10,7 @@ The project supports `html` as one of its initial payload formats, but the curre
 
 That is inconsistent with the documented architecture, which already describes HTML as living in an isolated payload container. Direct host-DOM injection also makes payload styling and structure harder to reason about, because HTML artifacts can interfere with the app shell and the shell can accidentally style the artifact.
 
-The product goal is a visual aid for structured artifacts, not a general-purpose browser tab. The HTML renderer therefore needs a contract that preserves rich markup while keeping the host UI stable and predictable.
+The product goal for Visual AId is structured-artifact rendering, not a general-purpose browser tab. The HTML renderer therefore needs a contract that preserves rich markup while keeping the host UI stable and predictable.
 
 ## Decision
 

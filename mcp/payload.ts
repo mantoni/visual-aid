@@ -60,7 +60,7 @@ export const visualAidPayloadSchema = z
   })
   .strict()
   .describe(
-    "Structured payload for visual-aid.show. Use it to render visually inspectable artifacts in the desktop app.",
+    "Structured payload for visual-aid.show. Use it to render visually inspectable artifacts in the Visual AId desktop app.",
   );
 
 export const visualAidWorkspaceOverrideSchema = z
@@ -69,13 +69,13 @@ export const visualAidWorkspaceOverrideSchema = z
       .string()
       .min(1)
       .describe(
-        "Optional workspace directory to target for this tool call. visual-aid stores one session per workspace.",
+        "Optional workspace directory to target for this tool call. Visual AId stores one session per workspace.",
       )
       .optional(),
   })
   .strict()
   .describe(
-    "Optional workspace override for tools that act on the current visual-aid workspace session.",
+    "Optional workspace override for tools that act on the current Visual AId workspace session.",
   );
 
 export const visualAidShowArgumentsSchema = visualAidPayloadSchema
@@ -90,7 +90,7 @@ export const visualAidShowArgumentsSchema = visualAidPayloadSchema
   })
   .strict()
   .describe(
-    "Arguments for visual-aid.show. Render markdown, code, json, diff, mermaid, or html in the desktop app.",
+    "Arguments for visual-aid.show. Render markdown, code, json, diff, mermaid, or html in the Visual AId desktop app.",
   );
 
 export type VisualAidPayload = z.infer<typeof visualAidPayloadSchema>;

@@ -32,9 +32,9 @@ const textResult = (text: string, isError = false) => ({
   isError,
 });
 
-const usageResourceText = `# visual-aid MCP server
+const usageResourceText = `# Visual AId MCP server
 
-\`visual-aid\` gives agents a desktop surface for artifacts that are easier to inspect visually than in terminal text.
+Visual AId gives agents a desktop surface for artifacts that are easier to inspect visually than in terminal text.
 
 ## Use it for
 
@@ -182,9 +182,9 @@ const server = new McpServer(visualAidServerInfo, {
 server.registerTool(
   "visual-aid.status",
   {
-    title: "Inspect visual-aid diagnostics",
+    title: "Inspect Visual AId diagnostics",
     description:
-      "Show which workspace, session file, and registry path visual-aid will use, plus the current session state.",
+      "Show which workspace, session file, and registry path Visual AId will use, plus the current session state.",
     inputSchema: visualAidWorkspaceOverrideSchema,
     annotations: {
       readOnlyHint: true,
@@ -212,9 +212,9 @@ server.registerResource(
   "visual-aid-status",
   "visual-aid://status",
   {
-    title: "visual-aid status",
+    title: "Visual AId status",
     description:
-      "Current diagnostic information for the visual-aid MCP server.",
+      "Current diagnostic information for the Visual AId MCP server.",
     mimeType: "application/json",
   },
   async (uri) => {
@@ -236,9 +236,9 @@ server.registerResource(
   "visual-aid-usage",
   "visual-aid://usage",
   {
-    title: "visual-aid usage",
+    title: "Visual AId usage",
     description:
-      "How and when to use visual-aid from MCP, including how to shape visual-aid.show payloads.",
+      "How and when to use Visual AId from MCP, including how to shape `visual-aid.show` payloads.",
     mimeType: "text/markdown",
   },
   async (uri) => ({
@@ -255,9 +255,9 @@ server.registerResource(
 server.registerTool(
   "visual-aid.open",
   {
-    title: "Open the visual-aid desktop app",
+    title: "Open the Visual AId desktop app",
     description:
-      "Launch the visual-aid desktop window for the targeted workspace, or focus the existing instance if it is already running.",
+      "Launch the Visual AId desktop window for the targeted workspace, or focus the existing instance if it is already running.",
     inputSchema: visualAidWorkspaceOverrideSchema,
     annotations: {
       idempotentHint: true,
@@ -276,8 +276,8 @@ server.registerTool(
 
     return textResult(
       launched
-        ? `visual-aid launch executed via ${launched.source}. Session state recorded at ${sessionPath}.`
-        : `visual-aid open recorded, but no app launch target was found. Set VISUAL_AID_OPEN_COMMAND or VISUAL_AID_APP_PATH, or build the desktop app so it can be auto-detected. Session state recorded at ${sessionPath}.`,
+        ? `Visual AId launch executed via ${launched.source}. Session state recorded at ${sessionPath}.`
+        : `Visual AId open recorded, but no app launch target was found. Set VISUAL_AID_OPEN_COMMAND or VISUAL_AID_APP_PATH, or build the desktop app so it can be auto-detected. Session state recorded at ${sessionPath}.`,
     );
   },
 );
@@ -287,7 +287,7 @@ server.registerTool(
   {
     title: "Render visual content in the desktop app",
     description:
-      "Render markdown, code, json, diff, mermaid, or html content in the visual-aid desktop app for the targeted workspace.",
+      "Render markdown, code, json, diff, mermaid, or html content in the Visual AId desktop app for the targeted workspace.",
     inputSchema: visualAidShowArgumentsSchema,
   },
   async ({ cwd, ...payload }) => {
@@ -312,7 +312,7 @@ server.registerTool(
   {
     title: "Clear the current visual output",
     description:
-      "Remove the rendered items for the targeted workspace from the visual-aid desktop app.",
+      "Remove the rendered items for the targeted workspace from the Visual AId desktop app.",
     inputSchema: visualAidWorkspaceOverrideSchema,
     annotations: {
       destructiveHint: true,
@@ -328,7 +328,7 @@ server.registerTool(
     await writeSession(sessionPath, next);
     await persistWorkspaceState(workspace.cwd, sessionPath, registryPath);
 
-    return textResult(`Cleared visual-aid session state at ${sessionPath}.`);
+    return textResult(`Cleared Visual AId session state at ${sessionPath}.`);
   },
 );
 

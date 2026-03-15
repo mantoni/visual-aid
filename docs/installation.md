@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Explain how to install `visual-aid` from packaged releases or from source.
+Explain how to install Visual AId from packaged releases or from source.
 
 ## Current Install Story
 
@@ -14,7 +14,7 @@ Source builds remain supported for contributors and for local dogfooding.
 
 1. Open the latest release on GitHub.
 2. Download the installer or bundle for your operating system.
-3. Install `visual-aid` using your platform's normal app-install flow.
+3. Install Visual AId using your platform's normal app-install flow.
 
 The release automation publishes versioned releases from `v<version>` tags and can also stage draft or pre-release builds for maintainers.
 

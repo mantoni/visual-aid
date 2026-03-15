@@ -6,7 +6,7 @@ Coding agents often need to share information that is awkward to inspect in a te
 
 ## Product Goal
 
-`visual-aid` provides a dedicated visual surface that coding agents can launch and control. The agent sends structured content, and the app renders the content in a format that is easier for the user to inspect.
+Visual AId provides a dedicated visual surface that coding agents can launch and control. The agent sends structured content, and the app renders the content in a format that is easier for the user to inspect.
 
 ## Users
 

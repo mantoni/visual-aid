@@ -104,7 +104,7 @@ describe("MCP stdio integration spec", () => {
     const byName = new Map(tools.tools.map((tool) => [tool.name, tool]));
 
     expect(byName.get("visual-aid.status")?.title).toBe(
-      "Inspect visual-aid diagnostics",
+      "Inspect Visual AId diagnostics",
     );
     expect(byName.get("visual-aid.status")?.description).toContain(
       "workspace",

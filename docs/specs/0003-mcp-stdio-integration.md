@@ -47,7 +47,7 @@ And the `visual-aid.show` description makes clear that it renders content in the
 Given a connected MCP client
 When the client lists and reads resources
 Then `visual-aid://usage` is present
-And the resource contents explain when to use `visual-aid`
+And the resource contents explain when to use Visual AId
 And the resource contents describe the `visual-aid.show` payload shape
 And the resource contents describe Markdown inline rendering capabilities
 And the resource contents explain when `presentation: "wireframe"` is a good fit

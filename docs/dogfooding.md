@@ -18,7 +18,7 @@ The generic config now relies on either an explicit tool `cwd` argument or the s
 
 If a launcher needs to target a different workspace than its process cwd, pass `cwd` in the tool call or set `VISUAL_AID_WORKSPACE_CWD` explicitly for that run.
 
-Debug-binary auto-launch is only valid while the Tauri dev server is live. If you are not running `npm start` or `npm run tauri:dev`, `visual-aid` will fall back to packaged artifacts instead of launching the debug binary by itself.
+Debug-binary auto-launch is only valid while the Tauri dev server is live. If you are not running `npm start` or `npm run tauri:dev`, Visual AId will fall back to packaged artifacts instead of launching the debug binary by itself.
 
 ## Codex MCP Config
 

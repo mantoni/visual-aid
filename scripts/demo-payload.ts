@@ -17,9 +17,9 @@ const session = {
       format: "markdown",
       title: "Demo Payload",
       summary:
-        "A sample payload written directly to the visual-aid session file.",
+        "A sample payload written directly to the Visual AId session file.",
       content: [
-        "# visual-aid demo",
+        "# Visual AId demo",
         "",
         "This payload was written by `npm run demo:payload`.",
         "",

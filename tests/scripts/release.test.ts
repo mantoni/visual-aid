@@ -66,7 +66,7 @@ describe("release planning", () => {
     const plan = createReleasePlan({ version });
 
     expect(version).toBe("0.1.0");
-    expect(plan.releaseName).toBe("visual-aid v0.1.0");
+    expect(plan.releaseName).toBe("Visual AId v0.1.0");
     expect(formatReleasePlan(plan)).toContain("Tag: v0.1.0");
   });
 
