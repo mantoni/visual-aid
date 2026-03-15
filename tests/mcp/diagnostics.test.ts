@@ -6,6 +6,8 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { visualAidServerInfo } from "../../mcp/server-info.js";
+
 const createTransport = (
   cwd: string,
   sessionPath: string,
@@ -84,7 +86,9 @@ describe("MCP diagnostics spec", () => {
       arguments: {},
     });
 
-    expect(firstTextContent(result.content)).toContain("server=visual-aid@0.1.0");
+    expect(firstTextContent(result.content)).toContain(
+      `server=${visualAidServerInfo.name}@${visualAidServerInfo.version}`,
+    );
     expect(firstTextContent(result.content)).toContain(`sessionPath=${sessionPath}`);
 
     const after = await readFile(sessionPath, "utf8").catch(() => null);
@@ -106,7 +110,7 @@ describe("MCP diagnostics spec", () => {
 
     expect(first?.mimeType).toBe("application/json");
     if (first && "text" in first) {
-      expect(first.text).toContain('"name": "visual-aid"');
+      expect(first.text).toContain(`"name": "${visualAidServerInfo.name}"`);
       expect(first.text).toContain(`"path": "${sessionPath.replaceAll("\\", "\\\\")}"`);
       expect(first.text).toContain(`"count": 0`);
     }

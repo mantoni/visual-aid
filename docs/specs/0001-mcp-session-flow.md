@@ -23,6 +23,7 @@ Related decisions:
 - `visual-aid.show` in `append` mode updates an existing item when the payload `id` matches a prior session item.
 - `visual-aid.clear` removes all active items from the session state.
 - Launch discovery prefers explicit overrides before auto-detected build artifacts.
+- Auto-detected debug binaries are only used when the matching dev server is reachable.
 - When a second app launch is attempted for the same project, the existing main window is focused instead of leaving multiple app windows open.
 
 ## Scenarios
@@ -68,10 +69,11 @@ Given both an explicit launch command and detectable local app artifacts
 When launch discovery runs
 Then the explicit launch command is selected
 
-### VAS-LAUNCH-002 Canonical dogfood sessions prefer the debug app target
+### VAS-LAUNCH-002 Canonical dogfood sessions prefer the debug app target when dev mode is live
 
 Given the canonical `.visual-aid/dev-session.json` session path
 And both debug and release local app artifacts are detectable
+And the Tauri dev server is reachable
 When launch discovery runs
 Then the debug binary is selected before the release artifacts
 
@@ -81,12 +83,21 @@ Given an explicit app bundle path and detectable local app artifacts
 When launch discovery runs
 Then the explicit app bundle path is selected
 
-### VAS-LAUNCH-004 Explicit debug preference can force the debug app target
+### VAS-LAUNCH-004 Explicit debug preference can force the debug app target when dev mode is live
 
 Given a non-canonical session path and both debug and release local app artifacts
 And `VISUAL_AID_PREFER_DEBUG_APP` is set to `1`
+And the Tauri dev server is reachable
 When launch discovery runs
 Then the debug binary is selected before the release artifacts
+
+### VAS-LAUNCH-005 Debug auto-detection falls back to packaged artifacts when dev mode is unavailable
+
+Given both debug and release local app artifacts are detectable
+And debug preference would otherwise select the debug binary
+And the Tauri dev server is unreachable
+When launch discovery runs
+Then the release artifact is selected before the debug binary
 
 ### VAS-SINGLE-INSTANCE-001 Duplicate app launches focus the existing main window
 
@@ -99,5 +110,5 @@ And the project does not keep multiple app windows open
 
 - `tests/mcp/session.test.ts`: `VAS-OPEN-001`, `VAS-SHOW-001`, `VAS-SHOW-002`, `VAS-SHOW-003`, `VAS-CLEAR-001`
 - `tests/mcp/integration.test.ts`: `VAS-SHOW-003`
-- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`, `VAS-LAUNCH-003`, `VAS-LAUNCH-004`
+- `tests/mcp/launch.test.ts`: `VAS-LAUNCH-001`, `VAS-LAUNCH-002`, `VAS-LAUNCH-003`, `VAS-LAUNCH-004`, `VAS-LAUNCH-005`
 - `src-tauri/src/main.rs`: `VAS-SINGLE-INSTANCE-001`

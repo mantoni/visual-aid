@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { maybeLaunchApp } from "./launch.js";
 import { visualAidPayloadSchema } from "./payload.js";
+import { visualAidServerInfo } from "./server-info.js";
 import {
   applyClear,
   applyOpen,
@@ -17,28 +18,35 @@ import {
   applyWorkspaceSession,
   readWorkspaceState,
   resolveRegistryPath,
-  resolveWorkspaceCwd,
+  resolveWorkspaceCwdForRequest,
   writeWorkspaceState,
 } from "./workspace.js";
 
-const workspaceCwd = resolveWorkspaceCwd(process.cwd());
 const sourceCwd = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const sessionPath = resolveSessionPath(workspaceCwd);
-const registryPath = resolveRegistryPath(workspaceCwd);
 
 const textResult = (text: string, isError = false) => ({
   content: [{ type: "text" as const, text }],
   isError,
 });
 
+const getWorkspacePaths = async () => {
+  const workspaceCwd = await resolveWorkspaceCwdForRequest(server.server);
+
+  return {
+    workspaceCwd,
+    sessionPath: resolveSessionPath(workspaceCwd),
+    registryPath: resolveRegistryPath(workspaceCwd),
+  };
+};
+
 const getDiagnostics = async () => {
+  const { sessionPath, registryPath } = await getWorkspacePaths();
   const session = await readSession(sessionPath);
   const workspaceState = await readWorkspaceState(registryPath);
 
   return {
     server: {
-      name: "visual-aid",
-      version: "0.1.0",
+      ...visualAidServerInfo,
     },
     session: {
       path: sessionPath,
@@ -56,7 +64,12 @@ const getDiagnostics = async () => {
   };
 };
 
-const persistWorkspaceState = async (session: Awaited<ReturnType<typeof readSession>>) => {
+const persistWorkspaceState = async (
+  workspaceCwd: string,
+  sessionPath: string,
+  registryPath: string,
+  session: Awaited<ReturnType<typeof readSession>>,
+) => {
   const workspaceState = await readWorkspaceState(registryPath);
 
   await writeWorkspaceState(
@@ -66,10 +79,7 @@ const persistWorkspaceState = async (session: Awaited<ReturnType<typeof readSess
 };
 
 const server = new McpServer(
-  {
-    name: "visual-aid",
-    version: "0.1.0",
-  },
+  visualAidServerInfo,
   {
     capabilities: {
       logging: {},
@@ -133,11 +143,12 @@ server.registerTool(
   async () => {
     const launched = await maybeLaunchApp(sourceCwd);
     const now = new Date().toISOString();
+    const { workspaceCwd, sessionPath, registryPath } = await getWorkspacePaths();
     const session = await readSession(sessionPath);
     const next = applyOpen(session, now);
 
     await writeSession(sessionPath, next);
-    await persistWorkspaceState(next);
+    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath, next);
 
     return textResult(
       launched
@@ -158,11 +169,12 @@ server.registerTool(
   async (payload) => {
     const launched = await maybeLaunchApp(sourceCwd);
     const now = new Date().toISOString();
+    const { workspaceCwd, sessionPath, registryPath } = await getWorkspacePaths();
     const session = await readSession(sessionPath);
     const next = applyShow(session, payload, now);
 
     await writeSession(sessionPath, next);
-    await persistWorkspaceState(next);
+    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath, next);
 
     return textResult(
       `Accepted ${payload.format} payload in ${payload.mode ?? "replace"} mode. ${launched ? `Launch checked via ${launched.source}. ` : ""}Session state recorded at ${sessionPath}.`,
@@ -177,11 +189,12 @@ server.registerTool(
     description: "Clear the active visual-aid session state.",
   },
   async () => {
+    const { workspaceCwd, sessionPath, registryPath } = await getWorkspacePaths();
     const session = await readSession(sessionPath);
     const next = applyClear(session, new Date().toISOString());
 
     await writeSession(sessionPath, next);
-    await persistWorkspaceState(next);
+    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath, next);
 
     return textResult(`Cleared visual-aid session state at ${sessionPath}.`);
   },

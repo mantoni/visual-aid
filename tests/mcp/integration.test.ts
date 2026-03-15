@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { ListRootsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { VisualAidSession } from "../../mcp/session.js";
@@ -325,6 +326,63 @@ describe("MCP stdio integration spec", () => {
         version: 1,
         format: "markdown",
         content: "# Shell Workspace",
+      },
+    });
+
+    const callerSessionPath = join(resolvedCallerWorkspace, ".visual-aid", "session.json");
+    const session = JSON.parse(
+      await readFile(callerSessionPath, "utf8"),
+    ) as VisualAidSession;
+    const workspaceState = JSON.parse(
+      await readFile(registryPath, "utf8"),
+    ) as VisualAidWorkspaceState;
+
+    expect(session.lastAction).toBe("show");
+    expect(workspaceState.activeWorkspaceId).toBe(resolvedCallerWorkspace);
+    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedCallerWorkspace);
+    expect(workspaceState.workspaces[0]?.sessionPath).toBe(callerSessionPath);
+
+    await rm(callerWorkspace, { recursive: true, force: true });
+  });
+
+  it("VXT-WORKSPACE-005 generic source-checkout config can use client roots as the active workspace", async () => {
+    const callerWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-caller-"));
+    const resolvedCallerWorkspace = await realpath(callerWorkspace);
+
+    if (transport) {
+      await transport.close();
+    }
+
+    client = new Client(
+      { name: "visual-aid-test-client", version: "0.1.0" },
+      { capabilities: { roots: { listChanged: false } } },
+    );
+    client.setRequestHandler(ListRootsRequestSchema, async () => ({
+      roots: [{ uri: `file://${resolvedCallerWorkspace}` }],
+    }));
+    transport = new StdioClientTransport({
+      command: process.execPath,
+      args: [
+        join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"),
+        join(process.cwd(), "mcp", "server.ts"),
+      ],
+      cwd: "/Users/max/projects/mantoni/visual-aid",
+      env: {
+        PATH: process.env.PATH ?? "",
+        HOME: process.env.HOME ?? "",
+        VISUAL_AID_REGISTRY_PATH: registryPath,
+        VISUAL_AID_OPEN_COMMAND: "true",
+      },
+      stderr: "pipe",
+    });
+    await client.connect(transport);
+
+    await client.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "markdown",
+        content: "# Root Workspace",
       },
     });
 

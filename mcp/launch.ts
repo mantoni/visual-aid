@@ -1,6 +1,9 @@
 import { spawn } from "node:child_process";
 import { access } from "node:fs/promises";
 import { join, normalize } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
+
+import tauriConfig from "../src-tauri/tauri.conf.json";
 
 export type LaunchTarget =
   | {
@@ -19,9 +22,38 @@ export type LaunchTarget =
       source: "detected release binary" | "detected debug binary";
     };
 
+const debugDevUrl = tauriConfig.build?.devUrl ?? null;
+
+export const isDebugAppReachable = async (
+  fetchImpl: typeof fetch = fetch,
+) => {
+  if (!debugDevUrl) {
+    return false;
+  }
+
+  const controller = new AbortController();
+  const timeout = delay(500, undefined, { signal: controller.signal }).then(() => {
+    controller.abort();
+  });
+
+  try {
+    const response = await fetchImpl(debugDevUrl, {
+      signal: controller.signal,
+    });
+    controller.abort();
+    await timeout.catch(() => undefined);
+    return response.ok;
+  } catch {
+    controller.abort();
+    await timeout.catch(() => undefined);
+    return false;
+  }
+};
+
 export const detectLaunchTarget = async (
   cwd = process.cwd(),
   env: NodeJS.ProcessEnv = process.env,
+  fetchImpl: typeof fetch = fetch,
 ) => {
   if (env.VISUAL_AID_OPEN_COMMAND) {
     return {
@@ -46,6 +78,8 @@ export const detectLaunchTarget = async (
     env.VISUAL_AID_PREFER_DEBUG_APP === "1" ||
     typeof env.VISUAL_AID_SESSION_PATH === "string" &&
     normalize(env.VISUAL_AID_SESSION_PATH).endsWith(canonicalDogfoodSessionSuffix);
+  const canUseDebugBinary =
+    prefersDebugBinary && await isDebugAppReachable(fetchImpl);
 
   const releaseCandidates: LaunchTarget[] = [
     {
@@ -72,9 +106,9 @@ export const detectLaunchTarget = async (
       source: "detected debug binary",
     },
   ];
-  const candidates = prefersDebugBinary
+  const candidates = canUseDebugBinary
     ? [releaseCandidates[2], releaseCandidates[0], releaseCandidates[1]]
-    : releaseCandidates;
+    : releaseCandidates.slice(0, 2);
 
   for (const candidate of candidates) {
     try {

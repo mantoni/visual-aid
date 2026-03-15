@@ -27,6 +27,7 @@ Specifically:
 - `npm start` may print the exact Codex MCP config block for the current checkout
 - Codex `config.toml` remains responsible for starting `npx tsx mcp/server.ts`
 - `npm start` does not launch a competing local MCP server process
+- auto-detected debug binaries remain tied to the live Tauri dev server and should not be launched as standalone replacements for `npm start`
 
 If a non-Codex local workflow later needs to launch both the app and the MCP server together, that should be added as a separate command rather than broadening `npm start`.
 

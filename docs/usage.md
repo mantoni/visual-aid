@@ -22,9 +22,13 @@ The default local workflow uses `.visual-aid/dev-session.json` as that shared se
 
 The printed Codex config block is generic. It points at this checkout's server code, but it leaves the caller workspace free so the active project gets its own `.visual-aid/session.json` automatically.
 
+If the MCP client exposes roots, `visual-aid` uses the active client root as the workspace target before falling back to launcher cwd.
+
 If the MCP launcher reports `/` as its process cwd, `visual-aid` falls back to `PWD` or `INIT_CWD` so the active shell workspace still becomes the session target.
 
 If you are using a packaged app instead of a source checkout, point `VISUAL_AID_APP_PATH` at the installed app bundle or executable when you want `visual-aid.open` to launch that packaged build explicitly.
+
+Auto-detected debug binaries are only launched when the Tauri dev server is reachable. Without a live `npm start` or `npm run tauri:dev` session, `visual-aid` falls back to packaged artifacts instead of opening a blank dev window.
 
 ## MCP Tools
 

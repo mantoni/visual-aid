@@ -74,9 +74,13 @@ describe("MCP launch spec", () => {
     const { writeFile } = await import("node:fs/promises");
     await writeFile(join(root, "src-tauri", "target", "debug", "visual-aid"), "");
 
-    const target = await detectLaunchTarget(root, {
-      VISUAL_AID_SESSION_PATH: join(root, ".visual-aid", "dev-session.json"),
-    });
+    const target = await detectLaunchTarget(
+      root,
+      {
+        VISUAL_AID_SESSION_PATH: join(root, ".visual-aid", "dev-session.json"),
+      },
+      async () => new Response("", { status: 200 }),
+    );
 
     expect(target).toEqual({
       kind: "binary",
@@ -142,15 +146,69 @@ describe("MCP launch spec", () => {
     const { writeFile } = await import("node:fs/promises");
     await writeFile(join(root, "src-tauri", "target", "debug", "visual-aid"), "");
 
-    const target = await detectLaunchTarget(root, {
-      VISUAL_AID_PREFER_DEBUG_APP: "1",
-      VISUAL_AID_SESSION_PATH: "/tmp/other-project/.visual-aid/session.json",
-    });
+    const target = await detectLaunchTarget(
+      root,
+      {
+        VISUAL_AID_PREFER_DEBUG_APP: "1",
+        VISUAL_AID_SESSION_PATH: "/tmp/other-project/.visual-aid/session.json",
+      },
+      async () => new Response("", { status: 200 }),
+    );
 
     expect(target).toEqual({
       kind: "binary",
       value: join(root, "src-tauri", "target", "debug", "visual-aid"),
       source: "detected debug binary",
+    });
+  });
+
+  it("VAS-LAUNCH-005 debug auto-detection is skipped when the dev server is unavailable", async () => {
+    const root = join(
+      process.cwd(),
+      ".tmp-tests",
+      `launch-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    );
+    tempRoots.push(root);
+
+    await mkdir(
+      join(
+        root,
+        "src-tauri",
+        "target",
+        "release",
+        "bundle",
+        "macos",
+        "visual-aid.app",
+      ),
+      { recursive: true },
+    );
+    await mkdir(join(root, "src-tauri", "target", "debug"), { recursive: true });
+    const { writeFile } = await import("node:fs/promises");
+    await writeFile(join(root, "src-tauri", "target", "debug", "visual-aid"), "");
+
+    const target = await detectLaunchTarget(
+      root,
+      {
+        VISUAL_AID_PREFER_DEBUG_APP: "1",
+        VISUAL_AID_SESSION_PATH: join(root, ".visual-aid", "dev-session.json"),
+      },
+      async () => {
+        throw new Error("offline");
+      },
+    );
+
+    expect(target).toEqual({
+      kind: "bundle",
+      value: join(
+        root,
+        "src-tauri",
+        "target",
+        "release",
+        "bundle",
+        "macos",
+        "visual-aid.app",
+      ),
+      source: "detected release app bundle",
     });
   });
 });
