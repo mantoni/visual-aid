@@ -4,6 +4,8 @@
 
 It exposes the `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` MCP tools over stdio so an MCP client can launch the desktop app and render structured content.
 
+Project homepage: [https://github.com/mantoni/visual-aid](https://github.com/mantoni/visual-aid)
+
 ## Install
 
 ```sh

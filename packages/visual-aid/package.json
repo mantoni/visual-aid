@@ -19,6 +19,14 @@
     "visualization",
     "agents"
   ],
+  "homepage": "https://github.com/mantoni/visual-aid",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mantoni/visual-aid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mantoni/visual-aid/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "*",
