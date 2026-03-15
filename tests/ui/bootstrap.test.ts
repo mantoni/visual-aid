@@ -387,6 +387,103 @@ describe("Interactive UI spec", () => {
     cleanup();
   });
 
+  it("VWT-TABS-004 closing an active workspace tab reveals another workspace", async () => {
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => true,
+      startSessionBridge: async (onWorkspaceState) => {
+        onWorkspaceState({
+          activeWorkspaceId: "/tmp/project-two",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:24:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Workspace One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+            {
+              id: "/tmp/project-two",
+              cwd: "/tmp/project-two",
+              label: "project-two",
+              sessionPath: "/tmp/project-two/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:25:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "html",
+                    title: "Workspace Two",
+                    content: "<section>Two</section>",
+                  },
+                ],
+              },
+            },
+            {
+              id: "/tmp/project-three",
+              cwd: "/tmp/project-three",
+              label: "project-three",
+              sessionPath: "/tmp/project-three/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:26:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "code",
+                    title: "Workspace Three",
+                    content: "const three = true;",
+                    language: "typescript",
+                  },
+                ],
+              },
+            },
+          ],
+        });
+
+        return () => {};
+      },
+    });
+
+    document
+      .querySelector<HTMLButtonElement>(
+        '.workspace-tab__close[data-close-workspace-id="/tmp/project-two"]',
+      )
+      ?.click();
+
+    expect(
+      document.querySelectorAll<HTMLButtonElement>(".workspace-tab"),
+    ).toHaveLength(2);
+    expect(
+      document
+        .querySelector<HTMLButtonElement>(
+          '.workspace-tab[data-workspace-id="/tmp/project-two"]',
+        ),
+    ).toBeNull();
+    expect(
+      document.querySelector(".document-toolbar__title")?.textContent,
+    ).toBe("Workspace One");
+    expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
+      "One",
+    );
+
+    cleanup();
+  });
+
   it("VUI-THEME-001 bootstrap follows preferred color scheme changes", async () => {
     const matchMedia = installMatchMedia(true);
     const cleanup = await bootstrapApp(setupRoot(), {

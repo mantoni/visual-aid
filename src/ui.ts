@@ -1,4 +1,5 @@
 import {
+  emptyWorkspaceState,
   isTauriEnvironment,
   startSessionBridge,
   type VisualAidPayload,
@@ -14,6 +15,7 @@ import {
   sessionForWorkspaceState,
   statusForSession,
   statusForWorkspaceState,
+  visibleWorkspaceState,
   type VisualAidState,
 } from "./view-model";
 import { renderInto } from "./render";
@@ -127,24 +129,66 @@ export const bootstrapApp = async (
     options?.bootstrapPayload ?? window.__VISUAL_AID_BOOTSTRAP__,
   );
 
-  const setWorkspaceState = (workspaceState: VisualAidWorkspaceState) => {
+  const syncHistoryVisibility = () => {
+    const historyToggle = target.querySelector<HTMLButtonElement>(
+      "[data-history-toggle]",
+    );
+    const historyOverlay = target.querySelector<HTMLElement>(".history-overlay");
+
+    historyToggle?.setAttribute(
+      "aria-expanded",
+      state.historyOpen === true ? "true" : "false",
+    );
+
+    if (historyOverlay) {
+      historyOverlay.classList.toggle(
+        "history-overlay--open",
+        state.historyOpen === true,
+      );
+      historyOverlay.setAttribute(
+        "aria-hidden",
+        state.historyOpen === true ? "false" : "true",
+      );
+    }
+  };
+
+  const syncStateFromWorkspaceState = (
+    workspaceState: VisualAidWorkspaceState,
+    selectedWorkspaceId: string | null | undefined = state.selectedWorkspaceId,
+  ) => {
+    const visibleState =
+      visibleWorkspaceState(workspaceState, state.hiddenWorkspaceIds) ??
+      emptyWorkspaceState();
+
     state.workspaceState = workspaceState;
     state.selectedWorkspaceId = resolveSelectedWorkspaceId(
-      workspaceState,
-      workspaceState.activeWorkspaceId,
+      visibleState,
+      selectedWorkspaceId,
     );
-    const session = sessionForWorkspaceState(
-      workspaceState,
-      state.selectedWorkspaceId,
-    );
+    const session = sessionForWorkspaceState(visibleState, state.selectedWorkspaceId);
     state.session = session;
-    state.status = statusForWorkspaceState(
-      workspaceState,
-      state.selectedWorkspaceId,
-    );
+    state.status = statusForWorkspaceState(visibleState, state.selectedWorkspaceId);
     state.selectedIndex = newestItemIndex(session);
     state.historyOpen = false;
     renderInto(target, state);
+  };
+
+  const setWorkspaceState = (
+    workspaceState: VisualAidWorkspaceState,
+    options?: {
+      revealWorkspaceId?: string | null;
+    },
+  ) => {
+    if (options?.revealWorkspaceId) {
+      state.hiddenWorkspaceIds = (state.hiddenWorkspaceIds ?? []).filter(
+        (workspaceId) => workspaceId !== options.revealWorkspaceId,
+      );
+    }
+
+    syncStateFromWorkspaceState(
+      workspaceState,
+      options?.revealWorkspaceId ?? workspaceState.activeWorkspaceId,
+    );
   };
 
   const show = (payload: VisualAidPayload) => {
@@ -225,18 +269,53 @@ export const bootstrapApp = async (
       return;
     }
 
-    state.selectedWorkspaceId = resolveSelectedWorkspaceId(
-      state.workspaceState,
-      workspaceId,
-    );
-    state.session = sessionForWorkspaceState(
-      state.workspaceState,
-      state.selectedWorkspaceId,
-    );
+    const visibleState =
+      visibleWorkspaceState(state.workspaceState, state.hiddenWorkspaceIds) ??
+      emptyWorkspaceState();
+
+    state.selectedWorkspaceId = resolveSelectedWorkspaceId(visibleState, workspaceId);
+    state.session = sessionForWorkspaceState(visibleState, state.selectedWorkspaceId);
     state.status = statusForSession(state.session);
     state.selectedIndex = newestItemIndex(state.session);
     state.historyOpen = false;
     renderInto(target, state);
+  };
+
+  const onWorkspaceCloseClick = (event: Event) => {
+    if (!(event.target instanceof Element) || !state.workspaceState) {
+      return;
+    }
+
+    const button = event.target.closest<HTMLButtonElement>(
+      ".workspace-tab__close[data-close-workspace-id]",
+    );
+
+    if (!button || !target.contains(button)) {
+      return;
+    }
+
+    const workspaceId = button.dataset.closeWorkspaceId;
+
+    if (!workspaceId) {
+      return;
+    }
+
+    const visibleState =
+      visibleWorkspaceState(state.workspaceState, state.hiddenWorkspaceIds) ??
+      emptyWorkspaceState();
+
+    if (visibleState.workspaces.length <= 1) {
+      return;
+    }
+
+    state.hiddenWorkspaceIds = [
+      ...new Set([...(state.hiddenWorkspaceIds ?? []), workspaceId]),
+    ];
+
+    const nextSelectedWorkspaceId =
+      state.selectedWorkspaceId === workspaceId ? null : state.selectedWorkspaceId;
+
+    syncStateFromWorkspaceState(state.workspaceState, nextSelectedWorkspaceId);
   };
 
   const onHistoryToggleClick = (event: Event) => {
@@ -253,7 +332,7 @@ export const bootstrapApp = async (
     }
 
     state.historyOpen = !state.historyOpen;
-    renderInto(target, state);
+    syncHistoryVisibility();
   };
 
   const onHistoryDismissClick = (event: Event) => {
@@ -270,12 +349,13 @@ export const bootstrapApp = async (
     }
 
     state.historyOpen = false;
-    renderInto(target, state);
+    syncHistoryVisibility();
   };
 
   window.addEventListener("visual-aid:show", onShowEvent);
   window.addEventListener("visual-aid:clear", onClearEvent);
   target.addEventListener("click", onHistoryClick);
+  target.addEventListener("click", onWorkspaceCloseClick);
   target.addEventListener("click", onWorkspaceTabClick);
   target.addEventListener("click", onHistoryToggleClick);
   target.addEventListener("click", onHistoryDismissClick);
@@ -287,7 +367,9 @@ export const bootstrapApp = async (
 
   if (useTauriBridge) {
     stopBridge = await connectSessionBridge((workspaceState) => {
-      setWorkspaceState(workspaceState);
+      setWorkspaceState(workspaceState, {
+        revealWorkspaceId: workspaceState.activeWorkspaceId,
+      });
     });
   }
 
@@ -297,6 +379,7 @@ export const bootstrapApp = async (
     window.removeEventListener("visual-aid:show", onShowEvent);
     window.removeEventListener("visual-aid:clear", onClearEvent);
     target.removeEventListener("click", onHistoryClick);
+    target.removeEventListener("click", onWorkspaceCloseClick);
     target.removeEventListener("click", onWorkspaceTabClick);
     target.removeEventListener("click", onHistoryToggleClick);
     target.removeEventListener("click", onHistoryDismissClick);

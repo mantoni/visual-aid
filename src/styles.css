@@ -1276,18 +1276,23 @@ p {
 .workspace-switcher {
   display: inline-flex;
   align-items: center;
-  gap: 1px;
+  gap: 8px;
   min-width: 0;
-  padding: 2px;
-  border: 1px solid var(--shell-border);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 0;
 }
 
 .workspace-switcher--single {
   padding: 0;
   border-color: transparent;
   background: transparent;
+}
+
+.workspace-tab-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: min(240px, 100%);
 }
 
 .workspace-pill,
@@ -1317,6 +1322,8 @@ p {
 .workspace-tab {
   min-width: 0;
   min-height: 28px;
+  padding-left: 32px;
+  padding-right: 32px;
   cursor: pointer;
 }
 
@@ -1344,6 +1351,100 @@ p {
   font-size: 0.86rem;
   font-weight: 500;
   text-overflow: ellipsis;
+}
+
+.workspace-tab__close {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition:
+    opacity 140ms ease,
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.workspace-tab-item:hover .workspace-tab__close,
+.workspace-tab-item:focus-within .workspace-tab__close {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.workspace-tab__close:hover,
+.workspace-tab__close:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  outline: 2px solid var(--accent-cool-focus);
+  outline-offset: 1px;
+}
+
+.workspace-tab__close-icon {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.workspace-tab__tooltip {
+  position: absolute;
+  display: block;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 8;
+  padding: 8px 10px;
+  border: 1px solid var(--shell-border);
+  border-radius: 8px;
+  background: #101923;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: saturate(1.5) blur(24px);
+  -webkit-backdrop-filter: saturate(1.5) blur(24px);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-4px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+  overflow: hidden;
+  isolation: isolate;
+  white-space: nowrap;
+}
+
+#app[data-theme="light"] .workspace-tab__tooltip {
+  background: #faf6ef;
+}
+
+.workspace-tab-item:hover .workspace-tab__tooltip,
+.workspace-tab-item:focus-within .workspace-tab__tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.workspace-tab-item:first-child .workspace-tab__tooltip {
+  left: 0;
+  transform: translateY(-4px);
+}
+
+.workspace-tab-item:first-child:hover .workspace-tab__tooltip,
+.workspace-tab-item:first-child:focus-within .workspace-tab__tooltip {
+  transform: translateY(0);
 }
 
 .history-toggle__count {

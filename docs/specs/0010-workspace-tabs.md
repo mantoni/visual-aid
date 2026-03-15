@@ -19,9 +19,11 @@ Related decisions:
 
 - The app shows a compact workspace switcher when more than one workspace session is available.
 - Each workspace tab represents one working directory and keeps its own payload history.
+- Each workspace tab exposes the full working directory path as a hover tooltip.
 - The active workspace controls the available recents history, current payload view, and toolbar title.
 - When a workspace receives a new session update from the desktop bridge, that workspace becomes active.
 - Clicking a workspace tab switches the visible session locally without mutating other workspace histories.
+- Closing a workspace tab removes it from the local tab strip without mutating the underlying workspace history.
 
 ## Scenarios
 
@@ -46,7 +48,21 @@ When the desktop bridge delivers an update that includes a second workspace as a
 Then a new workspace tab appears
 And that new workspace becomes the visible workspace
 
+### VWT-TABS-003 Workspace tabs expose path tooltips and close controls
+
+Given a renderer state with two workspace sessions
+When the renderer output is generated
+Then each workspace tab exposes its full working directory path through a hover tooltip
+And each workspace tab includes a close control
+
+### VWT-TABS-004 Closing an active workspace tab reveals another workspace
+
+Given the desktop app is showing three workspace sessions
+When the user closes the active workspace tab
+Then that workspace tab is removed from the visible tab strip
+And another visible workspace becomes active
+
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VWT-TABS-001`
-- `tests/ui/bootstrap.test.ts`: `VWT-TABS-002`, `VWT-BRIDGE-001`
+- `tests/ui/render.test.ts`: `VWT-TABS-001`, `VWT-TABS-003`
+- `tests/ui/bootstrap.test.ts`: `VWT-TABS-002`, `VWT-BRIDGE-001`, `VWT-TABS-004`

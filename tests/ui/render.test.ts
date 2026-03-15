@@ -210,6 +210,87 @@ describe("Renderer output spec", () => {
     expect(tabs[1]?.classList.contains("workspace-tab--active")).toBe(true);
   });
 
+  it("VWT-TABS-003 workspace tabs expose path tooltips and close controls", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        workspaceState: {
+          activeWorkspaceId: "/tmp/project-two",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:15:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Project One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+            {
+              id: "/tmp/project-two",
+              cwd: "/tmp/project-two",
+              label: "project-two",
+              sessionPath: "/tmp/project-two/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:16:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "html",
+                    title: "Project Two",
+                    content: "<section>Two</section>",
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        selectedWorkspaceId: "/tmp/project-two",
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T09:16:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "html",
+              title: "Project Two",
+              content: "<section>Two</section>",
+            },
+          ],
+        },
+        status: "Received HTML payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    const tabs = body.querySelectorAll<HTMLButtonElement>(".workspace-tab");
+    const closeButtons =
+      body.querySelectorAll<HTMLButtonElement>(".workspace-tab__close");
+    const tooltips =
+      body.querySelectorAll<HTMLSpanElement>(".workspace-tab__tooltip");
+
+    expect(tabs[0]?.hasAttribute("title")).toBe(false);
+    expect(tabs[1]?.hasAttribute("title")).toBe(false);
+    expect(tooltips[0]?.textContent?.trim()).toBe("/tmp/project-one");
+    expect(tooltips[1]?.textContent?.trim()).toBe("/tmp/project-two");
+    expect(closeButtons).toHaveLength(2);
+    expect(closeButtons[0]?.getAttribute("aria-label")).toBe(
+      "Close project-one tab",
+    );
+  });
+
   it("VAR-HISTORY-003 recents are hidden until the user opens them", () => {
     const body = renderDocument(
       renderAppHtml({

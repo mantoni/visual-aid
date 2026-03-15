@@ -23,6 +23,7 @@ import {
   appDisplayName,
   formatLabels,
   resolveSelectedIndex,
+  visibleWorkspaceState,
   type VisualAidState,
 } from "./view-model";
 
@@ -609,19 +610,38 @@ const renderWorkspaceTabs = (
   return `
     <nav class="workspace-switcher" aria-label="Workspaces">
       ${workspaceState.workspaces
-        .map((workspace) => {
+        .map((workspace, index) => {
           const isActive = workspace.id === selectedWorkspaceId;
+          const closeLabel = `Close ${workspace.label} tab`;
+          const tooltipId = `workspace-tooltip-${index}`;
 
           return `
-            <button
-              class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
-              type="button"
-              data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
-              aria-pressed="${isActive ? "true" : "false"}"
-              title="${escapeHtmlAttribute(workspace.cwd)}"
-            >
-              <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
-            </button>
+            <div class="workspace-tab-item${isActive ? " workspace-tab-item--active" : ""}">
+              <button
+                class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
+                type="button"
+                data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+                aria-pressed="${isActive ? "true" : "false"}"
+                aria-describedby="${escapeHtmlAttribute(tooltipId)}"
+              >
+                <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
+              </button>
+              <button
+                class="workspace-tab__close"
+                type="button"
+                data-close-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+                aria-label="${escapeHtmlAttribute(closeLabel)}"
+              >
+                <span class="workspace-tab__close-icon" aria-hidden="true">x</span>
+              </button>
+              <span
+                id="${escapeHtmlAttribute(tooltipId)}"
+                class="workspace-tab__tooltip"
+                role="tooltip"
+              >
+                ${escapeHtml(workspace.cwd)}
+              </span>
+            </div>
           `;
         })
         .join("")}
@@ -765,9 +785,13 @@ const renderSplash = (status: string) => `
 `;
 
 export const renderAppHtml = (state: VisualAidState) => {
+  const renderedWorkspaceState = visibleWorkspaceState(
+    state.workspaceState,
+    state.hiddenWorkspaceIds,
+  );
   const selectedWorkspaceId =
     state.selectedWorkspaceId ??
-    state.workspaceState?.activeWorkspaceId ??
+    renderedWorkspaceState?.activeWorkspaceId ??
     null;
   const selectedIndex = resolveSelectedIndex(
     state.session,
@@ -784,7 +808,11 @@ export const renderAppHtml = (state: VisualAidState) => {
         ${
           current
             ? `
-              ${renderDocumentToolbar(state, current, selectedWorkspaceId)}
+              ${renderDocumentToolbar(
+                { ...state, workspaceState: renderedWorkspaceState },
+                current,
+                selectedWorkspaceId,
+              )}
               ${renderHistorySheet(state.session, selectedIndex, state.historyOpen === true)}
               <main class="document-stage">
                 <section class="viewer-surface" aria-label="Current payload">
