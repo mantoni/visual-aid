@@ -21,6 +21,7 @@ Related decisions:
 - Workspace identity in the registry follows the target workspace, not the source checkout.
 - Cross-workspace source testing keeps the same shared registry model and single-window workspace tabs.
 - A generic MCP config may point at this checkout's server entrypoint while the caller cwd determines the active workspace.
+- When a launcher starts the MCP server from `/`, the server may recover the caller workspace from `PWD` or `INIT_CWD`.
 
 ## Scenarios
 
@@ -46,7 +47,16 @@ When `visual-aid.show` records a payload
 Then that caller cwd becomes the active workspace
 And the session is written under that caller cwd
 
+### VXT-WORKSPACE-004 Root launcher cwd falls back to the caller shell workspace
+
+Given Codex starts this checkout's MCP server entrypoint from `/`
+And `PWD` or `INIT_CWD` points at another project
+And no explicit session or workspace override is configured
+When `visual-aid.show` records a payload
+Then that shell workspace becomes the active workspace
+And the session is written under that shell workspace
+
 ## Test Mapping
 
-- `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-001`
-- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`
+- `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-001`, `VXT-WORKSPACE-004`
+- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`, `VXT-WORKSPACE-004`

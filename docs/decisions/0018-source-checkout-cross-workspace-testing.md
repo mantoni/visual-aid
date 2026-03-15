@@ -22,7 +22,7 @@ Specifically:
 - `npm start` keeps the repository-local `.visual-aid/dev-session.json` as the default local app session for source-checkout dogfooding
 - `npm start -- --print-codex-config` prints a generic config block that points at this checkout's MCP server entrypoint by absolute path
 - the generic config intentionally does not pin `cwd` or `VISUAL_AID_SESSION_PATH`, so the caller workspace becomes the active workspace automatically
-- the MCP server resolves workspace identity from the process cwd by default and still honors explicit overrides when needed
+- the MCP server resolves workspace identity from the process cwd by default, falls back to `PWD` or `INIT_CWD` when launchers report `/`, and still honors explicit overrides when needed
 - source-checkout configs may set `VISUAL_AID_PREFER_DEBUG_APP=1` so launch discovery keeps preferring the local debug build
 
 ## Consequences
@@ -36,4 +36,4 @@ Positive consequences:
 
 Costs and constraints:
 
-- the setup depends on Codex starting the MCP server in the active project cwd when the config does not specify `cwd`
+- launchers that clear both the process cwd and shell cwd environment still need an explicit `VISUAL_AID_WORKSPACE_CWD` override

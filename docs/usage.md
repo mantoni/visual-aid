@@ -22,6 +22,8 @@ The default local workflow uses `.visual-aid/dev-session.json` as that shared se
 
 The printed Codex config block is generic. It points at this checkout's server code, but it leaves the caller workspace free so the active project gets its own `.visual-aid/session.json` automatically.
 
+If the MCP launcher reports `/` as its process cwd, `visual-aid` falls back to `PWD` or `INIT_CWD` so the active shell workspace still becomes the session target.
+
 If you are using a packaged app instead of a source checkout, point `VISUAL_AID_APP_PATH` at the installed app bundle or executable when you want `visual-aid.open` to launch that packaged build explicitly.
 
 ## MCP Tools

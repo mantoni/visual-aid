@@ -86,4 +86,12 @@ describe("MCP workspace registry", () => {
       }),
     ).toBe("/tmp/project-one");
   });
+
+  it("VXT-WORKSPACE-004 workspace cwd falls back to PWD when the launcher cwd is root", () => {
+    expect(
+      resolveWorkspaceCwd("/", {
+        PWD: "/tmp/project-one",
+      }),
+    ).toBe("/tmp/project-one");
+  });
 });

@@ -28,7 +28,23 @@ export const workspaceLabelForCwd = (cwd: string) => basename(cwd) || cwd;
 export const resolveWorkspaceCwd = (
   cwd = process.cwd(),
   env: NodeJS.ProcessEnv = process.env,
-) => env.VISUAL_AID_WORKSPACE_CWD ?? cwd;
+) => {
+  if (env.VISUAL_AID_WORKSPACE_CWD) {
+    return env.VISUAL_AID_WORKSPACE_CWD;
+  }
+
+  if (cwd !== "/") {
+    return cwd;
+  }
+
+  const shellCwd = env.PWD ?? env.INIT_CWD;
+
+  if (shellCwd && shellCwd !== "/") {
+    return shellCwd;
+  }
+
+  return cwd;
+};
 
 export const resolveRegistryPath = (
   cwd = process.cwd(),
