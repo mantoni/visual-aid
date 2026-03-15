@@ -91,6 +91,8 @@ afterEach(() => {
   delete window.__VISUAL_AID__;
   delete window.__VISUAL_AID_BOOTSTRAP__;
   vi.unstubAllGlobals();
+  delete document.documentElement.dataset.theme;
+  delete document.body.dataset.theme;
   document.documentElement.style.removeProperty("color-scheme");
 });
 
@@ -341,10 +343,14 @@ describe("Interactive UI spec", () => {
     });
 
     expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe("dark");
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(document.body.dataset.theme).toBe("dark");
 
     matchMedia.setMatches(false);
 
     expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe("light");
+    expect(document.documentElement.dataset.theme).toBe("light");
+    expect(document.body.dataset.theme).toBe("light");
 
     cleanup();
   });

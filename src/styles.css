@@ -1,10 +1,18 @@
-:root {
+:root,
+:root[data-theme="dark"] {
   color: #f5f1e8;
   background: #09111a;
+  color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="light"] {
+  color: #1e2531;
+  background: #f4efe6;
+  color-scheme: light;
 }
 
 * {
@@ -15,7 +23,16 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  color: inherit;
+  background: inherit;
+}
+
+body[data-theme="dark"] {
   background: #09111a;
+}
+
+body[data-theme="light"] {
+  background: #f4efe6;
 }
 
 button,

@@ -59,6 +59,10 @@ const syncAppTheme = (target: HTMLElement) => {
       : null;
   const applyTheme = (theme: AppTheme) => {
     target.dataset.theme = theme;
+    document.documentElement.dataset.theme = theme;
+    if (document.body) {
+      document.body.dataset.theme = theme;
+    }
     document.documentElement.style.colorScheme = theme;
   };
   const syncTheme = () => {
@@ -70,6 +74,10 @@ const syncAppTheme = (target: HTMLElement) => {
   if (!mediaQuery) {
     return () => {
       delete target.dataset.theme;
+      delete document.documentElement.dataset.theme;
+      if (document.body) {
+        delete document.body.dataset.theme;
+      }
       document.documentElement.style.removeProperty("color-scheme");
     };
   }
@@ -80,6 +88,10 @@ const syncAppTheme = (target: HTMLElement) => {
     return () => {
       mediaQuery.removeEventListener("change", syncTheme);
       delete target.dataset.theme;
+      delete document.documentElement.dataset.theme;
+      if (document.body) {
+        delete document.body.dataset.theme;
+      }
       document.documentElement.style.removeProperty("color-scheme");
     };
   }
@@ -89,6 +101,10 @@ const syncAppTheme = (target: HTMLElement) => {
   return () => {
     mediaQuery.removeListener(syncTheme);
     delete target.dataset.theme;
+    delete document.documentElement.dataset.theme;
+    if (document.body) {
+      delete document.body.dataset.theme;
+    }
     document.documentElement.style.removeProperty("color-scheme");
   };
 };

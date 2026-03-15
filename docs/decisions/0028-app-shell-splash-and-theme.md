@@ -20,7 +20,7 @@ Specifically:
 - the visible app branding uses `Visual AId` in the desktop title and shell copy
 - empty sessions render a branded splash screen instead of the payload viewer panels
 - once a payload exists, the shell switches to the viewer plus history layout
-- the renderer shell follows the system light or dark color scheme and updates when that preference changes
+- the desktop shell follows the system light or dark color scheme and updates when that preference changes
 
 The MCP tool names, repository name, and internal identifiers remain `visual-aid`. This decision only changes the user-facing desktop shell and branding.
 
