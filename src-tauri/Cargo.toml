@@ -1,6 +1,6 @@
 [package]
 name = "visual-aid"
-version = "0.1.0"
+version = "0.1.1"
 description = "A desktop visual aid for coding agents."
 authors = ["Codex"]
 license = "MIT"
