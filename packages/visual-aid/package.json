@@ -1,0 +1,27 @@
+{
+  "name": "visual-aid",
+  "version": "0.1.1",
+  "description": "Visual AId MCP server for launching the desktop app and rendering structured artifacts over MCP.",
+  "type": "module",
+  "bin": {
+    "visual-aid": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "visualization",
+    "agents"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "*",
+    "zod": "*"
+  }
+}

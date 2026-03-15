@@ -17,6 +17,7 @@ The first packaged distribution path will use GitHub Actions to build desktop in
 Specifically:
 
 - maintainers use `npm version` to bump the release version so the npm lifecycle can keep JavaScript, Rust, and Tauri version metadata aligned
+- the same version sync also keeps `packages/visual-aid/package.json` aligned with the root package version
 - versioned release tags use the `v<version>` format
 - a single release workflow supports both pushed version tags and manual `workflow_dispatch`
 - release builds run on macOS, Linux, and Windows runners
@@ -36,4 +37,4 @@ Costs and constraints:
 
 - release success now depends on cross-platform CI stability and GitHub-hosted runner behavior
 - signed and notarized distribution may still require later repository or organization secrets
-- the `npm version` lifecycle and release workflow must keep version metadata aligned across JavaScript, Rust, and Tauri config files
+- the `npm version` lifecycle and release workflow must keep version metadata aligned across the root package, the standalone MCP package, Rust, and Tauri config files

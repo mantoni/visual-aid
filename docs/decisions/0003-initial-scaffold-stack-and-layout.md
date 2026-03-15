@@ -29,6 +29,10 @@ The repository layout will start with:
 - `src-tauri/` for the Tauri host application
 - `docs/` for product, architecture, and decision records
 
+The publishable MCP server later moved into `packages/visual-aid/` in
+[0034-standalone-mcp-npm-package.md](0034-standalone-mcp-npm-package.md),
+while `mcp/` stayed in the repository as compatibility wrappers for local dogfooding.
+
 ## Consequences
 
 Positive consequences:

@@ -14,6 +14,8 @@ The default local dogfood path is:
 
 The printed MCP config is now generic. It points at this checkout's server entrypoint by absolute path, but it does not pin `cwd` or `VISUAL_AID_SESSION_PATH`. That means Codex can reuse the same config across projects, and each caller project gets its own `.visual-aid/session.json` automatically.
 
+That source-checkout config remains the canonical local dogfood path even though the MCP server source now also lives in the standalone `packages/visual-aid/` npm package.
+
 The generic config now relies on either an explicit tool `cwd` argument or the server process cwd.
 
 If a launcher needs to target a different workspace than its process cwd, pass `cwd` in the tool call or set `VISUAL_AID_WORKSPACE_CWD` explicitly for that run.

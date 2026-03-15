@@ -22,6 +22,7 @@ export type ReleasePlan = {
 
 const VERSION_FILE_PATHS = {
   packageJson: "package.json",
+  mcpPackageJson: join("packages", "visual-aid", "package.json"),
   tauriConfig: join("src-tauri", "tauri.conf.json"),
   cargoToml: join("src-tauri", "Cargo.toml"),
 } as const;
@@ -69,30 +70,38 @@ export const parseCargoVersion = (content: string) => {
 };
 
 export const readRepositoryVersion = async (cwd = process.cwd()) => {
-  const [packageJsonRaw, tauriConfigRaw, cargoTomlRaw] = await Promise.all([
+  const [packageJsonRaw, mcpPackageJsonRaw, tauriConfigRaw, cargoTomlRaw] = await Promise.all([
     readFile(join(cwd, VERSION_FILE_PATHS.packageJson), "utf8"),
+    readFile(join(cwd, VERSION_FILE_PATHS.mcpPackageJson), "utf8"),
     readFile(join(cwd, VERSION_FILE_PATHS.tauriConfig), "utf8"),
     readFile(join(cwd, VERSION_FILE_PATHS.cargoToml), "utf8"),
   ]);
 
   const packageVersion = JSON.parse(packageJsonRaw).version;
+  const mcpPackageVersion = JSON.parse(mcpPackageJsonRaw).version;
   const tauriVersion = JSON.parse(tauriConfigRaw).version;
   const cargoVersion = parseCargoVersion(cargoTomlRaw);
 
   if (
     typeof packageVersion !== "string" ||
+    typeof mcpPackageVersion !== "string" ||
     typeof tauriVersion !== "string" ||
     typeof cargoVersion !== "string"
   ) {
     throw new Error("Release version metadata must be strings in all tracked files");
   }
 
-  const versions = [packageVersion, tauriVersion, cargoVersion].map(normalizeVersion);
+  const versions = [
+    packageVersion,
+    mcpPackageVersion,
+    tauriVersion,
+    cargoVersion,
+  ].map(normalizeVersion);
   const [firstVersion] = versions;
 
   if (!versions.every((version) => version === firstVersion)) {
     throw new Error(
-      `Release version mismatch: package.json=${packageVersion}, src-tauri/tauri.conf.json=${tauriVersion}, src-tauri/Cargo.toml=${cargoVersion}`,
+      `Release version mismatch: package.json=${packageVersion}, packages/visual-aid/package.json=${mcpPackageVersion}, src-tauri/tauri.conf.json=${tauriVersion}, src-tauri/Cargo.toml=${cargoVersion}`,
     );
   }
 

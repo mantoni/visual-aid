@@ -22,6 +22,8 @@ The default local workflow uses `.visual-aid/dev-session.json` as that shared se
 
 The printed Codex config block is generic. It points at this checkout's server code, but it leaves the caller workspace free so the active project gets its own `.visual-aid/session.json` automatically.
 
+The same MCP server source is also maintained as the standalone npm package `visual-aid` under `packages/visual-aid/`. That package is the intended non-source install shape for the MCP side of the product.
+
 The MCP server resolves workspace identity from a tool `cwd` argument first, then from `VISUAL_AID_WORKSPACE_CWD`, and finally from its process cwd.
 
 If the launcher starts the server from the wrong directory, pass `cwd` in the tool call or set `VISUAL_AID_WORKSPACE_CWD` for that run.
@@ -89,6 +91,14 @@ npm start -- --print-codex-config
 ```
 
 Use the same printed config from any project. No per-project MCP changes are required.
+
+When the standalone npm package is a better fit than a source checkout, the intended Codex config shape is:
+
+```toml
+[mcp_servers.visual-aid]
+command = "npx"
+args = ["-y", "visual-aid"]
+```
 
 Then call these tools from your MCP client:
 

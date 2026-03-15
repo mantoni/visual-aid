@@ -65,6 +65,7 @@ The baseline document set is:
 - [docs/specs/0010-workspace-tabs.md](docs/specs/0010-workspace-tabs.md): first-pass single-window workspace tab behavior
 - [docs/specs/0011-github-release-distribution.md](docs/specs/0011-github-release-distribution.md): release packaging and GitHub Releases publishing behavior
 - [docs/specs/0012-cross-workspace-source-testing.md](docs/specs/0012-cross-workspace-source-testing.md): using this source checkout from another local workspace
+- [docs/specs/0013-mcp-npm-package.md](docs/specs/0013-mcp-npm-package.md): standalone npm packaging contract for the MCP server
 - [docs/decisions/README.md](docs/decisions/README.md): how decisions are recorded
 - [docs/decisions/0001-markdown-first-agent-workflow.md](docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
 - [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
@@ -98,6 +99,7 @@ The baseline document set is:
 - [docs/decisions/0031-workspace-tab-close-deletes-session.md](docs/decisions/0031-workspace-tab-close-deletes-session.md): make tab close delete workspace session state, including the last visible tab
 - [docs/decisions/0032-html-wireframe-presentation.md](docs/decisions/0032-html-wireframe-presentation.md): add an explicit HTML wireframe presentation for low-fidelity fragment previews
 - [docs/decisions/0033-self-describing-mcp-surface.md](docs/decisions/0033-self-describing-mcp-surface.md): make the MCP surface self-describing for arbitrary agents
+- [docs/decisions/0034-standalone-mcp-npm-package.md](docs/decisions/0034-standalone-mcp-npm-package.md): split the MCP server into a publishable standalone npm package
 
 ## Documentation Rules
 
@@ -123,6 +125,7 @@ Useful commands:
 - `npm test`: run the automated test suite
 - `npm run verify`: run type checks, tests, and frontend build together
 - `npm run build`: build the frontend bundle
+- `npm run build:mcp-package`: build the standalone MCP npm package under `packages/visual-aid/dist`
 - `npm run tauri:dev`: lower-level Tauri app dev command used by the supervisor
 - `npm run tauri:build`: build the desktop app bundle
 - `npm run mcp`: package-script wrapper for the stdio MCP server; Codex config should use `npx tsx mcp/server.ts` directly to avoid npm banner output
@@ -136,5 +139,6 @@ Environment variables:
 - `VISUAL_AID_OPEN_COMMAND`: explicit command used by `visual-aid.open`
 - `VISUAL_AID_APP_PATH`: explicit app bundle path used by `visual-aid.open`
 - `VISUAL_AID_PREFER_DEBUG_APP`: when set to `1`, prefer the local debug build during launch auto-detection
+- `VISUAL_AID_DEV_SERVER_URL`: override the dev-server probe URL used for debug-build detection
 
 If no launch override is configured, the MCP server will try to auto-discover a local macOS app bundle or binary under `src-tauri/target/`.

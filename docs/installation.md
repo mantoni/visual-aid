@@ -6,7 +6,9 @@ Explain how to install Visual AId from packaged releases or from source.
 
 ## Current Install Story
 
-Packaged installers published to GitHub Releases are now the primary install path.
+Packaged installers published to GitHub Releases are now the primary install path for the desktop app.
+
+The MCP server is maintained separately as a publishable npm package under `packages/visual-aid/`.
 
 Source builds remain supported for contributors and for local dogfooding.
 
@@ -17,6 +19,14 @@ Source builds remain supported for contributors and for local dogfooding.
 3. Install Visual AId using your platform's normal app-install flow.
 
 The release automation publishes versioned releases from `v<version>` tags and can also stage draft or pre-release builds for maintainers.
+
+## MCP Server Package
+
+The repository now keeps the MCP server in a standalone npm package named `visual-aid`.
+
+That package is intended to let an MCP client install or run the server without cloning the full desktop-app repository.
+
+Until npm publication and installed-app discovery are fully documented, the source-checkout dogfood flow remains the canonical end-to-end setup in this repository.
 
 ## Source Build Prerequisites
 
@@ -71,7 +81,7 @@ Tauri will place the resulting bundles under `src-tauri/target/`.
 
 Maintainers publish packaged installers through the repository release workflow:
 
-1. Run `npm version patch`, `npm version minor`, or `npm version major` to bump `package.json` and sync `src-tauri/tauri.conf.json` plus `src-tauri/Cargo.toml`.
+1. Run `npm version patch`, `npm version minor`, or `npm version major` to bump `package.json` and sync `packages/visual-aid/package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`.
 2. Push the generated release commit and tag with `git push --follow-tags` to publish the stable release automatically.
 3. Or push the version commit and start the `Release` workflow manually to stage a draft or pre-release from the current checkout.
 

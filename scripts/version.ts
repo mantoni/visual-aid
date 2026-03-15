@@ -4,9 +4,22 @@ import { pathToFileURL } from "node:url";
 
 const VERSION_FILE_PATHS = {
   packageJson: "package.json",
+  mcpPackageJson: join("packages", "visual-aid", "package.json"),
   tauriConfig: join("src-tauri", "tauri.conf.json"),
   cargoToml: join("src-tauri", "Cargo.toml"),
 } as const;
+
+export const updatePackageJsonVersion = (content: string, version: string) => {
+  const parsed = JSON.parse(content) as { version?: unknown };
+
+  if (typeof parsed.version !== "string") {
+    throw new Error("Could not find package version in package.json");
+  }
+
+  parsed.version = version;
+
+  return `${JSON.stringify(parsed, null, 2)}\n`;
+};
 
 export const parsePackageVersion = (content: string) => {
   const version = JSON.parse(content).version;
@@ -45,27 +58,35 @@ export const updateTauriConfigVersion = (content: string, version: string) => {
 
 export const syncRepositoryVersionFiles = async (cwd = process.cwd()) => {
   const packageJsonPath = join(cwd, VERSION_FILE_PATHS.packageJson);
+  const mcpPackageJsonPath = join(cwd, VERSION_FILE_PATHS.mcpPackageJson);
   const tauriConfigPath = join(cwd, VERSION_FILE_PATHS.tauriConfig);
   const cargoTomlPath = join(cwd, VERSION_FILE_PATHS.cargoToml);
 
-  const [packageJsonRaw, tauriConfigRaw, cargoTomlRaw] = await Promise.all([
+  const [packageJsonRaw, mcpPackageJsonRaw, tauriConfigRaw, cargoTomlRaw] = await Promise.all([
     readFile(packageJsonPath, "utf8"),
+    readFile(mcpPackageJsonPath, "utf8"),
     readFile(tauriConfigPath, "utf8"),
     readFile(cargoTomlPath, "utf8"),
   ]);
 
   const version = parsePackageVersion(packageJsonRaw);
+  const nextMcpPackageJson = updatePackageJsonVersion(mcpPackageJsonRaw, version);
   const nextTauriConfig = updateTauriConfigVersion(tauriConfigRaw, version);
   const nextCargoToml = updateCargoPackageVersion(cargoTomlRaw, version);
 
   await Promise.all([
+    writeFile(mcpPackageJsonPath, nextMcpPackageJson, "utf8"),
     writeFile(tauriConfigPath, nextTauriConfig, "utf8"),
     writeFile(cargoTomlPath, nextCargoToml, "utf8"),
   ]);
 
   return {
     version,
-    updatedFiles: [VERSION_FILE_PATHS.tauriConfig, VERSION_FILE_PATHS.cargoToml],
+    updatedFiles: [
+      VERSION_FILE_PATHS.mcpPackageJson,
+      VERSION_FILE_PATHS.tauriConfig,
+      VERSION_FILE_PATHS.cargoToml,
+    ],
   };
 };
 

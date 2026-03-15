@@ -11,7 +11,7 @@ Related decisions:
 
 ## Preconditions
 
-- The repository version is aligned across `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`.
+- The repository version is aligned across `package.json`, `packages/visual-aid/package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`.
 - GitHub Actions can run on the repository.
 - The release workflow has permission to create or update GitHub Releases.
 
@@ -36,7 +36,7 @@ And it plans bundled artifacts for macOS, Linux, and Windows
 
 Given a maintainer runs `npm version patch`
 When the npm version lifecycle completes
-Then `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` all contain the same bumped version
+Then `package.json`, `packages/visual-aid/package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` all contain the same bumped version
 And the resulting commit and `v<version>` tag are ready to push for release publishing
 
 ### VRD-PUBLISH-001 Tagged releases publish installers to GitHub Releases

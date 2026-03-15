@@ -8,16 +8,17 @@
     "start": "tsx scripts/start.ts",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:mcp-package": "tsc -p packages/visual-aid/tsconfig.json",
     "check": "tsc --noEmit",
     "demo:payload": "tsx scripts/demo-payload.ts",
     "mcp": "tsx mcp/server.ts",
     "release:plan": "tsx scripts/release.ts --json",
     "release:sync-version": "tsx scripts/version.ts",
     "test": "vitest run",
-    "verify": "npm run check && npm run test && npm run build",
+    "verify": "npm run check && npm run test && npm run build && npm run build:mcp-package",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "version": "tsx scripts/version.ts && git add package.json package-lock.json src-tauri/tauri.conf.json src-tauri/Cargo.toml"
+    "version": "tsx scripts/version.ts && git add package.json package-lock.json packages/visual-aid/package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml"
   },
   "keywords": [
     "tauri",

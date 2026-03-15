@@ -14,7 +14,8 @@ The initial scaffold uses:
 
 - a Vite-based vanilla TypeScript frontend for the renderer UI
 - a Tauri v2 Rust host in `src-tauri/`
-- a Node-based MCP server in `mcp/`
+- a publishable Node-based MCP server package in `packages/visual-aid/`
+- repository-local `mcp/` wrappers that preserve the current source-checkout entrypoints
 - a file-based session bridge for the first desktop integration step
 
 ## Core Responsibilities

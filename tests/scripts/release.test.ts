@@ -10,11 +10,13 @@ import {
   formatReleasePlan,
   parseCargoVersion,
   parseReleaseArgs,
+  readRepositoryVersion,
   resolveReleaseVersion,
 } from "../../scripts/release.js";
 import {
   runVersionSync,
   syncRepositoryVersionFiles,
+  updatePackageJsonVersion,
   updateCargoPackageVersion,
 } from "../../scripts/version.js";
 
@@ -107,15 +109,21 @@ describe("release planning", () => {
     );
   });
 
-  it("VRD-BUILD-002 npm version keeps package, Tauri, and Cargo versions aligned", async () => {
+  it("VRD-BUILD-002 VMP-VERSION-001 npm version keeps the standalone MCP package, Tauri, and Cargo versions aligned", async () => {
     const root = await mkdtemp(join(tmpdir(), "visual-aid-release-"));
     tempRoots.push(root);
 
     await mkdir(join(root, "src-tauri"), { recursive: true });
+    await mkdir(join(root, "packages", "visual-aid"), { recursive: true });
     await Promise.all([
       writeFile(
         join(root, "package.json"),
         JSON.stringify({ name: "visual-aid", version: "1.2.3" }, null, 2),
+        "utf8",
+      ),
+      writeFile(
+        join(root, "packages", "visual-aid", "package.json"),
+        JSON.stringify({ name: "visual-aid", version: "0.1.0" }, null, 2),
         "utf8",
       ),
       writeFile(
@@ -133,6 +141,9 @@ describe("release planning", () => {
     const result = await syncRepositoryVersionFiles(root);
 
     expect(result.version).toBe("1.2.3");
+    expect(JSON.parse(await readFile(join(root, "packages", "visual-aid", "package.json"), "utf8"))).toMatchObject(
+      { version: "1.2.3" },
+    );
     expect(JSON.parse(await readFile(join(root, "src-tauri", "tauri.conf.json"), "utf8"))).toMatchObject(
       { version: "1.2.3" },
     );
@@ -141,15 +152,21 @@ describe("release planning", () => {
     );
   });
 
-  it("VRD-BUILD-002 version sync reports the files it updated", async () => {
+  it("VRD-BUILD-002 VMP-VERSION-001 version sync reports the files it updated", async () => {
     const root = await mkdtemp(join(tmpdir(), "visual-aid-release-"));
     tempRoots.push(root);
 
     await mkdir(join(root, "src-tauri"), { recursive: true });
+    await mkdir(join(root, "packages", "visual-aid"), { recursive: true });
     await Promise.all([
       writeFile(
         join(root, "package.json"),
         JSON.stringify({ name: "visual-aid", version: "2.0.0" }, null, 2),
+        "utf8",
+      ),
+      writeFile(
+        join(root, "packages", "visual-aid", "package.json"),
+        JSON.stringify({ name: "visual-aid", version: "0.1.0" }, null, 2),
         "utf8",
       ),
       writeFile(
@@ -169,7 +186,50 @@ describe("release planning", () => {
 
     expect(exitCode).toBe(0);
     expect(stdout.text()).toBe(
-      "Synced release version 2.0.0 to src-tauri/tauri.conf.json, src-tauri/Cargo.toml\n",
+      "Synced release version 2.0.0 to packages/visual-aid/package.json, src-tauri/tauri.conf.json, src-tauri/Cargo.toml\n",
+    );
+  });
+
+  it("release planning rejects version mismatches from the standalone MCP package metadata", async () => {
+    const root = await mkdtemp(join(tmpdir(), "visual-aid-release-"));
+    tempRoots.push(root);
+
+    await mkdir(join(root, "src-tauri"), { recursive: true });
+    await mkdir(join(root, "packages", "visual-aid"), { recursive: true });
+    await Promise.all([
+      writeFile(
+        join(root, "package.json"),
+        JSON.stringify({ name: "visual-aid", version: "1.0.0" }, null, 2),
+        "utf8",
+      ),
+      writeFile(
+        join(root, "packages", "visual-aid", "package.json"),
+        JSON.stringify({ name: "visual-aid", version: "2.0.0" }, null, 2),
+        "utf8",
+      ),
+      writeFile(
+        join(root, "src-tauri", "tauri.conf.json"),
+        `${JSON.stringify({ version: "1.0.0" }, null, 2)}\n`,
+        "utf8",
+      ),
+      writeFile(
+        join(root, "src-tauri", "Cargo.toml"),
+        '[package]\nname = "visual-aid"\nversion = "1.0.0"\n',
+        "utf8",
+      ),
+    ]);
+
+    await writeFile(
+      join(root, "packages", "visual-aid", "package.json"),
+      updatePackageJsonVersion(
+        JSON.stringify({ name: "visual-aid", version: "2.0.0" }, null, 2),
+        "2.0.0",
+      ),
+      "utf8",
+    );
+
+    await expect(readRepositoryVersion(root)).rejects.toThrow(
+      "Release version mismatch: package.json=1.0.0, packages/visual-aid/package.json=2.0.0, src-tauri/tauri.conf.json=1.0.0, src-tauri/Cargo.toml=1.0.0",
     );
   });
 
