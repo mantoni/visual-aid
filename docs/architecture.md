@@ -51,9 +51,10 @@ The initial MCP surface should stay intentionally small:
 
 `visual-aid.show` may launch the app implicitly if it is not already running, but `visual-aid.open` remains useful for explicit control and debugging.
 
-The server also exposes a diagnostic resource:
+The server also exposes fixed readable resources:
 
 - `visual-aid://status`: readable JSON status for host integration and debugging
+- `visual-aid://usage`: readable Markdown usage guidance so an MCP client can discover when and how to use the server without repository context
 
 ## Initial Desktop Bridge
 

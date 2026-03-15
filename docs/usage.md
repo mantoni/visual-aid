@@ -42,6 +42,11 @@ Auto-detected debug binaries are only launched when the Tauri dev server is reac
 All four tools may also accept an optional `cwd` argument when the caller wants
 to force a specific workspace for that tool call.
 
+The server also exposes readable resources for discovery:
+
+- `visual-aid://status`: machine-readable JSON diagnostics
+- `visual-aid://usage`: markdown guidance for arbitrary agents that need to understand when to use `visual-aid` and how to call `visual-aid.show`
+
 ## Common Payload Types
 
 The app currently supports:
@@ -64,6 +69,10 @@ Use `visual-aid` when the artifact is easier to inspect visually than in termina
 - code changes in unified diff
 - diagrams in Mermaid
 - fragment-oriented UI previews in HTML
+
+Markdown already handles more than plain prose. Inside a `markdown` payload, the renderer can show headings, lists, blockquotes, tables, links, sanitized raw HTML snippets, syntax-highlighted fenced code blocks, embedded Mermaid fences, and embedded diff fences.
+
+Use `html` with `presentation: "wireframe"` when the goal is to inspect UI structure rather than finished styling. That works best when agents send short semantic fragments, rely on layout helper classes like `va-stack`, `va-grid`, `va-sidebar`, `va-cluster`, and `va-spread`, and avoid custom CSS unless the task truly needs a richer HTML preview.
 
 ## Example Workflow
 

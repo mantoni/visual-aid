@@ -21,6 +21,8 @@ Related decisions:
 ## Invariants
 
 - The server advertises the documented tool surface.
+- The server advertises tool metadata that explains each tool's intent and key input fields.
+- The server exposes a readable usage resource for discovery without repository context.
 - Successful tool calls update the session file according to the behavior spec.
 - Invalid tool input is rejected by the registered input schema and returned as an MCP error result.
 
@@ -31,6 +33,24 @@ Related decisions:
 Given a connected MCP client
 When the client lists tools
 Then the tool names include `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear`
+
+### VAI-DISCOVERY-001 MCP tool metadata explains the server to an arbitrary agent
+
+Given a connected MCP client
+When the client lists tools
+Then each documented tool includes a human-readable title and description
+And `visual-aid.show` includes described schema fields for its payload contract
+And the `visual-aid.show` description makes clear that it renders content in the desktop app
+
+### VAI-DISCOVERY-002 MCP usage resource is listed and readable
+
+Given a connected MCP client
+When the client lists and reads resources
+Then `visual-aid://usage` is present
+And the resource contents explain when to use `visual-aid`
+And the resource contents describe the `visual-aid.show` payload shape
+And the resource contents describe Markdown inline rendering capabilities
+And the resource contents explain when `presentation: "wireframe"` is a good fit
 
 ### VAI-SHOW-001 Show writes the session file through a real MCP call
 
@@ -92,4 +112,4 @@ And the returned text mentions input validation
 
 ## Test Mapping
 
-- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-SHOW-003`, `VAI-SHOW-004`, `VAI-VALIDATION-001`, `VAI-VALIDATION-002`, `VAI-VALIDATION-003`
+- `tests/mcp/integration.test.ts`: `VAI-LIST-001`, `VAI-DISCOVERY-001`, `VAI-DISCOVERY-002`, `VAI-SHOW-001`, `VAI-CLEAR-001`, `VAI-SHOW-002`, `VAI-SHOW-003`, `VAI-SHOW-004`, `VAI-VALIDATION-001`, `VAI-VALIDATION-002`, `VAI-VALIDATION-003`

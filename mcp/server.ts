@@ -32,6 +32,77 @@ const textResult = (text: string, isError = false) => ({
   isError,
 });
 
+const usageResourceText = `# visual-aid MCP server
+
+\`visual-aid\` gives agents a desktop surface for artifacts that are easier to inspect visually than in terminal text.
+
+## Use it for
+
+- markdown plans, writeups, and reports
+- source code snippets or full files
+- JSON data
+- unified diffs
+- Mermaid diagrams
+- HTML fragments and wireframes
+
+## Tools
+
+- \`visual-aid.status\`: inspect the server, workspace, and session path the call will use
+- \`visual-aid.open\`: launch or focus the desktop app
+- \`visual-aid.show\`: render a payload in the desktop app
+- \`visual-aid.clear\`: clear the rendered items for the targeted workspace
+
+## Markdown can already render inline
+
+- headings, paragraphs, ordered and unordered lists, and blockquotes
+- tables and links
+- sanitized raw HTML snippets
+- syntax-highlighted fenced code blocks
+- embedded Mermaid fences
+- embedded diff fences
+
+## visual-aid.show required fields
+
+- \`version\`: use \`1\`
+- \`format\`: one of \`markdown\`, \`code\`, \`json\`, \`diff\`, \`mermaid\`, or \`html\`
+- \`content\`: the raw content to render
+
+## visual-aid.show optional fields
+
+- \`title\`: user-facing title
+- \`summary\`: short user-facing summary
+- \`id\`: stable item id for append-mode replacement
+- \`language\`: syntax-highlighting hint for code payloads
+- \`presentation\`: renderer hint, currently \`default\` or \`wireframe\` for html payloads
+- \`mode\`: \`replace\` or \`append\`
+- \`cwd\`: target workspace directory for this call
+
+## When to use html wireframe
+
+Use \`format: "html"\` with \`presentation: "wireframe"\` when the user wants to inspect UI structure, layout, information hierarchy, or interaction flow without committing to final visual design.
+
+Good wireframe payloads:
+
+- use semantic HTML such as \`main\`, \`section\`, \`nav\`, \`aside\`, \`form\`, \`label\`, \`button\`, and lists
+- focus on regions, hierarchy, and states
+- optionally use helper classes such as \`va-stack\`, \`va-grid\`, \`va-sidebar\`, \`va-cluster\`, and \`va-spread\`
+- avoid custom CSS unless the task truly needs richer html instead of a low-fidelity sketch
+
+Prefer markdown instead when prose plus inline code, diff, mermaid, or small HTML snippets already communicate the idea.
+
+## Example
+
+\`\`\`json
+{
+  "version": 1,
+  "format": "markdown",
+  "title": "Plan",
+  "summary": "Current implementation plan",
+  "content": "# Plan\\n\\n- Inspect renderer\\n- Add tests\\n- Verify output"
+}
+\`\`\`
+`;
+
 const getWorkspacePaths = async (cwdOverride?: string) => {
   if (cwdOverride) {
     return {
@@ -111,10 +182,14 @@ const server = new McpServer(visualAidServerInfo, {
 server.registerTool(
   "visual-aid.status",
   {
-    title: "Get visual-aid diagnostics",
+    title: "Inspect visual-aid diagnostics",
     description:
-      "Return a human-readable summary of the current MCP and session status.",
+      "Show which workspace, session file, and registry path visual-aid will use, plus the current session state.",
     inputSchema: visualAidWorkspaceOverrideSchema,
+    annotations: {
+      readOnlyHint: true,
+      idempotentHint: true,
+    },
   },
   async ({ cwd }) => {
     const diagnostics = await getDiagnostics(cwd);
@@ -157,13 +232,36 @@ server.registerResource(
   },
 );
 
+server.registerResource(
+  "visual-aid-usage",
+  "visual-aid://usage",
+  {
+    title: "visual-aid usage",
+    description:
+      "How and when to use visual-aid from MCP, including how to shape visual-aid.show payloads.",
+    mimeType: "text/markdown",
+  },
+  async (uri) => ({
+    contents: [
+      {
+        uri: uri.href,
+        mimeType: "text/markdown",
+        text: usageResourceText,
+      },
+    ],
+  }),
+);
+
 server.registerTool(
   "visual-aid.open",
   {
-    title: "Open visual-aid",
+    title: "Open the visual-aid desktop app",
     description:
-      "Launch the visual-aid desktop app or focus an existing instance.",
+      "Launch the visual-aid desktop window for the targeted workspace, or focus the existing instance if it is already running.",
     inputSchema: visualAidWorkspaceOverrideSchema,
+    annotations: {
+      idempotentHint: true,
+    },
   },
   async ({ cwd }) => {
     const launched = await maybeLaunchApp(sourceCwd);
@@ -187,9 +285,9 @@ server.registerTool(
 server.registerTool(
   "visual-aid.show",
   {
-    title: "Render structured payload",
+    title: "Render visual content in the desktop app",
     description:
-      "Validate and record a structured payload for the visual-aid app.",
+      "Render markdown, code, json, diff, mermaid, or html content in the visual-aid desktop app for the targeted workspace.",
     inputSchema: visualAidShowArgumentsSchema,
   },
   async ({ cwd, ...payload }) => {
@@ -212,9 +310,14 @@ server.registerTool(
 server.registerTool(
   "visual-aid.clear",
   {
-    title: "Clear rendered payloads",
-    description: "Clear the active visual-aid session state.",
+    title: "Clear the current visual output",
+    description:
+      "Remove the rendered items for the targeted workspace from the visual-aid desktop app.",
     inputSchema: visualAidWorkspaceOverrideSchema,
+    annotations: {
+      destructiveHint: true,
+      idempotentHint: true,
+    },
   },
   async ({ cwd }) => {
     const { workspace, sessionPath, registryPath } =

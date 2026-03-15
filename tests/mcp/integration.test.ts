@@ -30,6 +30,9 @@ const firstTextContent = (value: unknown) => {
   return entry.text;
 };
 
+const objectRecord = (value: unknown) =>
+  value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+
 const createTransport = (
   cwd: string,
   sessionPath: string,
@@ -94,6 +97,87 @@ describe("MCP stdio integration spec", () => {
       "visual-aid.show",
       "visual-aid.status",
     ]);
+  });
+
+  it("VAI-DISCOVERY-001 MCP tool metadata explains the server to an arbitrary agent", async () => {
+    const tools = await client!.listTools();
+    const byName = new Map(tools.tools.map((tool) => [tool.name, tool]));
+
+    expect(byName.get("visual-aid.status")?.title).toBe(
+      "Inspect visual-aid diagnostics",
+    );
+    expect(byName.get("visual-aid.status")?.description).toContain(
+      "workspace",
+    );
+    expect(byName.get("visual-aid.status")?.annotations).toMatchObject({
+      readOnlyHint: true,
+      idempotentHint: true,
+    });
+
+    expect(byName.get("visual-aid.open")?.description).toContain(
+      "desktop window",
+    );
+    expect(byName.get("visual-aid.open")?.annotations).toMatchObject({
+      idempotentHint: true,
+    });
+
+    expect(byName.get("visual-aid.show")?.title).toBe(
+      "Render visual content in the desktop app",
+    );
+    expect(byName.get("visual-aid.show")?.description).toContain(
+      "desktop app",
+    );
+
+    const showProperties = objectRecord(
+      byName.get("visual-aid.show")?.inputSchema.properties,
+    );
+
+    expect(objectRecord(showProperties?.version)?.description).toContain(
+      "current version is 1",
+    );
+    expect(objectRecord(showProperties?.format)?.description).toContain(
+      "desktop app",
+    );
+    expect(objectRecord(showProperties?.content)?.description).toContain(
+      "render",
+    );
+    expect(objectRecord(showProperties?.mode)?.description).toContain(
+      "replace clears existing items first",
+    );
+    expect(objectRecord(showProperties?.cwd)?.description).toContain(
+      "workspace directory",
+    );
+
+    expect(byName.get("visual-aid.clear")?.annotations).toMatchObject({
+      destructiveHint: true,
+      idempotentHint: true,
+    });
+  });
+
+  it("VAI-DISCOVERY-002 MCP usage resource is listed and readable", async () => {
+    const resources = await client!.listResources();
+    const usageResource = resources.resources.find(
+      (resource) => resource.uri === "visual-aid://usage",
+    );
+
+    expect(usageResource?.mimeType).toBe("text/markdown");
+    expect(usageResource?.description).toContain("when to use");
+
+    const result = await client!.readResource({
+      uri: "visual-aid://usage",
+    });
+    const first = result.contents[0];
+
+    expect(first?.mimeType).toBe("text/markdown");
+    if (first && "text" in first) {
+      expect(first.text).toContain("desktop surface");
+      expect(first.text).toContain("visual-aid.show");
+      expect(first.text).toContain("Markdown can already render inline");
+      expect(first.text).toContain("embedded Mermaid fences");
+      expect(first.text).toContain('presentation: "wireframe"');
+      expect(first.text).toContain("semantic HTML");
+      expect(first.text).toContain('"version": 1');
+    }
   });
 
   it("VAI-SHOW-001 show writes the session file through a real MCP call", async () => {
