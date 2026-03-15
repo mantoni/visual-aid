@@ -1,6 +1,6 @@
 {
   "name": "visual-aid",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Visual AId is a Tauri desktop app that coding agents can launch and send structured data to over MCP.",
   "type": "module",
