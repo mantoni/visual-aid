@@ -11,6 +11,7 @@
     "check": "tsc --noEmit",
     "demo:payload": "tsx scripts/demo-payload.ts",
     "mcp": "tsx mcp/server.ts",
+    "release:plan": "tsx scripts/release.ts --json",
     "test": "vitest run",
     "verify": "npm run check && npm run test && npm run build",
     "tauri:dev": "tauri dev",
