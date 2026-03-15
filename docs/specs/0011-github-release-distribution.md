@@ -20,6 +20,7 @@ Related decisions:
 - Release automation builds desktop bundles from the repository source with `npm ci` and `npm run tauri:build`.
 - Release automation publishes the bundles to a GitHub Release whose tag matches the requested app version.
 - Manual release runs can stage a draft or pre-release without requiring a second workflow definition.
+- `npm version` keeps the tracked release version files aligned before maintainers push a release tag.
 - The published release process remains source-of-truth documentation for how packaged installers are produced.
 
 ## Scenarios
@@ -30,6 +31,13 @@ Given a release version such as `0.1.0`
 When the release automation prepares distribution metadata
 Then it expects a Git tag named `v0.1.0`
 And it plans bundled artifacts for macOS, Linux, and Windows
+
+### VRD-BUILD-002 npm version keeps tracked release metadata aligned
+
+Given a maintainer runs `npm version patch`
+When the npm version lifecycle completes
+Then `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` all contain the same bumped version
+And the resulting commit and `v<version>` tag are ready to push for release publishing
 
 ### VRD-PUBLISH-001 Tagged releases publish installers to GitHub Releases
 
@@ -47,4 +55,4 @@ And the resulting GitHub Release stays non-public until the maintainer promotes 
 
 ## Test Mapping
 
-- `tests/scripts/release.test.ts`: `VRD-BUILD-001`, `VRD-PUBLISH-001`, `VRD-PUBLISH-002`
+- `tests/scripts/release.test.ts`: `VRD-BUILD-001`, `VRD-BUILD-002`, `VRD-PUBLISH-001`, `VRD-PUBLISH-002`
