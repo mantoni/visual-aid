@@ -20,7 +20,6 @@ import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
 import { hydrateMermaidPayloads } from "./mermaid";
 import {
-  appDisplayName,
   formatLabels,
   resolveSelectedIndex,
   type VisualAidState,
@@ -1252,11 +1251,12 @@ const renderSplash = (status: string) => `
     <section class="splash" aria-label="Welcome">
       <div class="splash__content">
         <p class="eyebrow">Agent Visualization Surface</p>
-        <h1>${appDisplayName}</h1>
+        <h1 class="splash__title">Visual <span class="splash__title-ai">AI</span>d</h1>
         <p class="splash__lead">A polished surface for inspecting structured agent output.</p>
         <p class="splash__copy">
-          Start by sending a <code>visual-aid.show</code> payload. Markdown, code, JSON,
-          unified diff, Mermaid, and HTML payloads all render in place once content arrives.
+          Waiting for the first payload in this workspace. Start by sending a
+          <code>visual-aid.show</code> payload. Markdown, code, JSON, unified diff,
+          Mermaid, and HTML payloads all render in place once content arrives.
         </p>
         <div class="splash__formats" aria-label="Supported payloads">
           <span class="splash__format">Markdown</span>
@@ -1266,18 +1266,6 @@ const renderSplash = (status: string) => `
           <span class="splash__format">Mermaid</span>
           <span class="splash__format">HTML</span>
         </div>
-      </div>
-      <div class="splash__aside">
-        <section class="splash-card">
-          <p class="panel__label">Status</p>
-          <h2>${escapeHtml(status)}</h2>
-          <p>Waiting for the first payload in this workspace.</p>
-        </section>
-        <section class="splash-card">
-          <p class="panel__label">Session Flow</p>
-          <h2>Replace or Append</h2>
-          <p>Replace refreshes the main view. Append preserves a navigable history for review.</p>
-        </section>
       </div>
     </section>
   </main>

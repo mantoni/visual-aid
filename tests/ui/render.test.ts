@@ -25,6 +25,10 @@ describe("Renderer output spec", () => {
     const body = renderDocument(html);
 
     expect(body.querySelector(".splash h1")?.textContent).toBe("Visual AId");
+    expect(body.querySelector(".splash__title-ai")?.textContent).toBe("AI");
+    expect(body.querySelector(".splash__status")).toBeNull();
+    expect(body.querySelector(".splash__aside")).toBeNull();
+    expect(body.querySelector(".splash-card")).toBeNull();
     expect(body.querySelector(".viewer-surface")).toBeNull();
     expect(body.querySelector(".app-frame")).toBeNull();
     expect(body.textContent).toContain(

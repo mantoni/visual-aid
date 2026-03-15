@@ -39,7 +39,10 @@ Related decisions:
 Given a renderer state with no session items
 When the renderer output is generated
 Then the splash title is `Visual AId`
+And the splash title visually emphasizes `AI`
 And the splash waiting message is visible
+And no splash status block is rendered
+And no secondary splash side panel is rendered
 And the payload viewer panel is not rendered
 
 ### VAR-MARKDOWN-001 Markdown payloads render in the markdown container
