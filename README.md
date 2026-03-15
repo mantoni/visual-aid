@@ -1,144 +1,223 @@
-# visual-aid
+# Visual AId
 
-## Purpose
+Visual AId is a local desktop app for coding agents that need a better surface than plain terminal text.
 
-`visual-aid` is the source repository for Visual AId, a Tauri application that gives coding agents a dedicated way to present structured information to users as visual output.
+An agent can launch the app over MCP, send a structured payload, and let the desktop UI render it in a form the user can actually inspect. The project is built around everyday agent workflows such as plans, code snippets, diffs, diagrams, JSON payloads, and lightweight HTML previews.
 
-Agents should be able to launch the app and send it structured payloads over MCP. The app then renders those payloads in a form that is easy for a user to inspect and understand.
+## What It Does
 
-## What The App Should Support
+Visual AId gives agents a dedicated visual output window instead of forcing every artifact through a terminal transcript.
 
-Visual AId is intended for structured formats such as:
+The current flow is:
+
+1. An MCP client calls `visual-aid.open` or `visual-aid.show`.
+2. The MCP server writes workspace-scoped session state.
+3. The Tauri desktop app renders the latest payload for that workspace.
+
+## Features
+
+- MCP tool surface for `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear`
+- Desktop rendering for `markdown`, `code`, `json`, `diff`, `mermaid`, and `html`
+- Rich Markdown support including tables, fenced code blocks, embedded Mermaid, and embedded diffs
+- Single-window multi-workspace tabs keyed by working directory
+- Session persistence and last-known-good restore behavior
+- Self-describing MCP metadata and readable MCP usage resources
+- Source-checkout dogfood flow for local development
+- Standalone MCP package source under [`packages/visual-aid`](packages/visual-aid)
+
+## Supported Payloads
+
+Visual AId currently renders:
 
 - Markdown
 - Source code
 - JSON
 - Unified diff
 - Mermaid
-- HTML
+- HTML fragments and wireframes
 
-The set of supported formats can grow over time as new agent workflows emerge, but those formats are added in the product codebase rather than through a plugin model.
+## Setup
 
-## Core Idea
+There are two distinct ways to use this project:
 
-Instead of forcing every piece of agent-generated content into plain terminal text, this project provides a separate visual surface for content that benefits from richer rendering.
+- regular use: install the desktop app and point your MCP client at the standalone `visual-aid` server package
+- contributor use: run the app and MCP server directly from this repository checkout
 
-That means an agent can:
+### Regular Setup
 
-1. Launch Visual AId.
-2. Send structured data to it through MCP.
-3. Let the app render an appropriate visual representation for the user.
+For most users, the intended setup is:
 
-## Direction
+1. Install the desktop app from this repository’s GitHub Releases.
+2. Configure your MCP client to use the standalone `visual-aid` MCP server.
 
-This project starts as the foundation for an agent-facing visualization tool:
+Desktop app install:
 
-- The agent is the producer of structured content.
-- MCP is the communication layer between the agent and the app.
-- The Tauri app is the renderer for the user-facing visual representation.
+1. Open the latest release for this repository.
+2. Download the installer or app bundle for your platform.
+3. Install it using your platform’s normal flow.
 
-The goal is a simple, reliable path from agent output to a visual experience that helps users understand code, changes, diagrams, and other structured artifacts more clearly.
+Simpler MCP setup:
 
-## Documentation Framework
+```toml
+[mcp_servers.visual-aid]
+command = "npx"
+args = ["-y", "visual-aid"]
+```
 
-This project is intended to be built and maintained primarily by a coding agent. To support that workflow, project knowledge should live in markdown files that are easy to inspect, update, and review.
+Or, if the package is installed globally:
 
-The baseline document set is:
+```toml
+[mcp_servers.visual-aid]
+command = "visual-aid"
+```
 
-- [docs/agent-workflow.md](docs/agent-workflow.md): operating rules for agent-driven work in this repository
-- [docs/architecture.md](docs/architecture.md): current system shape and technical boundaries
-- [docs/installation.md](docs/installation.md): source-first installation guide and prerequisites
-- [docs/usage.md](docs/usage.md): how to run the app, connect Codex, and send payloads
-- [docs/dogfooding.md](docs/dogfooding.md): canonical local dogfood flow centered on `npm start`
-- [docs/backlog.md](docs/backlog.md): current prioritized backlog and accepted future direction
-- [docs/product.md](docs/product.md): product intent, scope, and milestone direction
-- [docs/specs/README.md](docs/specs/README.md): behavior-spec convention and test mapping rules
-- [docs/specs/0001-mcp-session-flow.md](docs/specs/0001-mcp-session-flow.md): initial acceptance spec for `visual-aid.open`, `show`, and `clear`
-- [docs/specs/0002-desktop-bridge-and-renderer-state.md](docs/specs/0002-desktop-bridge-and-renderer-state.md): polling and renderer-state behavior
-- [docs/specs/0003-mcp-stdio-integration.md](docs/specs/0003-mcp-stdio-integration.md): end-to-end MCP client/server behavior
-- [docs/specs/0004-renderer-output.md](docs/specs/0004-renderer-output.md): visible renderer output and layout behavior
-- [docs/specs/0005-interactive-ui-behavior.md](docs/specs/0005-interactive-ui-behavior.md): live DOM updates from UI events and polling
-- [docs/specs/0006-format-aware-renderers.md](docs/specs/0006-format-aware-renderers.md): first-pass renderer semantics for each supported format
-- [docs/specs/0007-mcp-diagnostics.md](docs/specs/0007-mcp-diagnostics.md): diagnostic tool and resource behavior for host integration
-- [docs/specs/0008-dogfooding-start-workflow.md](docs/specs/0008-dogfooding-start-workflow.md): canonical `npm start` dogfood behavior and Codex config expectations
-- [docs/specs/0009-persisted-session-restore.md](docs/specs/0009-persisted-session-restore.md): local restore behavior for the last known good rendered session
-- [docs/specs/0010-workspace-tabs.md](docs/specs/0010-workspace-tabs.md): first-pass single-window workspace tab behavior
-- [docs/specs/0011-github-release-distribution.md](docs/specs/0011-github-release-distribution.md): release packaging and GitHub Releases publishing behavior
-- [docs/specs/0012-cross-workspace-source-testing.md](docs/specs/0012-cross-workspace-source-testing.md): using this source checkout from another local workspace
-- [docs/specs/0013-mcp-npm-package.md](docs/specs/0013-mcp-npm-package.md): standalone npm packaging contract for the MCP server
-- [docs/decisions/README.md](docs/decisions/README.md): how decisions are recorded
-- [docs/decisions/0001-markdown-first-agent-workflow.md](docs/decisions/0001-markdown-first-agent-workflow.md): first architectural decision record
-- [docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md](docs/decisions/0002-initial-mcp-contract-and-payload-envelope.md): initial app control contract and payload shape
-- [docs/decisions/0003-initial-scaffold-stack-and-layout.md](docs/decisions/0003-initial-scaffold-stack-and-layout.md): initial implementation stack and repository layout
-- [docs/decisions/0004-initial-file-based-session-bridge.md](docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
-- [docs/decisions/0005-documentation-integrated-testing.md](docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
-- [docs/decisions/0006-initial-format-aware-renderers.md](docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for the initial format set
-- [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
-- [docs/decisions/0008-session-history-and-item-replacement.md](docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
-- [docs/decisions/0009-rendered-mermaid-diagrams.md](docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
-- [docs/decisions/0010-last-known-good-session-restore.md](docs/decisions/0010-last-known-good-session-restore.md): persist and restore the last known good rendered session snapshot
-- [docs/decisions/0011-isolated-html-fragments.md](docs/decisions/0011-isolated-html-fragments.md): render HTML payloads as isolated fragments with app-owned styling
-- [docs/decisions/0012-push-based-session-bridge.md](docs/decisions/0012-push-based-session-bridge.md): replace renderer polling with host-emitted desktop session updates
-- [docs/decisions/0013-project-owned-format-expansion.md](docs/decisions/0013-project-owned-format-expansion.md): keep new format support in the core codebase rather than plugins
-- [docs/decisions/0014-single-window-workspace-tabs.md](docs/decisions/0014-single-window-workspace-tabs.md): define future multi-session browsing around single-window workspace tabs
-- [docs/decisions/0015-richer-markdown-rendering.md](docs/decisions/0015-richer-markdown-rendering.md): upgrade Markdown rendering from a minimal subset to a richer parser-backed view
-- [docs/decisions/0016-json-payload-renderer.md](docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
-- [docs/decisions/0017-github-release-distribution.md](docs/decisions/0017-github-release-distribution.md): define GitHub Actions and GitHub Releases as the first packaged distribution path
-- [docs/decisions/0018-source-checkout-cross-workspace-testing.md](docs/decisions/0018-source-checkout-cross-workspace-testing.md): separate source checkout location from target workspace identity during local testing
-- [docs/decisions/0019-process-cwd-workspace-resolution.md](docs/decisions/0019-process-cwd-workspace-resolution.md): historical process-cwd-only workspace resolution
-- [docs/decisions/0020-normalized-workspace-registry.md](docs/decisions/0020-normalized-workspace-registry.md): keep workspace discovery in the registry while leaving session content in per-workspace session files
-- [docs/decisions/0022-tool-cwd-workspace-resolution.md](docs/decisions/0022-tool-cwd-workspace-resolution.md): prefer tool `cwd`, then explicit overrides, then `process.cwd()` for workspace identity
-- [docs/decisions/0023-source-code-rendering.md](docs/decisions/0023-source-code-rendering.md): add syntax-highlighted source-code payloads and highlighted Markdown fenced code blocks
-- [docs/decisions/0024-embedded-mermaid-in-markdown.md](docs/decisions/0024-embedded-mermaid-in-markdown.md): render Mermaid fences inside Markdown as embedded diagrams with source fallback
-- [docs/decisions/0025-embedded-diff-in-markdown.md](docs/decisions/0025-embedded-diff-in-markdown.md): render diff fences inside Markdown with the structured diff viewer
-- [docs/decisions/0026-sanitized-html-in-markdown.md](docs/decisions/0026-sanitized-html-in-markdown.md): render sanitized raw HTML snippets inside Markdown while keeping standalone HTML isolated
-- [docs/decisions/0027-remove-excalidraw-format.md](docs/decisions/0027-remove-excalidraw-format.md): remove Excalidraw as a first-class payload format
-- [docs/decisions/0028-app-shell-splash-and-theme.md](docs/decisions/0028-app-shell-splash-and-theme.md): define the branded splash state, app chrome, and adaptive light/dark shell theming
-- [docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md](docs/decisions/0029-explicit-payload-fields-no-arbitrary-metadata.md): remove arbitrary payload metadata in favor of explicit fields
-- [docs/decisions/0030-document-style-active-shell.md](docs/decisions/0030-document-style-active-shell.md): shift active payload sessions to a content-first document shell with toggleable recents
-- [docs/decisions/0031-workspace-tab-close-deletes-session.md](docs/decisions/0031-workspace-tab-close-deletes-session.md): make tab close delete workspace session state, including the last visible tab
-- [docs/decisions/0032-html-wireframe-presentation.md](docs/decisions/0032-html-wireframe-presentation.md): add an explicit HTML wireframe presentation for low-fidelity fragment previews
-- [docs/decisions/0033-self-describing-mcp-surface.md](docs/decisions/0033-self-describing-mcp-surface.md): make the MCP surface self-describing for arbitrary agents
-- [docs/decisions/0034-standalone-mcp-npm-package.md](docs/decisions/0034-standalone-mcp-npm-package.md): split the MCP server into a publishable standalone npm package
+That is the simpler MCP setup this project is aiming for: no source checkout, no `tsx` path, and no repo-local wiring in the MCP config.
 
-## Documentation Rules
+The repository already contains that standalone package source under [`packages/visual-aid`](packages/visual-aid). If npm publication is not available yet in your environment, use the contributor setup below.
 
-- Significant product, architecture, and process decisions must be captured as markdown before or alongside implementation.
-- When a decision changes prior direction, the relevant decision record and affected documents must be updated in the same change.
-- The markdown documents are the primary project memory for future agent work.
+### Contributor Setup
 
-## Default Development Path
+If you are developing Visual AId itself or dogfooding from a source checkout:
 
-The canonical local dogfood flow is:
+```sh
+git clone https://github.com/mantoni/visual-aid.git
+cd visual-aid
+npm install
+npm start
+```
 
-1. Run `npm start` to create or reuse `.visual-aid/dev-session.json` and launch the Tauri app in dev mode.
-2. Run `npm start -- --print-codex-config` and use the printed generic MCP server block in Codex.
-3. Use `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` through Codex from any project.
+Then print the matching MCP config for that checkout:
 
-See [docs/dogfooding.md](docs/dogfooding.md) for the concise setup and quick test sequence.
+```sh
+npm start -- --print-codex-config
+```
+
+Expected shape:
+
+```toml
+[mcp_servers.visual-aid]
+command = "/absolute/path/to/visual-aid/node_modules/.bin/tsx"
+args = ["/absolute/path/to/visual-aid/mcp/server.ts"]
+env = { VISUAL_AID_PREFER_DEBUG_APP = "1" }
+```
+
+That source-checkout config is the contributor dogfood path. It is not the simplest end-user setup.
+
+## Quick Start
+
+For regular use:
+
+1. Install the desktop app from GitHub Releases.
+2. Configure your MCP client to run `visual-aid`.
+3. Call `visual-aid.status`.
+4. Call `visual-aid.open`.
+5. Call `visual-aid.show` with a payload.
+
+For contributor use from this repository:
+
+1. Install dependencies with `npm install`.
+2. Start the desktop app with `npm start`.
+3. Print the matching Codex MCP config with `npm start -- --print-codex-config`.
+4. Add that block to your Codex `config.toml`.
+5. Call `visual-aid.status`, then `visual-aid.open`, then `visual-aid.show`.
+
+## Codex Setup
+
+Use one of these two patterns:
+
+- simpler MCP package setup:
+
+```toml
+[mcp_servers.visual-aid]
+command = "npx"
+args = ["-y", "visual-aid"]
+```
+
+- source-checkout dogfood setup:
+
+```sh
+npm start -- --print-codex-config
+```
+
+The source-checkout config is generic:
+
+- it points at this checkout’s MCP server entrypoint
+- it does not pin a single workspace
+- the active caller project gets its own `.visual-aid/session.json`
+
+If you need to run the source-checkout MCP server manually outside Codex, use:
+
+```fish
+env VISUAL_AID_SESSION_PATH=(pwd)/.visual-aid/dev-session.json npx tsx mcp/server.ts
+```
+
+## Using Visual AId
+
+Once the app and MCP server are available, the normal tool flow is:
+
+1. `visual-aid.status` to inspect workspace and session diagnostics
+2. `visual-aid.open` to launch or focus the desktop app
+3. `visual-aid.show` to render a payload
+4. `visual-aid.clear` to clear the current workspace output
+
+Example payload:
+
+```json
+{
+  "version": 1,
+  "format": "markdown",
+  "title": "Plan",
+  "summary": "Current implementation plan",
+  "content": "# Plan\n\n- Inspect renderer\n- Add tests\n- Verify output"
+}
+```
+
+## Development
+
+This section is for contributors working from the repository checkout.
 
 Useful commands:
 
-- `npm start`: canonical local dogfood entrypoint for the app
-- `npm start -- --print-codex-config`: print the exact Codex MCP config block for the current checkout
-- `npm run check`: type-check the project
-- `npm test`: run the automated test suite
-- `npm run verify`: run type checks, tests, and frontend build together
+- `npm start`: canonical local dogfood entrypoint
+- `npm start -- --print-codex-config`: print the current checkout’s MCP config
+- `npm run check`: TypeScript type-check
+- `npm test`: run Vitest
 - `npm run build`: build the frontend bundle
-- `npm run build:mcp-package`: build the standalone MCP npm package under `packages/visual-aid/dist`
-- `npm run tauri:dev`: lower-level Tauri app dev command used by the supervisor
-- `npm run tauri:build`: build the desktop app bundle
-- `npm run mcp`: package-script wrapper for the stdio MCP server; Codex config should use `npx tsx mcp/server.ts` directly to avoid npm banner output
-- `npm run demo:payload`: write a sample session payload to `.visual-aid/session.json`
+- `npm run build:mcp-package`: build the standalone MCP package
+- `npm run tauri:build`: build desktop bundles
+- `npm run verify`: run check, test, frontend build, and MCP package build
 
-Environment variables:
+Important environment variables:
 
-- `VISUAL_AID_SESSION_PATH`: override the JSON session file path for manual MCP or app runs; `npm start` uses `.visual-aid/dev-session.json`
-- `VISUAL_AID_WORKSPACE_CWD`: override the workspace identity used for registry and tab labeling
-- `VISUAL_AID_REGISTRY_PATH`: override the shared workspace registry path used for multi-workspace session discovery
-- `VISUAL_AID_OPEN_COMMAND`: explicit command used by `visual-aid.open`
-- `VISUAL_AID_APP_PATH`: explicit app bundle path used by `visual-aid.open`
-- `VISUAL_AID_PREFER_DEBUG_APP`: when set to `1`, prefer the local debug build during launch auto-detection
-- `VISUAL_AID_DEV_SERVER_URL`: override the dev-server probe URL used for debug-build detection
+- `VISUAL_AID_SESSION_PATH`: override the session file path
+- `VISUAL_AID_WORKSPACE_CWD`: override the workspace identity
+- `VISUAL_AID_REGISTRY_PATH`: override the shared workspace registry path
+- `VISUAL_AID_OPEN_COMMAND`: explicit launch command for `visual-aid.open`
+- `VISUAL_AID_APP_PATH`: explicit app bundle or executable path
+- `VISUAL_AID_PREFER_DEBUG_APP`: prefer a local debug build when dev mode is live
+- `VISUAL_AID_DEV_SERVER_URL`: override the dev-server probe URL used for debug detection
 
-If no launch override is configured, the MCP server will try to auto-discover a local macOS app bundle or binary under `src-tauri/target/`.
+## Repository Layout
+
+- [`src/`](src): Vite renderer UI
+- [`src-tauri/`](src-tauri): Tauri host application
+- [`packages/visual-aid/`](packages/visual-aid): standalone MCP package source
+- [`mcp/`](mcp): compatibility wrappers for the repo-local MCP entrypoints
+- [`tests/`](tests): Vitest coverage
+- [`docs/`](docs): product, architecture, specs, and decision records
+
+## Documentation
+
+Start here for deeper detail:
+
+- [`docs/installation.md`](docs/installation.md): installation paths and prerequisites
+- [`docs/usage.md`](docs/usage.md): payloads, tools, and normal usage
+- [`docs/dogfooding.md`](docs/dogfooding.md): canonical local workflow
+- [`docs/product.md`](docs/product.md): product intent and scope
+- [`docs/architecture.md`](docs/architecture.md): system shape and technical boundaries
+- [`docs/specs/README.md`](docs/specs/README.md): behavior specs
+- [`docs/decisions/README.md`](docs/decisions/README.md): architectural decision records
+
+## Status
+
+Visual AId is actively evolving. The core MCP-to-desktop flow is working, the renderer set is already useful, and current work is focused on making installation, renderer quality, and everyday agent workflows easier to adopt.
