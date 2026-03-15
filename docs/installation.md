@@ -2,13 +2,23 @@
 
 ## Purpose
 
-Explain how to install `visual-aid` in its current source-first state.
+Explain how to install `visual-aid` from packaged releases or from source.
 
 ## Current Install Story
 
-Today the primary install path is from source. A GitHub Releases installer flow is planned, but it is not the default path yet.
+Packaged installers published to GitHub Releases are now the primary install path.
 
-## Prerequisites
+Source builds remain supported for contributors and for local dogfooding.
+
+## Install From GitHub Releases
+
+1. Open the latest release on GitHub.
+2. Download the installer or bundle for your operating system.
+3. Install `visual-aid` using your platform's normal app-install flow.
+
+The release automation publishes versioned releases from `v<version>` tags and can also stage draft or pre-release builds for maintainers.
+
+## Source Build Prerequisites
 
 - Install the Tauri prerequisites for your operating system: [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/)
 - Install a recent Node.js LTS release with `npm`
@@ -56,6 +66,14 @@ npm run tauri:build
 ```
 
 Tauri will place the resulting bundles under `src-tauri/target/`.
+
+## Maintainer Release Flow
+
+Maintainers publish packaged installers through the repository release workflow:
+
+1. Align the repository version in `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`.
+2. Push a version tag such as `v0.1.0` to publish a release automatically.
+3. Or start the `Release` workflow manually to stage a draft or pre-release from the current checkout.
 
 ## Related Docs
 

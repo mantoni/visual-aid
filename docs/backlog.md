@@ -7,12 +7,11 @@ Capture the currently intended product backlog in one place so future agent sess
 ## Now
 
 - Render Excalidraw payloads as actual drawings instead of falling back to raw JSON-only inspection.
-- Define and document a release process that builds installers and uploads them to GitHub Releases.
 - Strengthen agent-facing guidance so agents routinely use `visual-aid` when a richer surface helps the user inspect structured output.
+- Add a top-level switcher for JSON payloads so users can toggle between the rich interactive view and plain JSON.
 
 ## Next
 
-- Add a top-level switcher for JSON payloads so users can toggle between the rich interactive view and plain JSON.
 - Tighten the diff renderer layout so unified diffs read less spaciously.
 - Add dark-mode-aware styling to rendered Mermaid diagrams.
 - Support closing, renaming, and reordering workspace tabs without adding multi-window support.

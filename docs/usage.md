@@ -22,6 +22,8 @@ The default local workflow uses `.visual-aid/dev-session.json` as that shared se
 
 The printed Codex config block is the safest way to avoid mismatched session paths.
 
+If you are using a packaged app instead of a source checkout, point `VISUAL_AID_APP_PATH` at the installed app bundle or executable when you want `visual-aid.open` to launch that packaged build explicitly.
+
 ## MCP Tools
 
 `visual-aid` exposes four tools:
