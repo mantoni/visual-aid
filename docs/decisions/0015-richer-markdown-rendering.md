@@ -20,6 +20,7 @@ Specifically:
 - raw HTML inside Markdown is escaped rather than executed or injected
 - the renderer supports richer document structure including ordered lists, blockquotes, tables, links, and fenced code blocks
 - fenced code blocks may surface the declared language label in the UI
+- Markdown may render some fenced languages, such as `mermaid`, through richer embedded viewers instead of plain code blocks
 
 ## Consequences
 

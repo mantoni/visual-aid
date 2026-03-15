@@ -272,6 +272,41 @@ describe("Renderer output spec", () => {
     );
   });
 
+  it("VFR-MARKDOWN-003 markdown mermaid fences render embedded mermaid frames", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T13:00:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Embedded Diagram",
+              content: [
+                "# Diagram",
+                "",
+                "```mermaid",
+                "graph TD",
+                "  A[Agent] --> B[Viewer]",
+                "```",
+              ].join("\n"),
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-markdown .payload-mermaid--embedded")).not.toBeNull();
+    expect(body.querySelector(".payload-markdown .payload-mermaid__diagram")).not.toBeNull();
+    expect(
+      body.querySelector(".payload-markdown .payload-mermaid__source-code")?.textContent,
+    ).toContain("graph TD");
+  });
+
   it("VFR-CODE-001 source code payloads render with syntax highlighting", () => {
     const body = renderDocument(
       renderAppHtml({

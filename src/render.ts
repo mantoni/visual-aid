@@ -142,60 +142,6 @@ const renderHighlightedCodeBlock = (
   return `<pre class="payload-pre ${preClassName}"><code class="hljs">${html}</code></pre>`;
 };
 
-const markdownRenderer = new MarkdownIt({
-  html: false,
-  linkify: true,
-});
-
-markdownRenderer.renderer.rules.fence = (
-  tokens: MarkdownToken[],
-  idx: number,
-  _options: unknown,
-  _env: unknown,
-  _self: MarkdownRendererLike,
-) => {
-  const token = tokens[idx];
-  const language = token?.info.trim().split(/\s+/, 1)[0] ?? "";
-  const rendered = renderHighlightedCodeBlock(
-    token?.content ?? "",
-    language,
-    "payload-pre--markdown payload-pre--code",
-  );
-
-  if (!language) {
-    return `<div class="payload-markdown__code-block">${rendered}</div>`;
-  }
-
-  return `
-    <div class="payload-markdown__code-block">
-      <div class="payload-markdown__code-label">${escapeHtml(language)}</div>
-      ${rendered}
-    </div>
-  `;
-};
-
-markdownRenderer.renderer.rules.table_open = () =>
-  '<div class="payload-markdown__table-wrap"><table>';
-markdownRenderer.renderer.rules.table_close = () => "</table></div>";
-
-markdownRenderer.renderer.rules.link_open = (
-  tokens: MarkdownToken[],
-  idx: number,
-  options: unknown,
-  _env: unknown,
-  self: MarkdownRendererLike,
-) => {
-  const token = tokens[idx];
-
-  token?.attrSet("target", "_blank");
-  token?.attrSet("rel", "noreferrer");
-
-  return self.renderToken(tokens, idx, options);
-};
-
-const renderMarkdown = (content: string) =>
-  `<div class="payload-markdown">${markdownRenderer.render(content)}</div>`;
-
 const codeLanguageFromPayload = (payload: VisualAidPayload) =>
   typeof payload.metadata?.language === "string"
     ? payload.metadata.language
@@ -257,11 +203,17 @@ const renderDiff = (content: string) => {
   return `<div class="payload-diff">${rows}</div>`;
 };
 
-const renderMermaid = (content: string) => {
+const renderMermaid = (
+  content: string,
+  options?: {
+    embedded?: boolean;
+  },
+) => {
   const firstLine = content.split("\n").find((line) => line.trim().length > 0) ?? "diagram";
+  const embeddedClass = options?.embedded ? " payload-mermaid--embedded" : "";
 
   return `
-    <div class="payload-mermaid">
+    <div class="payload-mermaid${embeddedClass}">
       <div class="payload-special__header">
         <span class="payload-special__badge">Rendered Diagram</span>
         <strong>${escapeHtml(firstLine)}</strong>
@@ -278,6 +230,65 @@ const renderMermaid = (content: string) => {
     </div>
   `;
 };
+
+const markdownRenderer = new MarkdownIt({
+  html: false,
+  linkify: true,
+});
+
+markdownRenderer.renderer.rules.fence = (
+  tokens: MarkdownToken[],
+  idx: number,
+  _options: unknown,
+  _env: unknown,
+  _self: MarkdownRendererLike,
+) => {
+  const token = tokens[idx];
+  const language = token?.info.trim().split(/\s+/, 1)[0] ?? "";
+
+  if (normalizeLanguage(language) === "mermaid") {
+    return renderMermaid(token?.content ?? "", { embedded: true });
+  }
+
+  const rendered = renderHighlightedCodeBlock(
+    token?.content ?? "",
+    language,
+    "payload-pre--markdown payload-pre--code",
+  );
+
+  if (!language) {
+    return `<div class="payload-markdown__code-block">${rendered}</div>`;
+  }
+
+  return `
+    <div class="payload-markdown__code-block">
+      <div class="payload-markdown__code-label">${escapeHtml(language)}</div>
+      ${rendered}
+    </div>
+  `;
+};
+
+markdownRenderer.renderer.rules.table_open = () =>
+  '<div class="payload-markdown__table-wrap"><table>';
+markdownRenderer.renderer.rules.table_close = () => "</table></div>";
+
+markdownRenderer.renderer.rules.link_open = (
+  tokens: MarkdownToken[],
+  idx: number,
+  options: unknown,
+  _env: unknown,
+  self: MarkdownRendererLike,
+) => {
+  const token = tokens[idx];
+
+  token?.attrSet("target", "_blank");
+  token?.attrSet("rel", "noreferrer");
+
+  return self.renderToken(tokens, idx, options);
+};
+
+const renderMarkdown = (content: string) =>
+  `<div class="payload-markdown">${markdownRenderer.render(content)}</div>`;
 
 const renderExcalidraw = (content: string) => {
   let parsed: unknown = null;

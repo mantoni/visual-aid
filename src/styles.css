@@ -271,7 +271,8 @@ h2 {
 .payload-markdown hr,
 .payload-markdown table,
 .payload-markdown .payload-markdown__table-wrap,
-.payload-markdown .payload-markdown__code-block {
+.payload-markdown .payload-markdown__code-block,
+.payload-markdown .payload-mermaid--embedded {
   margin: 0 0 14px;
 }
 
@@ -645,6 +646,11 @@ h2 {
 
 .payload-pre--mermaid {
   margin: 12px 0 0;
+}
+
+.payload-markdown .payload-mermaid--embedded {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .hljs {

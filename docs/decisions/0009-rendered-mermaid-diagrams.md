@@ -22,6 +22,7 @@ Specifically:
 - a rendered diagram becomes the primary Mermaid view
 - the raw Mermaid source remains available in the payload panel
 - if Mermaid rendering fails or the renderer is unavailable, the UI falls back to the source view with an explicit message
+- the same rendered-diagram and source-fallback model may be reused for Mermaid blocks embedded in other renderer surfaces such as Markdown
 
 This keeps the MCP payload envelope and session model unchanged while improving one of the most important visual formats.
 

@@ -19,7 +19,7 @@ Related decisions:
 ## Invariants
 
 - Markdown uses semantic document structure instead of a raw pre block when possible.
-- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, and syntax-highlighted fenced code blocks while escaping raw HTML.
+- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, syntax-highlighted fenced code blocks, and embedded Mermaid fences while escaping raw HTML.
 - Source code payloads render in a dedicated syntax-highlighted code viewer with an optional language label.
 - JSON payloads expose parsed structure when valid and keep a readable raw fallback when invalid.
 - Diff lines are visually classified by their line prefix and role.
@@ -42,6 +42,20 @@ Given a markdown payload with a blockquote, ordered list, table, link, and fence
 When the renderer output is generated
 Then the output includes semantic blockquote, ordered-list, table, and anchor elements
 And fenced code is rendered in a dedicated syntax-highlighted code block with its language label visible when supplied
+
+### VFR-MARKDOWN-003 Markdown Mermaid fences render as embedded diagrams
+
+Given a markdown payload with a fenced code block whose language is `mermaid`
+When the renderer output is generated
+Then the markdown output includes an embedded Mermaid frame
+And the Mermaid source remains available for inspection inside the markdown view
+
+### VFR-MARKDOWN-004 Markdown Mermaid fences fall back to source when rendering fails
+
+Given a markdown payload with a fenced code block whose language is `mermaid`
+When the renderer attempts to hydrate the embedded Mermaid view and rendering fails
+Then the markdown output shows a readable fallback message
+And the Mermaid source is visible for inspection inside the markdown view
 
 ### VFR-CODE-001 Source code payloads render with syntax highlighting
 
@@ -94,5 +108,5 @@ And the raw JSON preview remains visible
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
-- `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
+- `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-004`
