@@ -6,7 +6,6 @@ Capture the currently intended product backlog in one place so future agent sess
 
 ## Now
 
-- Add single-window multi-session browsing with tabs at the top of the app, keyed by working directory.
 - Render Excalidraw payloads as actual drawings instead of falling back to raw JSON-only inspection.
 - Define and document a release process that builds installers and uploads them to GitHub Releases.
 - Strengthen agent-facing guidance so agents routinely use `visual-aid` when a richer surface helps the user inspect structured output.

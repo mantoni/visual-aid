@@ -92,6 +92,78 @@ describe("Renderer output spec", () => {
     expect(items[1]?.textContent).toContain("First");
   });
 
+  it("VWT-TABS-001 multiple workspaces render as tabs", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        workspaceState: {
+          activeWorkspaceId: "/tmp/project-two",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:15:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Project One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+            {
+              id: "/tmp/project-two",
+              cwd: "/tmp/project-two",
+              label: "project-two",
+              sessionPath: "/tmp/project-two/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:16:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "html",
+                    title: "Project Two",
+                    content: "<section>Two</section>",
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        selectedWorkspaceId: "/tmp/project-two",
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T09:16:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "html",
+              title: "Project Two",
+              content: "<section>Two</section>",
+            },
+          ],
+        },
+        status: "Received HTML payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    const tabs = body.querySelectorAll(".workspace-tab");
+
+    expect(tabs).toHaveLength(2);
+    expect(tabs[0]?.textContent).toContain("project-one");
+    expect(tabs[1]?.classList.contains("workspace-tab--active")).toBe(true);
+  });
+
   it("VFR-MARKDOWN-001 markdown headings and lists render semantically", () => {
     const body = renderDocument(
       renderAppHtml({

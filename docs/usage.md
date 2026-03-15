@@ -42,6 +42,8 @@ The app currently supports:
 - `excalidraw`
 - `html`
 
+When multiple working directories send payloads through the shared registry, the app keeps them in one window and shows each working directory as a top-level tab.
+
 Use `visual-aid` when the artifact is easier to inspect visually than in terminal text alone, such as:
 
 - plans and long explanations in Markdown

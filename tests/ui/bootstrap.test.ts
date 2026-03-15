@@ -201,4 +201,169 @@ describe("Interactive UI spec", () => {
 
     expect(stopPolling).toHaveBeenCalledTimes(1);
   });
+
+  it("VWT-TABS-002 switching tabs swaps the visible workspace history", async () => {
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => true,
+      startSessionBridge: async (onWorkspaceState) => {
+        onWorkspaceState({
+          activeWorkspaceId: "/tmp/project-one",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:25:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Workspace One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+            {
+              id: "/tmp/project-two",
+              cwd: "/tmp/project-two",
+              label: "project-two",
+              sessionPath: "/tmp/project-two/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:26:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "html",
+                    title: "Workspace Two",
+                    content: "<section>Two</section>",
+                  },
+                ],
+              },
+            },
+          ],
+        });
+
+        return () => {};
+      },
+    });
+
+    const workspaceTabs = document.querySelectorAll<HTMLButtonElement>(".workspace-tab");
+    workspaceTabs[1]?.click();
+
+    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
+      "Workspace Two",
+    );
+    expect(document.querySelectorAll(".workspace-tab")[1]?.classList.contains("workspace-tab--active")).toBe(
+      true,
+    );
+    expect(document.querySelector(".payload-html__frame")).not.toBeNull();
+
+    cleanup();
+  });
+
+  it("VWT-BRIDGE-001 bridge updates can add and activate a new workspace", async () => {
+    const bridge = {
+      deliver: null as ((workspaceState: VisualAidWorkspaceState) => void) | null,
+    };
+
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => true,
+      startSessionBridge: async (onWorkspaceState) => {
+        bridge.deliver = onWorkspaceState;
+        onWorkspaceState({
+          activeWorkspaceId: "/tmp/project-one",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:27:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Workspace One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+          ],
+        });
+
+        return () => {};
+      },
+    });
+
+    const deliverWorkspaceState = bridge.deliver;
+
+    if (!deliverWorkspaceState) {
+      throw new Error("Expected bridge update handler");
+    }
+
+    deliverWorkspaceState({
+      activeWorkspaceId: "/tmp/project-two",
+      workspaces: [
+        {
+          id: "/tmp/project-one",
+          cwd: "/tmp/project-one",
+          label: "project-one",
+          sessionPath: "/tmp/project-one/.visual-aid/session.json",
+          session: {
+            openedAt: null,
+            lastAction: "show",
+            updatedAt: "2026-03-15T09:27:00.000Z",
+            items: [
+              {
+                version: 1,
+                format: "markdown",
+                title: "Workspace One",
+                content: "# One",
+              },
+            ],
+          },
+        },
+        {
+          id: "/tmp/project-two",
+          cwd: "/tmp/project-two",
+          label: "project-two",
+          sessionPath: "/tmp/project-two/.visual-aid/session.json",
+          session: {
+            openedAt: null,
+            lastAction: "show",
+            updatedAt: "2026-03-15T09:28:00.000Z",
+            items: [
+              {
+                version: 1,
+                format: "html",
+                title: "Workspace Two",
+                content: "<section>Two</section>",
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    expect(document.querySelectorAll(".workspace-tab")).toHaveLength(2);
+    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
+      "Workspace Two",
+    );
+    expect(document.querySelectorAll(".workspace-tab")[1]?.classList.contains("workspace-tab--active")).toBe(
+      true,
+    );
+
+    cleanup();
+  });
 });

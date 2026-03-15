@@ -36,7 +36,7 @@ The first renderer pass is format-aware without depending on heavyweight externa
 - Mermaid is rendered as a diagram when possible, with the source kept available as a fallback and inspection surface.
 - Excalidraw is rendered as a structured canvas summary with raw JSON preview when possible.
 - HTML is rendered as fragment-oriented content inside a sandboxed isolated payload surface with app-provided base styles.
-- The renderer uses a single main viewer with a reverse-chronological history sidebar; the newest item is selected by default, and the user can select older session items locally.
+- The renderer uses a single main viewer with top-level workspace tabs keyed by working directory plus a reverse-chronological history sidebar for the selected workspace.
 
 This keeps the early renderer surface explicit and testable while leaving room for richer format-specific engines later.
 
@@ -113,7 +113,7 @@ These should be treated as render targets, not as implementation commitments to 
 The following direction is now explicit even where implementation is still pending:
 
 - additional formats are added in the product codebase rather than through a plugin model
-- future multi-session browsing should use single-window workspace tabs keyed by working directory
+- multi-session browsing stays inside a single app window through workspace tabs keyed by working directory
 - a future full-document HTML workflow should use a separate explicit format instead of broadening fragment-oriented `html`
 
 ## Open Questions

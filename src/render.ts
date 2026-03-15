@@ -468,9 +468,35 @@ export const renderMetadata = (payload: VisualAidPayload) => {
 };
 
 export const renderAppHtml = (state: VisualAidState) => {
+  const selectedWorkspaceId =
+    state.selectedWorkspaceId ?? state.workspaceState?.activeWorkspaceId ?? null;
   const selectedIndex = resolveSelectedIndex(state.session, state.selectedIndex);
   const current =
     selectedIndex === null ? null : state.session.items[selectedIndex] ?? null;
+  const workspaceTabs =
+    state.workspaceState && state.workspaceState.workspaces.length > 1
+      ? `
+        <nav class="workspace-tabs" aria-label="Workspaces">
+          ${state.workspaceState.workspaces
+            .map((workspace) => {
+              const isActive = workspace.id === selectedWorkspaceId;
+
+              return `
+                <button
+                  class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
+                  type="button"
+                  data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+                  aria-pressed="${isActive ? "true" : "false"}"
+                >
+                  <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
+                  <span class="workspace-tab__path">${escapeHtml(workspace.cwd)}</span>
+                </button>
+              `;
+            })
+            .join("")}
+        </nav>
+      `
+      : "";
   const history = state.session.items
     .slice()
     .reverse()
@@ -507,6 +533,7 @@ export const renderAppHtml = (state: VisualAidState) => {
           <strong>${escapeHtml(state.status)}</strong>
         </div>
       </header>
+      ${workspaceTabs}
       <main class="layout">
         <section class="panel panel--viewer">
           <div class="panel__header">

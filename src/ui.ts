@@ -12,6 +12,7 @@ import {
   resolveSelectedIndex,
   resolveSelectedWorkspaceId,
   sessionForWorkspaceState,
+  statusForSession,
   statusForWorkspaceState,
   type VisualAidState,
 } from "./view-model";
@@ -143,9 +144,42 @@ export const bootstrapApp = async (
     renderInto(target, state);
   };
 
+  const onWorkspaceTabClick = (event: Event) => {
+    if (!(event.target instanceof Element) || !state.workspaceState) {
+      return;
+    }
+
+    const button = event.target.closest<HTMLButtonElement>(
+      ".workspace-tab[data-workspace-id]",
+    );
+
+    if (!button || !target.contains(button)) {
+      return;
+    }
+
+    const workspaceId = button.dataset.workspaceId;
+
+    if (!workspaceId) {
+      return;
+    }
+
+    state.selectedWorkspaceId = resolveSelectedWorkspaceId(
+      state.workspaceState,
+      workspaceId,
+    );
+    state.session = sessionForWorkspaceState(
+      state.workspaceState,
+      state.selectedWorkspaceId,
+    );
+    state.status = statusForSession(state.session);
+    state.selectedIndex = newestItemIndex(state.session);
+    renderInto(target, state);
+  };
+
   window.addEventListener("visual-aid:show", onShowEvent);
   window.addEventListener("visual-aid:clear", onClearEvent);
   target.addEventListener("click", onHistoryClick);
+  target.addEventListener("click", onWorkspaceTabClick);
 
   renderInto(target, state);
 
@@ -162,6 +196,7 @@ export const bootstrapApp = async (
     window.removeEventListener("visual-aid:show", onShowEvent);
     window.removeEventListener("visual-aid:clear", onClearEvent);
     target.removeEventListener("click", onHistoryClick);
+    target.removeEventListener("click", onWorkspaceTabClick);
     delete window.__VISUAL_AID__;
   };
 };
