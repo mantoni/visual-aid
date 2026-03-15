@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { emptySession } from "../../mcp/session.js";
 import {
   applyWorkspaceSession,
-  emptyWorkspaceState,
+  emptyWorkspaceRegistryState,
   resolveRegistryPath,
   resolveWorkspaceCwd,
 } from "../../mcp/workspace.js";
@@ -11,20 +10,9 @@ import {
 describe("MCP workspace registry", () => {
   it("VWT-BRIDGE-001 workspace updates append a new active workspace entry", () => {
     const next = applyWorkspaceSession(
-      emptyWorkspaceState(),
+      emptyWorkspaceRegistryState(),
       "/tmp/project-one",
       "/tmp/project-one/.visual-aid/session.json",
-      {
-        ...emptySession(),
-        lastAction: "show",
-        items: [
-          {
-            version: 1,
-            format: "markdown",
-            content: "# One",
-          },
-        ],
-      },
     );
 
     expect(next.activeWorkspaceId).toBe("/tmp/project-one");
@@ -32,43 +20,26 @@ describe("MCP workspace registry", () => {
     expect(next.workspaces[0]?.label).toBe("project-one");
   });
 
-  it("VWT-BRIDGE-001 workspace updates replace an existing workspace in place", () => {
+  it("VXT-WORKSPACE-006 registry entries store workspace references without embedded session payloads", () => {
     const initial = applyWorkspaceSession(
-      emptyWorkspaceState(),
+      emptyWorkspaceRegistryState(),
       "/tmp/project-one",
       "/tmp/project-one/.visual-aid/session.json",
-      {
-        ...emptySession(),
-        lastAction: "show",
-        items: [
-          {
-            version: 1,
-            format: "markdown",
-            content: "# Draft",
-          },
-        ],
-      },
     );
 
     const next = applyWorkspaceSession(
       initial,
       "/tmp/project-one",
       "/tmp/project-one/.visual-aid/session.json",
-      {
-        ...emptySession(),
-        lastAction: "show",
-        items: [
-          {
-            version: 1,
-            format: "html",
-            content: "<article>Updated</article>",
-          },
-        ],
-      },
     );
 
     expect(next.workspaces).toHaveLength(1);
-    expect(next.workspaces[0]?.session.items[0]?.format).toBe("html");
+    expect(next.workspaces[0]).toEqual({
+      id: "/tmp/project-one",
+      cwd: "/tmp/project-one",
+      label: "project-one",
+      sessionPath: "/tmp/project-one/.visual-aid/session.json",
+    });
   });
 
   it("VWT-BRIDGE-001 registry path honors the explicit environment override", () => {

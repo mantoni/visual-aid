@@ -8,7 +8,7 @@ import { ListRootsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { VisualAidSession } from "../../mcp/session.js";
-import type { VisualAidWorkspaceState } from "../../mcp/workspace.js";
+import type { VisualAidWorkspaceRegistryState } from "../../mcp/workspace.js";
 
 const firstTextContent = (value: unknown) => {
   if (!Array.isArray(value) || value.length === 0) {
@@ -115,10 +115,10 @@ describe("MCP stdio integration spec", () => {
 
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
-    ) as VisualAidWorkspaceState;
+    ) as VisualAidWorkspaceRegistryState;
 
     expect(workspaceState.workspaces).toHaveLength(1);
-    expect(workspaceState.workspaces[0]?.session.items[0]?.format).toBe("markdown");
+    expect(workspaceState.workspaces[0]?.sessionPath).toBe(sessionPath);
   });
 
   it("VAI-CLEAR-001 clear empties the session file through a real MCP call", async () => {
@@ -235,11 +235,32 @@ describe("MCP stdio integration spec", () => {
 
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
-    ) as VisualAidWorkspaceState;
+    ) as VisualAidWorkspaceRegistryState;
 
     expect(workspaceState.activeWorkspaceId).toBe(targetWorkspace);
     expect(workspaceState.workspaces[0]?.cwd).toBe(targetWorkspace);
     expect(workspaceState.workspaces[0]?.label).toBe("target-project");
+  });
+
+  it("VXT-WORKSPACE-006 registry stores workspace references without duplicating session content", async () => {
+    await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "markdown",
+        content: "# Registry Reference",
+      },
+    });
+
+    const registry = JSON.parse(
+      await readFile(registryPath, "utf8"),
+    ) as Record<string, unknown>;
+    const firstWorkspace = Array.isArray(registry.workspaces)
+      ? registry.workspaces[0] as Record<string, unknown> | undefined
+      : undefined;
+
+    expect(firstWorkspace?.sessionPath).toBe(sessionPath);
+    expect("session" in (firstWorkspace ?? {})).toBe(false);
   });
 
   it("VXT-WORKSPACE-003 generic source-checkout config uses the caller cwd as the workspace", async () => {
@@ -283,7 +304,7 @@ describe("MCP stdio integration spec", () => {
     ) as VisualAidSession;
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
-    ) as VisualAidWorkspaceState;
+    ) as VisualAidWorkspaceRegistryState;
 
     expect(session.lastAction).toBe("show");
     expect(workspaceState.activeWorkspaceId).toBe(resolvedCallerWorkspace);
@@ -332,7 +353,7 @@ describe("MCP stdio integration spec", () => {
 
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
-    ) as VisualAidWorkspaceState;
+    ) as VisualAidWorkspaceRegistryState;
 
     expect(workspaceState.activeWorkspaceId).toBe("/");
     expect(workspaceState.workspaces[0]?.cwd).toBe("/");
@@ -387,7 +408,7 @@ describe("MCP stdio integration spec", () => {
 
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
-    ) as VisualAidWorkspaceState;
+    ) as VisualAidWorkspaceRegistryState;
 
     expect(workspaceState.activeWorkspaceId).toBe(resolvedLauncherWorkspace);
     expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedLauncherWorkspace);

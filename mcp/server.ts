@@ -68,13 +68,12 @@ const persistWorkspaceState = async (
   workspaceCwd: string,
   sessionPath: string,
   registryPath: string,
-  session: Awaited<ReturnType<typeof readSession>>,
 ) => {
   const workspaceState = await readWorkspaceState(registryPath);
 
   await writeWorkspaceState(
     registryPath,
-    applyWorkspaceSession(workspaceState, workspaceCwd, sessionPath, session),
+    applyWorkspaceSession(workspaceState, workspaceCwd, sessionPath),
   );
 };
 
@@ -148,7 +147,7 @@ server.registerTool(
     const next = applyOpen(session, now);
 
     await writeSession(sessionPath, next);
-    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath, next);
+    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath);
 
     return textResult(
       launched
@@ -174,7 +173,7 @@ server.registerTool(
     const next = applyShow(session, payload, now);
 
     await writeSession(sessionPath, next);
-    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath, next);
+    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath);
 
     return textResult(
       `Accepted ${payload.format} payload in ${payload.mode ?? "replace"} mode. ${launched ? `Launch checked via ${launched.source}. ` : ""}Session state recorded at ${sessionPath}.`,
@@ -194,7 +193,7 @@ server.registerTool(
     const next = applyClear(session, new Date().toISOString());
 
     await writeSession(sessionPath, next);
-    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath, next);
+    await persistWorkspaceState(workspaceCwd, sessionPath, registryPath);
 
     return textResult(`Cleared visual-aid session state at ${sessionPath}.`);
   },

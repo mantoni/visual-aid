@@ -1,22 +1,19 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 
-import type { VisualAidSession } from "./session.js";
-
-export type VisualAidWorkspace = {
+export type VisualAidWorkspaceRegistryEntry = {
   id: string;
   cwd: string;
   label: string;
   sessionPath: string;
-  session: VisualAidSession;
 };
 
-export type VisualAidWorkspaceState = {
+export type VisualAidWorkspaceRegistryState = {
   activeWorkspaceId: string | null;
-  workspaces: VisualAidWorkspace[];
+  workspaces: VisualAidWorkspaceRegistryEntry[];
 };
 
-export const emptyWorkspaceState = (): VisualAidWorkspaceState => ({
+export const emptyWorkspaceRegistryState = (): VisualAidWorkspaceRegistryState => ({
   activeWorkspaceId: null,
   workspaces: [],
 });
@@ -45,36 +42,34 @@ export const resolveRegistryPath = (
 
 export const readWorkspaceState = async (
   registryPath: string,
-): Promise<VisualAidWorkspaceState> => {
+): Promise<VisualAidWorkspaceRegistryState> => {
   try {
     const raw = await readFile(registryPath, "utf8");
-    return JSON.parse(raw) as VisualAidWorkspaceState;
+    return JSON.parse(raw) as VisualAidWorkspaceRegistryState;
   } catch {
-    return emptyWorkspaceState();
+    return emptyWorkspaceRegistryState();
   }
 };
 
 export const writeWorkspaceState = async (
   registryPath: string,
-  workspaceState: VisualAidWorkspaceState,
+  workspaceState: VisualAidWorkspaceRegistryState,
 ) => {
   await mkdir(dirname(registryPath), { recursive: true });
   await writeFile(registryPath, JSON.stringify(workspaceState, null, 2));
 };
 
 export const applyWorkspaceSession = (
-  workspaceState: VisualAidWorkspaceState,
+  workspaceState: VisualAidWorkspaceRegistryState,
   cwd: string,
   sessionPath: string,
-  session: VisualAidSession,
-): VisualAidWorkspaceState => {
+): VisualAidWorkspaceRegistryState => {
   const workspaceId = workspaceIdForCwd(cwd);
   const workspace = {
     id: workspaceId,
     cwd,
     label: workspaceLabelForCwd(cwd),
     sessionPath,
-    session,
   };
   const existingIndex = workspaceState.workspaces.findIndex(
     (entry) => entry.id === workspaceId,

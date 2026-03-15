@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted
+Superseded by [0020-normalized-workspace-registry.md](0020-normalized-workspace-registry.md)
+
+This record is preserved for historical context only. The current persisted restore behavior is defined by [0020-normalized-workspace-registry.md](0020-normalized-workspace-registry.md).
 
 ## Context
 

@@ -19,6 +19,7 @@ Related decisions:
 
 - The source checkout and the target workspace may differ.
 - Workspace identity in the registry follows the target workspace, not the source checkout.
+- The registry stores workspace references and session paths without embedding the live session payloads.
 - Cross-workspace source testing keeps the same shared registry model and single-window workspace tabs.
 - A generic MCP config may point at this checkout's server entrypoint while the server process cwd determines the active workspace.
 - Client roots and shell cwd environment variables do not change workspace identity unless an explicit workspace override is configured.
@@ -64,7 +65,15 @@ When `visual-aid.show` records a payload
 Then the server process cwd remains the active workspace
 And client roots do not change the selected workspace
 
+### VXT-WORKSPACE-006 Registry entries do not duplicate session content
+
+Given the MCP server records a payload for a workspace
+When the shared registry file is written
+Then the registry entry stores the workspace identity and session path
+And the registry entry does not embed the live session payloads
+
 ## Test Mapping
 
 - `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-001`, `VXT-WORKSPACE-004`
-- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`, `VXT-WORKSPACE-004`, `VXT-WORKSPACE-005`
+- `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-006`
+- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`, `VXT-WORKSPACE-004`, `VXT-WORKSPACE-005`, `VXT-WORKSPACE-006`

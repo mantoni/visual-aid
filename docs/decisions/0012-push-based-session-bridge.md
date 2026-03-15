@@ -18,8 +18,8 @@ The desktop bridge remains file-based, but renderer updates become push-based.
 
 Specifically:
 
-- the Tauri host watches the configured session path for file changes
-- when the session changes, the host reads the current session state and emits a renderer event with the session payload
+- the Tauri host watches the configured shared registry path for file changes
+- when the registry changes, the host reads the current workspace state and emits a renderer event with the workspace payload
 - the frontend performs one initial session read at startup, then listens for host-emitted session updates
 - duplicate session snapshots are suppressed in the frontend bridge layer
 
