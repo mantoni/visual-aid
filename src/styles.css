@@ -272,7 +272,8 @@ h2 {
 .payload-markdown table,
 .payload-markdown .payload-markdown__table-wrap,
 .payload-markdown .payload-markdown__code-block,
-.payload-markdown .payload-mermaid--embedded {
+.payload-markdown .payload-mermaid--embedded,
+.payload-markdown .payload-diff--embedded {
   margin: 0 0 14px;
 }
 
@@ -525,6 +526,11 @@ h2 {
   display: grid;
   gap: 6px;
   font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+}
+
+.payload-markdown .payload-diff--embedded {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .payload-diff__line {

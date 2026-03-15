@@ -307,6 +307,50 @@ describe("Renderer output spec", () => {
     ).toContain("graph TD");
   });
 
+  it("VFR-MARKDOWN-005 markdown diff fences render embedded diff views", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T13:05:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Embedded Diff",
+              content: [
+                "# Patch",
+                "",
+                "```diff",
+                "--- a/src/render.ts",
+                "+++ b/src/render.ts",
+                "@@ -1 +1 @@",
+                "-const oldValue = 1;",
+                "+const newValue = 2;",
+                "```",
+              ].join("\n"),
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-markdown .payload-diff--embedded")).not.toBeNull();
+    expect(
+      body.querySelector(".payload-markdown .payload-diff__line--file code")?.textContent,
+    ).toBe("--- a/src/render.ts");
+    expect(
+      body.querySelector(".payload-markdown .payload-diff__line--remove code")
+        ?.textContent,
+    ).toBe("-const oldValue = 1;");
+    expect(
+      body.querySelector(".payload-markdown .payload-diff__line--add code")?.textContent,
+    ).toBe("+const newValue = 2;");
+  });
+
   it("VFR-CODE-001 source code payloads render with syntax highlighting", () => {
     const body = renderDocument(
       renderAppHtml({

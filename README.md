@@ -90,6 +90,7 @@ The baseline document set is:
 - [docs/decisions/0022-tool-cwd-workspace-resolution.md](docs/decisions/0022-tool-cwd-workspace-resolution.md): prefer tool `cwd`, then explicit overrides, then `process.cwd()` for workspace identity
 - [docs/decisions/0023-source-code-rendering.md](docs/decisions/0023-source-code-rendering.md): add syntax-highlighted source-code payloads and highlighted Markdown fenced code blocks
 - [docs/decisions/0024-embedded-mermaid-in-markdown.md](docs/decisions/0024-embedded-mermaid-in-markdown.md): render Mermaid fences inside Markdown as embedded diagrams with source fallback
+- [docs/decisions/0025-embedded-diff-in-markdown.md](docs/decisions/0025-embedded-diff-in-markdown.md): render diff fences inside Markdown with the structured diff viewer
 
 ## Documentation Rules
 

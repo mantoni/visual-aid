@@ -19,7 +19,7 @@ Related decisions:
 ## Invariants
 
 - Markdown uses semantic document structure instead of a raw pre block when possible.
-- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, syntax-highlighted fenced code blocks, and embedded Mermaid fences while escaping raw HTML.
+- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, syntax-highlighted fenced code blocks, embedded Mermaid fences, and embedded diff fences while escaping raw HTML.
 - Source code payloads render in a dedicated syntax-highlighted code viewer with an optional language label.
 - JSON payloads expose parsed structure when valid and keep a readable raw fallback when invalid.
 - Diff lines are visually classified by their line prefix and role.
@@ -56,6 +56,13 @@ Given a markdown payload with a fenced code block whose language is `mermaid`
 When the renderer attempts to hydrate the embedded Mermaid view and rendering fails
 Then the markdown output shows a readable fallback message
 And the Mermaid source is visible for inspection inside the markdown view
+
+### VFR-MARKDOWN-005 Markdown diff fences render as embedded diff views
+
+Given a markdown payload with a fenced code block whose language is `diff`
+When the renderer output is generated
+Then the markdown output includes an embedded diff view
+And diff lines are classified by file, hunk, add, remove, and context roles inside the markdown view
 
 ### VFR-CODE-001 Source code payloads render with syntax highlighting
 
@@ -108,5 +115,5 @@ And the raw JSON preview remains visible
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-005`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
 - `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-004`

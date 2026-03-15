@@ -93,6 +93,7 @@ const normalizeLanguage = (value: string | null | undefined) => {
   const aliases: Record<string, string> = {
     html: "xml",
     js: "javascript",
+    patch: "diff",
     shell: "bash",
     sh: "bash",
     ts: "typescript",
@@ -183,7 +184,13 @@ const classifyDiffLine = (line: string) => {
   return "context";
 };
 
-const renderDiff = (content: string) => {
+const renderDiff = (
+  content: string,
+  options?: {
+    embedded?: boolean;
+  },
+) => {
+  const embeddedClass = options?.embedded ? " payload-diff--embedded" : "";
   const rows = content
     .split("\n")
     .map((line) => {
@@ -200,7 +207,7 @@ const renderDiff = (content: string) => {
     })
     .join("");
 
-  return `<div class="payload-diff">${rows}</div>`;
+  return `<div class="payload-diff${embeddedClass}">${rows}</div>`;
 };
 
 const renderMermaid = (
@@ -248,6 +255,10 @@ markdownRenderer.renderer.rules.fence = (
 
   if (normalizeLanguage(language) === "mermaid") {
     return renderMermaid(token?.content ?? "", { embedded: true });
+  }
+
+  if (normalizeLanguage(language) === "diff") {
+    return renderDiff(token?.content ?? "", { embedded: true });
   }
 
   const rendered = renderHighlightedCodeBlock(
