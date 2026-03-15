@@ -28,4 +28,31 @@ describe("Renderer stylesheet spec", () => {
       "-webkit-backdrop-filter: var(--document-glass-backdrop);",
     );
   });
+
+  it("VAR-LAYOUT-005 the toolbar chrome stays unified while the active workspace tab remains emphasized", () => {
+    expect(stylesheet).toContain("--document-glass-bg: rgba(12, 18, 27, 0.68);");
+    expect(stylesheet).toContain("--document-glass-bg: rgba(244, 239, 230, 0.92);");
+    expect(stylesheet).toContain("--toolbar-control-active-bg: rgba(255, 255, 255, 0.86);");
+    expect(stylesheet).toContain(
+      "--toolbar-control-active-border: rgba(48, 75, 98, 0.16);",
+    );
+    expect(stylesheet).toContain("background: var(--toolbar-control-hover-bg);");
+    expect(stylesheet).toContain("background: var(--toolbar-control-active-bg);");
+    expect(stylesheet).toContain("box-shadow: var(--toolbar-control-active-shadow);");
+  });
+
+  it("VAR-LAYOUT-006 the recents sheet keeps elevated surfaces across themes", () => {
+    expect(stylesheet).toContain("--history-sheet-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);");
+    expect(stylesheet).toContain(
+      "--history-sheet-shadow:\n    0 24px 56px rgba(97, 72, 37, 0.18),",
+    );
+    expect(stylesheet).toContain("--history-item-bg: rgba(255, 255, 255, 0.52);");
+    expect(stylesheet).toContain(
+      "--history-item-active-border: rgba(185, 110, 43, 0.16);",
+    );
+    expect(stylesheet).toContain("background: var(--history-item-bg);");
+    expect(stylesheet).toContain("background: var(--history-item-active-bg);");
+    expect(stylesheet).toContain("box-shadow: var(--history-sheet-shadow);");
+    expect(stylesheet).toContain("box-shadow: var(--history-item-active-shadow);");
+  });
 });

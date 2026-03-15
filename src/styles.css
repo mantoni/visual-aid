@@ -98,6 +98,18 @@ pre {
     rgba(13, 20, 31, 0.98),
     rgba(8, 14, 22, 0.96)
   );
+  --document-glass-bg: rgba(12, 18, 27, 0.68);
+  --document-glass-backdrop: saturate(1.35) blur(18px);
+  --toolbar-control-hover-bg: rgba(255, 255, 255, 0.06);
+  --toolbar-control-active-bg: rgba(255, 255, 255, 0.1);
+  --toolbar-control-active-border: rgba(255, 255, 255, 0.06);
+  --toolbar-control-active-shadow: none;
+  --history-sheet-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+  --history-item-bg: rgba(255, 255, 255, 0.03);
+  --history-item-hover-bg: rgba(255, 255, 255, 0.05);
+  --history-item-active-bg: rgba(255, 255, 255, 0.08);
+  --history-item-active-border: rgba(255, 255, 255, 0.08);
+  --history-item-active-shadow: none;
   --frame-shadow:
     0 24px 80px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
@@ -169,6 +181,24 @@ pre {
       rgba(255, 255, 255, 0.98),
       rgba(244, 247, 249, 0.98)
     );
+  --document-glass-bg: rgba(244, 239, 230, 0.92);
+  --document-glass-backdrop: saturate(1.15) blur(16px);
+  --toolbar-control-hover-bg: rgba(255, 255, 255, 0.54);
+  --toolbar-control-active-bg: rgba(255, 255, 255, 0.86);
+  --toolbar-control-active-border: rgba(48, 75, 98, 0.16);
+  --toolbar-control-active-shadow:
+    0 10px 24px rgba(93, 71, 41, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --history-sheet-shadow:
+    0 24px 56px rgba(97, 72, 37, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --history-item-bg: rgba(255, 255, 255, 0.52);
+  --history-item-hover-bg: rgba(255, 255, 255, 0.74);
+  --history-item-active-bg: rgba(255, 252, 246, 0.92);
+  --history-item-active-border: rgba(185, 110, 43, 0.16);
+  --history-item-active-shadow:
+    0 10px 24px rgba(97, 72, 37, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   --frame-shadow:
     0 22px 70px rgba(81, 62, 36, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -966,29 +996,27 @@ p {
   padding: 9px 10px;
   border: 1px solid var(--shell-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--history-item-bg);
   color: inherit;
   text-align: left;
   opacity: 1;
   cursor: pointer;
   transition:
     border-color 120ms ease,
-    background 120ms ease;
-}
-
-#app[data-theme="light"] .history-item {
-  background: rgba(30, 37, 49, 0.02);
+    background 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .history-item:hover,
 .history-item:focus-visible {
   border-color: var(--shell-border);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--history-item-hover-bg);
 }
 
 .history-item--active {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--history-item-active-border);
+  background: var(--history-item-active-bg);
+  box-shadow: var(--history-item-active-shadow);
 }
 
 .empty-state {
@@ -1211,8 +1239,6 @@ p {
 
 .shell--document {
   --document-toolbar-height: 52px;
-  --document-glass-bg: rgba(12, 18, 27, 0.68);
-  --document-glass-backdrop: saturate(1.35) blur(18px);
   padding: 0;
 }
 
@@ -1255,10 +1281,6 @@ p {
   background: var(--document-glass-bg);
   backdrop-filter: var(--document-glass-backdrop);
   -webkit-backdrop-filter: var(--document-glass-backdrop);
-}
-
-#app[data-theme="light"] .shell--document {
-  --document-glass-bg: rgba(252, 250, 246, 0.72);
 }
 
 .document-toolbar__start,
@@ -1337,7 +1359,7 @@ p {
   border: 1px solid var(--shell-border);
   border-radius: 8px;
   background: transparent;
-  color: inherit;
+  color: var(--text-secondary);
   text-align: left;
   white-space: nowrap;
 }
@@ -1362,14 +1384,15 @@ p {
 .history-sheet__close:hover,
 .history-sheet__close:focus-visible {
   border-color: var(--shell-border);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--toolbar-control-hover-bg);
 }
 
 .workspace-tab--active,
 .history-toggle--active {
-  border-color: rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: none;
+  border-color: var(--toolbar-control-active-border);
+  background: var(--toolbar-control-active-bg);
+  box-shadow: var(--toolbar-control-active-shadow);
+  color: var(--text-primary);
   transform: none;
 }
 
@@ -1379,6 +1402,10 @@ p {
   font-size: 0.86rem;
   font-weight: 500;
   text-overflow: ellipsis;
+}
+
+.workspace-tab--active .workspace-tab__label {
+  font-weight: 600;
 }
 
 .workspace-tab__close {
@@ -1581,7 +1608,7 @@ p {
   border: 1px solid var(--shell-border);
   border-radius: 12px;
   background: var(--document-glass-bg);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+  box-shadow: var(--history-sheet-shadow);
   opacity: 0;
   overflow: hidden;
   pointer-events: none;

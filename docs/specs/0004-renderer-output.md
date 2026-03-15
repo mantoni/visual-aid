@@ -22,9 +22,12 @@ Related decisions:
 - Empty sessions show a branded splash screen rather than the payload viewer panels.
 - The current payload view reflects the selected session item.
 - The active shell uses a compact toolbar instead of in-content app branding or global status copy.
+- The sticky toolbar keeps the same document-surface tone as the surrounding shell in both light and dark themes.
 - History is available from a toggleable recents sheet and is shown in reverse chronological order with the selected item marked active.
 - The recents sheet stays anchored to the sticky toolbar instead of scrolling away with the document content.
 - The recents sheet uses the same translucent blurred glass treatment as the sticky toolbar.
+- The active workspace tab remains visibly emphasized relative to inactive tabs in both light and dark themes.
+- The recents sheet and selected history item remain visually elevated and distinct in both light and dark themes.
 - On narrow screens, the recents toggle remains on the toolbar's top row and stays aligned to the right.
 - HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
 - HTML payloads size their iframe to the available document viewport height so the iframe remains the scrolling surface and the outer document shell avoids a scrollbar.
@@ -118,7 +121,21 @@ When the recents sheet rules are inspected
 Then the sheet uses the shared document glass background
 And the sheet uses the same backdrop blur recipe as the sticky toolbar
 
+### VAR-LAYOUT-005 The toolbar chrome stays unified while the active workspace tab remains emphasized
+
+Given the renderer stylesheet for payload sessions
+When the light and dark theme toolbar rules are inspected
+Then the sticky toolbar uses theme-matched document surface colors instead of a separate band
+And the active workspace tab uses a stronger filled treatment than inactive tabs
+
+### VAR-LAYOUT-006 The recents sheet keeps elevated surfaces across themes
+
+Given the renderer stylesheet for payload sessions
+When the recents sheet and history item theme rules are inspected
+Then the recents sheet uses a dedicated elevated shadow in light and dark themes
+And the selected history item uses a stronger filled treatment than inactive history items
+
 ## Test Mapping
 
 - `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HTML-002`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`, `VAR-HISTORY-003`, `VAR-LAYOUT-002`
-- `tests/ui/styles.test.ts`: `VAR-LAYOUT-003`, `VAR-LAYOUT-004`
+- `tests/ui/styles.test.ts`: `VAR-LAYOUT-003`, `VAR-LAYOUT-004`, `VAR-LAYOUT-005`, `VAR-LAYOUT-006`
