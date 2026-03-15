@@ -320,13 +320,17 @@ fn read_workspace_state(registry_path: Option<String>) -> Result<VisualAidWorksp
             Ok(workspace_state)
         }
         Ok(None) | Err(_) => {
-            if let Some(legacy_workspace_state) = read_legacy_workspace_state(&legacy_session_path)? {
+            if let Some(persisted_workspace_state) = read_workspace_state_file(&persisted_path)? {
+                return Ok(persisted_workspace_state);
+            }
+
+            if let Some(legacy_workspace_state) =
+                read_legacy_workspace_state(&legacy_session_path)?
+            {
                 return Ok(legacy_workspace_state);
             }
 
-            read_workspace_state_file(&persisted_path)?
-                .ok_or_else(|| "missing persisted workspace state".to_string())
-                .or_else(|_| Ok(VisualAidWorkspaceState::default()))
+            Ok(VisualAidWorkspaceState::default())
         }
     }
 }
