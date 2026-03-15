@@ -7,11 +7,16 @@ Capture the currently intended product backlog in one place so future agent sess
 ## Now
 
 - Improve Markdown rendering beyond the current lightweight renderer. This is the first renderer-quality priority.
+- Add spacing below rendered Markdown headings and make Markdown links directly followable from the app.
+- Render Excalidraw payloads as actual drawings instead of falling back to raw JSON-only inspection.
 - Define and document a release process that builds installers and uploads them to GitHub Releases.
 - Strengthen agent-facing guidance so agents routinely use `visual-aid` when a richer surface helps the user inspect structured output.
 
 ## Next
 
+- Add a top-level switcher for JSON payloads so users can toggle between the rich interactive view and plain JSON.
+- Tighten the diff renderer layout so unified diffs read less spaciously.
+- Add dark-mode-aware styling to rendered Mermaid diagrams.
 - Add single-window multi-session browsing with tabs at the top of the app, keyed by working directory.
 - Support closing, renaming, and reordering workspace tabs without adding multi-window support.
 - Define a separate full-document HTML format for interactive web feature or site previews instead of broadening fragment-oriented `html`.
