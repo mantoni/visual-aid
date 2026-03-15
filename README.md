@@ -84,6 +84,7 @@ The baseline document set is:
 - [docs/decisions/0016-json-payload-renderer.md](docs/decisions/0016-json-payload-renderer.md): add JSON as a first-class payload format with parsed and fallback views
 - [docs/decisions/0017-github-release-distribution.md](docs/decisions/0017-github-release-distribution.md): define GitHub Actions and GitHub Releases as the first packaged distribution path
 - [docs/decisions/0018-source-checkout-cross-workspace-testing.md](docs/decisions/0018-source-checkout-cross-workspace-testing.md): separate source checkout location from target workspace identity during local testing
+- [docs/decisions/0019-process-cwd-workspace-resolution.md](docs/decisions/0019-process-cwd-workspace-resolution.md): keep workspace resolution tied to `process.cwd()` unless explicitly overridden
 
 ## Documentation Rules
 

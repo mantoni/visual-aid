@@ -20,9 +20,8 @@ Related decisions:
 - The source checkout and the target workspace may differ.
 - Workspace identity in the registry follows the target workspace, not the source checkout.
 - Cross-workspace source testing keeps the same shared registry model and single-window workspace tabs.
-- A generic MCP config may point at this checkout's server entrypoint while the caller cwd determines the active workspace.
-- When the MCP client exposes roots, the active workspace may be derived from the current client root instead of the server process cwd.
-- When a launcher starts the MCP server from `/`, the server may recover the caller workspace from `PWD` or `INIT_CWD`.
+- A generic MCP config may point at this checkout's server entrypoint while the server process cwd determines the active workspace.
+- Client roots and shell cwd environment variables do not change workspace identity unless an explicit workspace override is configured.
 
 ## Scenarios
 
@@ -48,22 +47,22 @@ When `visual-aid.show` records a payload
 Then that caller cwd becomes the active workspace
 And the session is written under that caller cwd
 
-### VXT-WORKSPACE-004 Root launcher cwd falls back to the caller shell workspace
+### VXT-WORKSPACE-004 Root launcher cwd ignores shell cwd fallbacks
 
 Given Codex starts this checkout's MCP server entrypoint from `/`
 And `PWD` or `INIT_CWD` points at another project
 And no explicit session or workspace override is configured
 When `visual-aid.show` records a payload
-Then that shell workspace becomes the active workspace
-And the session is written under that shell workspace
+Then `/` remains the active workspace
+And shell cwd environment variables do not change the selected workspace
 
-### VXT-WORKSPACE-005 Client roots can supply the active workspace
+### VXT-WORKSPACE-005 Client roots do not override the process cwd
 
 Given the MCP server runs from the `visual-aid` source checkout
 And the MCP client exposes another workspace as its active file root
 When `visual-aid.show` records a payload
-Then that client root becomes the active workspace
-And the session is written under that client root
+Then the server process cwd remains the active workspace
+And client roots do not change the selected workspace
 
 ## Test Mapping
 

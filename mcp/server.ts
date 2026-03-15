@@ -18,7 +18,7 @@ import {
   applyWorkspaceSession,
   readWorkspaceState,
   resolveRegistryPath,
-  resolveWorkspaceCwdForRequest,
+  resolveWorkspaceCwd,
   writeWorkspaceState,
 } from "./workspace.js";
 
@@ -30,7 +30,7 @@ const textResult = (text: string, isError = false) => ({
 });
 
 const getWorkspacePaths = async () => {
-  const workspaceCwd = await resolveWorkspaceCwdForRequest(server.server);
+  const workspaceCwd = resolveWorkspaceCwd();
 
   return {
     workspaceCwd,

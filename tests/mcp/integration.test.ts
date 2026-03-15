@@ -293,7 +293,7 @@ describe("MCP stdio integration spec", () => {
     await rm(callerWorkspace, { recursive: true, force: true });
   });
 
-  it("VXT-WORKSPACE-004 generic source-checkout config falls back to PWD when the launcher cwd is root", async () => {
+  it("VXT-WORKSPACE-004 generic source-checkout config ignores shell cwd fallbacks when the launcher cwd is root", async () => {
     const callerWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-caller-"));
     const resolvedCallerWorkspace = await realpath(callerWorkspace);
 
@@ -313,6 +313,7 @@ describe("MCP stdio integration spec", () => {
         PATH: process.env.PATH ?? "",
         HOME: process.env.HOME ?? "",
         PWD: resolvedCallerWorkspace,
+        VISUAL_AID_SESSION_PATH: sessionPath,
         VISUAL_AID_REGISTRY_PATH: registryPath,
         VISUAL_AID_OPEN_COMMAND: "true",
       },
@@ -329,25 +330,22 @@ describe("MCP stdio integration spec", () => {
       },
     });
 
-    const callerSessionPath = join(resolvedCallerWorkspace, ".visual-aid", "session.json");
-    const session = JSON.parse(
-      await readFile(callerSessionPath, "utf8"),
-    ) as VisualAidSession;
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
     ) as VisualAidWorkspaceState;
 
-    expect(session.lastAction).toBe("show");
-    expect(workspaceState.activeWorkspaceId).toBe(resolvedCallerWorkspace);
-    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedCallerWorkspace);
-    expect(workspaceState.workspaces[0]?.sessionPath).toBe(callerSessionPath);
+    expect(workspaceState.activeWorkspaceId).toBe("/");
+    expect(workspaceState.workspaces[0]?.cwd).toBe("/");
+    expect(workspaceState.workspaces[0]?.sessionPath).toBe(sessionPath);
 
     await rm(callerWorkspace, { recursive: true, force: true });
   });
 
-  it("VXT-WORKSPACE-005 generic source-checkout config can use client roots as the active workspace", async () => {
+  it("VXT-WORKSPACE-005 generic source-checkout config ignores client roots when the process cwd is available", async () => {
     const callerWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-caller-"));
     const resolvedCallerWorkspace = await realpath(callerWorkspace);
+    const launcherWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-launcher-"));
+    const resolvedLauncherWorkspace = await realpath(launcherWorkspace);
 
     if (transport) {
       await transport.close();
@@ -366,10 +364,11 @@ describe("MCP stdio integration spec", () => {
         join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"),
         join(process.cwd(), "mcp", "server.ts"),
       ],
-      cwd: "/Users/max/projects/mantoni/visual-aid",
+      cwd: launcherWorkspace,
       env: {
         PATH: process.env.PATH ?? "",
         HOME: process.env.HOME ?? "",
+        VISUAL_AID_SESSION_PATH: sessionPath,
         VISUAL_AID_REGISTRY_PATH: registryPath,
         VISUAL_AID_OPEN_COMMAND: "true",
       },
@@ -386,19 +385,15 @@ describe("MCP stdio integration spec", () => {
       },
     });
 
-    const callerSessionPath = join(resolvedCallerWorkspace, ".visual-aid", "session.json");
-    const session = JSON.parse(
-      await readFile(callerSessionPath, "utf8"),
-    ) as VisualAidSession;
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
     ) as VisualAidWorkspaceState;
 
-    expect(session.lastAction).toBe("show");
-    expect(workspaceState.activeWorkspaceId).toBe(resolvedCallerWorkspace);
-    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedCallerWorkspace);
-    expect(workspaceState.workspaces[0]?.sessionPath).toBe(callerSessionPath);
+    expect(workspaceState.activeWorkspaceId).toBe(resolvedLauncherWorkspace);
+    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedLauncherWorkspace);
+    expect(workspaceState.workspaces[0]?.sessionPath).toBe(sessionPath);
 
     await rm(callerWorkspace, { recursive: true, force: true });
+    await rm(launcherWorkspace, { recursive: true, force: true });
   });
 });

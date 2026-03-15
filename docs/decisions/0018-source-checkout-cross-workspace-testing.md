@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted
+Superseded by [0019-process-cwd-workspace-resolution.md](0019-process-cwd-workspace-resolution.md)
+
+This record is preserved for historical context only. The current workspace resolution behavior is defined by [0019-process-cwd-workspace-resolution.md](0019-process-cwd-workspace-resolution.md).
 
 ## Context
 
