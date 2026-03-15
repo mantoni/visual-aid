@@ -4,6 +4,7 @@ import {
   applyWorkspaceSession,
   emptyWorkspaceRegistryState,
   resolveRegistryPath,
+  resolveWorkspace,
   resolveWorkspaceCwd,
 } from "../../mcp/workspace.js";
 
@@ -51,19 +52,32 @@ describe("MCP workspace registry", () => {
   });
 
   it("VXT-WORKSPACE-001 workspace cwd honors the explicit environment override", () => {
-    expect(
+    return expect(
       resolveWorkspaceCwd("/tmp/visual-aid", {
         VISUAL_AID_WORKSPACE_CWD: "/tmp/project-one",
       }),
-    ).toBe("/tmp/project-one");
+    ).resolves.toBe("/tmp/project-one");
   });
 
   it("VXT-WORKSPACE-004 workspace cwd ignores shell cwd fallbacks when the launcher cwd is root", () => {
-    expect(
+    return expect(
       resolveWorkspaceCwd("/", {
         PWD: "/tmp/project-one",
         INIT_CWD: "/tmp/project-two",
       }),
-    ).toBe("/");
+    ).resolves.toBe("/");
+  });
+
+  it("VXT-WORKSPACE-003 workspace cwd falls back to the launcher cwd by default", () => {
+    return expect(resolveWorkspaceCwd("/tmp/visual-aid", {})).resolves.toBe(
+      "/tmp/visual-aid",
+    );
+  });
+
+  it("VXT-WORKSPACE-003 workspace diagnostics report process cwd as the resolution source", () => {
+    return expect(resolveWorkspace("/tmp/visual-aid", {})).resolves.toEqual({
+      cwd: "/tmp/visual-aid",
+      source: "process-cwd",
+    });
   });
 });

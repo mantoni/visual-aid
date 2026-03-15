@@ -22,9 +22,9 @@ The default local workflow uses `.visual-aid/dev-session.json` as that shared se
 
 The printed Codex config block is generic. It points at this checkout's server code, but it leaves the caller workspace free so the active project gets its own `.visual-aid/session.json` automatically.
 
-The MCP server resolves workspace identity from its process cwd unless `VISUAL_AID_WORKSPACE_CWD` is set explicitly.
+The MCP server resolves workspace identity from a tool `cwd` argument first, then from `VISUAL_AID_WORKSPACE_CWD`, and finally from its process cwd.
 
-If the launcher starts the server from the wrong directory, fix the launcher cwd or set `VISUAL_AID_WORKSPACE_CWD` for that run.
+If the launcher starts the server from the wrong directory, pass `cwd` in the tool call or set `VISUAL_AID_WORKSPACE_CWD` for that run.
 
 If you are using a packaged app instead of a source checkout, point `VISUAL_AID_APP_PATH` at the installed app bundle or executable when you want `visual-aid.open` to launch that packaged build explicitly.
 
@@ -34,10 +34,13 @@ Auto-detected debug binaries are only launched when the Tauri dev server is reac
 
 `visual-aid` exposes four tools:
 
-- `visual-aid.status`: show MCP and session diagnostics
+- `visual-aid.status`: show MCP, session, and workspace-resolution diagnostics
 - `visual-aid.open`: launch or focus the app
 - `visual-aid.show`: render a structured payload
 - `visual-aid.clear`: clear the active session
+
+All four tools may also accept an optional `cwd` argument when the caller wants
+to force a specific workspace for that tool call.
 
 ## Common Payload Types
 

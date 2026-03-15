@@ -22,4 +22,15 @@ export const visualAidPayloadSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
+export const visualAidWorkspaceOverrideSchema = z.object({
+  cwd: z.string().min(1).optional(),
+});
+
+export const visualAidShowArgumentsSchema = visualAidPayloadSchema.extend({
+  cwd: z.string().min(1).optional(),
+});
+
 export type VisualAidPayload = z.infer<typeof visualAidPayloadSchema>;
+export type VisualAidShowArguments = z.infer<
+  typeof visualAidShowArgumentsSchema
+>;

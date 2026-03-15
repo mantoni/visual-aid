@@ -13,16 +13,26 @@ export type VisualAidWorkspaceRegistryState = {
   workspaces: VisualAidWorkspaceRegistryEntry[];
 };
 
-export const emptyWorkspaceRegistryState = (): VisualAidWorkspaceRegistryState => ({
-  activeWorkspaceId: null,
-  workspaces: [],
-});
+export type VisualAidWorkspaceResolutionSource =
+  | "explicit-override"
+  | "process-cwd";
+
+export type VisualAidWorkspaceResolution = {
+  cwd: string;
+  source: VisualAidWorkspaceResolutionSource;
+};
+
+export const emptyWorkspaceRegistryState =
+  (): VisualAidWorkspaceRegistryState => ({
+    activeWorkspaceId: null,
+    workspaces: [],
+  });
 
 export const workspaceIdForCwd = (cwd: string) => cwd;
 
 export const workspaceLabelForCwd = (cwd: string) => basename(cwd) || cwd;
 
-export const resolveWorkspaceCwd = (
+const resolveExplicitWorkspaceCwd = (
   cwd = process.cwd(),
   env: NodeJS.ProcessEnv = process.env,
 ) => {
@@ -30,7 +40,31 @@ export const resolveWorkspaceCwd = (
     return env.VISUAL_AID_WORKSPACE_CWD;
   }
 
-  return cwd;
+  return null;
+};
+
+export const resolveWorkspaceCwd = async (
+  cwd = process.cwd(),
+  env: NodeJS.ProcessEnv = process.env,
+) => (await resolveWorkspace(cwd, env)).cwd;
+
+export const resolveWorkspace = async (
+  cwd = process.cwd(),
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<VisualAidWorkspaceResolution> => {
+  const explicitWorkspaceCwd = resolveExplicitWorkspaceCwd(cwd, env);
+
+  if (explicitWorkspaceCwd) {
+    return {
+      cwd: explicitWorkspaceCwd,
+      source: "explicit-override",
+    };
+  }
+
+  return {
+    cwd,
+    source: "process-cwd",
+  };
 };
 
 export const resolveRegistryPath = (

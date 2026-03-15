@@ -18,8 +18,10 @@ Related decisions:
 
 - `visual-aid.status` returns a human-readable diagnostic summary.
 - `visual-aid.status` does not mutate the session file.
+- `visual-aid.status` reports the resolved workspace path and its resolution source.
+- `visual-aid.status` may accept an explicit `cwd` argument to inspect another workspace.
 - `visual-aid://status` is listed as a readable resource.
-- Reading `visual-aid://status` returns JSON text with server and session information.
+- Reading `visual-aid://status` returns JSON text with server, session, and workspace information.
 
 ## Scenarios
 
@@ -28,13 +30,14 @@ Related decisions:
 Given a connected MCP client
 When the client calls `visual-aid.status`
 Then the response text includes the server name and session path
+And the response text includes the resolved workspace path and workspace resolution source
 
 ### VDI-RESOURCE-001 Status resource is listed and readable
 
 Given a connected MCP client
 When the client lists and reads resources
 Then `visual-aid://status` is present
-And the resource contents include session diagnostics as JSON text
+And the resource contents include session and workspace diagnostics as JSON text
 
 ## Test Mapping
 

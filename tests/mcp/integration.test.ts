@@ -4,7 +4,6 @@ import { tmpdir } from "node:os";
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { ListRootsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { VisualAidSession } from "../../mcp/session.js";
@@ -39,7 +38,10 @@ const createTransport = (
 ) =>
   new StdioClientTransport({
     command: process.execPath,
-    args: [join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"), "mcp/server.ts"],
+    args: [
+      join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"),
+      "mcp/server.ts",
+    ],
     cwd,
     env: {
       PATH: process.env.PATH ?? "",
@@ -208,7 +210,9 @@ describe("MCP stdio integration spec", () => {
     });
 
     expect(result.isError).toBe(true);
-    expect(firstTextContent(result.content)).toContain("Input validation error");
+    expect(firstTextContent(result.content)).toContain(
+      "Input validation error",
+    );
   });
 
   it("VXT-WORKSPACE-002 workspace overrides attribute registry updates to the target project", async () => {
@@ -252,11 +256,12 @@ describe("MCP stdio integration spec", () => {
       },
     });
 
-    const registry = JSON.parse(
-      await readFile(registryPath, "utf8"),
-    ) as Record<string, unknown>;
+    const registry = JSON.parse(await readFile(registryPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
     const firstWorkspace = Array.isArray(registry.workspaces)
-      ? registry.workspaces[0] as Record<string, unknown> | undefined
+      ? (registry.workspaces[0] as Record<string, unknown> | undefined)
       : undefined;
 
     expect(firstWorkspace?.sessionPath).toBe(sessionPath);
@@ -298,7 +303,11 @@ describe("MCP stdio integration spec", () => {
       },
     });
 
-    const callerSessionPath = join(resolvedCallerWorkspace, ".visual-aid", "session.json");
+    const callerSessionPath = join(
+      resolvedCallerWorkspace,
+      ".visual-aid",
+      "session.json",
+    );
     const session = JSON.parse(
       await readFile(callerSessionPath, "utf8"),
     ) as VisualAidSession;
@@ -362,34 +371,25 @@ describe("MCP stdio integration spec", () => {
     await rm(callerWorkspace, { recursive: true, force: true });
   });
 
-  it("VXT-WORKSPACE-005 generic source-checkout config ignores client roots when the process cwd is available", async () => {
+  it("VXT-WORKSPACE-007 tool arguments can override the workspace cwd", async () => {
     const callerWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-caller-"));
     const resolvedCallerWorkspace = await realpath(callerWorkspace);
-    const launcherWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-launcher-"));
-    const resolvedLauncherWorkspace = await realpath(launcherWorkspace);
 
     if (transport) {
       await transport.close();
     }
 
-    client = new Client(
-      { name: "visual-aid-test-client", version: "0.1.0" },
-      { capabilities: { roots: { listChanged: false } } },
-    );
-    client.setRequestHandler(ListRootsRequestSchema, async () => ({
-      roots: [{ uri: `file://${resolvedCallerWorkspace}` }],
-    }));
+    client = createClient();
     transport = new StdioClientTransport({
       command: process.execPath,
       args: [
         join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"),
         join(process.cwd(), "mcp", "server.ts"),
       ],
-      cwd: launcherWorkspace,
+      cwd: "/",
       env: {
         PATH: process.env.PATH ?? "",
         HOME: process.env.HOME ?? "",
-        VISUAL_AID_SESSION_PATH: sessionPath,
         VISUAL_AID_REGISTRY_PATH: registryPath,
         VISUAL_AID_OPEN_COMMAND: "true",
       },
@@ -400,21 +400,30 @@ describe("MCP stdio integration spec", () => {
     await client.callTool({
       name: "visual-aid.show",
       arguments: {
+        cwd: resolvedCallerWorkspace,
         version: 1,
         format: "markdown",
-        content: "# Root Workspace",
+        content: "# Argument Workspace",
       },
     });
 
+    const callerSessionPath = join(
+      resolvedCallerWorkspace,
+      ".visual-aid",
+      "session.json",
+    );
+    const session = JSON.parse(
+      await readFile(callerSessionPath, "utf8"),
+    ) as VisualAidSession;
     const workspaceState = JSON.parse(
       await readFile(registryPath, "utf8"),
     ) as VisualAidWorkspaceRegistryState;
 
-    expect(workspaceState.activeWorkspaceId).toBe(resolvedLauncherWorkspace);
-    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedLauncherWorkspace);
-    expect(workspaceState.workspaces[0]?.sessionPath).toBe(sessionPath);
+    expect(session.lastAction).toBe("show");
+    expect(workspaceState.activeWorkspaceId).toBe(resolvedCallerWorkspace);
+    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedCallerWorkspace);
+    expect(workspaceState.workspaces[0]?.sessionPath).toBe(callerSessionPath);
 
     await rm(callerWorkspace, { recursive: true, force: true });
-    await rm(launcherWorkspace, { recursive: true, force: true });
   });
 });

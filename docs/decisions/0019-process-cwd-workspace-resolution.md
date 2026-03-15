@@ -2,11 +2,15 @@
 
 ## Status
 
-Accepted
+Superseded by [0022-tool-cwd-workspace-resolution.md](0022-tool-cwd-workspace-resolution.md)
 
 ## Context
 
 [0018-source-checkout-cross-workspace-testing.md](0018-source-checkout-cross-workspace-testing.md) expanded workspace resolution beyond the server process cwd.
+
+This record is preserved for historical context only. The current workspace
+resolution behavior is defined by
+[0022-tool-cwd-workspace-resolution.md](0022-tool-cwd-workspace-resolution.md).
 
 That added support for:
 

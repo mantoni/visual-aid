@@ -14,9 +14,9 @@ The default local dogfood path is:
 
 The printed MCP config is now generic. It points at this checkout's server entrypoint by absolute path, but it does not pin `cwd` or `VISUAL_AID_SESSION_PATH`. That means Codex can reuse the same config across projects, and each caller project gets its own `.visual-aid/session.json` automatically.
 
-The generic config now relies on the launcher to start the MCP server with the correct process cwd for the active project.
+The generic config now relies on either an explicit tool `cwd` argument or the server process cwd.
 
-If a launcher needs to target a different workspace than its process cwd, set `VISUAL_AID_WORKSPACE_CWD` explicitly for that run.
+If a launcher needs to target a different workspace than its process cwd, pass `cwd` in the tool call or set `VISUAL_AID_WORKSPACE_CWD` explicitly for that run.
 
 Debug-binary auto-launch is only valid while the Tauri dev server is live. If you are not running `npm start` or `npm run tauri:dev`, `visual-aid` will fall back to packaged artifacts instead of launching the debug binary by itself.
 
@@ -47,7 +47,7 @@ env VISUAL_AID_SESSION_PATH=(pwd)/.visual-aid/dev-session.json npx tsx mcp/serve
 
 ## Quick Test Sequence
 
-1. Call `visual-aid.status` from any project and confirm the reported `sessionPath` ends with that project's `.visual-aid/session.json`.
+1. Call `visual-aid.status` from any project and confirm the reported `sessionPath` ends with that project's `.visual-aid/session.json` and `workspaceSource` matches the expected resolution path.
 2. Call `visual-aid.open` and confirm the app window opens or focuses.
 3. Call `visual-aid.show` with a small markdown payload and confirm it renders in the app.
 4. Call `visual-aid.clear` and confirm the rendered content disappears.

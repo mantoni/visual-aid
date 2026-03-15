@@ -15,7 +15,10 @@ const createTransport = (
 ) =>
   new StdioClientTransport({
     command: process.execPath,
-    args: [join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"), "mcp/server.ts"],
+    args: [
+      join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"),
+      "mcp/server.ts",
+    ],
     cwd,
     env: {
       PATH: process.env.PATH ?? "",
@@ -89,7 +92,18 @@ describe("MCP diagnostics spec", () => {
     expect(firstTextContent(result.content)).toContain(
       `server=${visualAidServerInfo.name}@${visualAidServerInfo.version}`,
     );
-    expect(firstTextContent(result.content)).toContain(`sessionPath=${sessionPath}`);
+    expect(firstTextContent(result.content)).toContain(
+      `sessionPath=${sessionPath}`,
+    );
+    expect(firstTextContent(result.content)).toContain(
+      `workspaceCwd=${process.cwd()}`,
+    );
+    expect(firstTextContent(result.content)).toContain(
+      "workspaceSource=process-cwd",
+    );
+    expect(firstTextContent(result.content)).toContain(
+      `processCwd=${process.cwd()}`,
+    );
 
     const after = await readFile(sessionPath, "utf8").catch(() => null);
     expect(after).toBe(before);
@@ -111,8 +125,33 @@ describe("MCP diagnostics spec", () => {
     expect(first?.mimeType).toBe("application/json");
     if (first && "text" in first) {
       expect(first.text).toContain(`"name": "${visualAidServerInfo.name}"`);
-      expect(first.text).toContain(`"path": "${sessionPath.replaceAll("\\", "\\\\")}"`);
+      expect(first.text).toContain(
+        `"path": "${sessionPath.replaceAll("\\", "\\\\")}"`,
+      );
       expect(first.text).toContain(`"count": 0`);
+      expect(first.text).toContain(
+        `"cwd": "${process.cwd().replaceAll("\\", "\\\\")}"`,
+      );
+      expect(first.text).toContain(`"source": "process-cwd"`);
+      expect(first.text).toContain(
+        `"processCwd": "${process.cwd().replaceAll("\\", "\\\\")}"`,
+      );
     }
+  });
+
+  it("VDI-TOOL-001 status tool honors an explicit cwd argument", async () => {
+    const overrideCwd = join(root, "override-project");
+
+    const result = await client!.callTool({
+      name: "visual-aid.status",
+      arguments: { cwd: overrideCwd },
+    });
+
+    expect(firstTextContent(result.content)).toContain(
+      `workspaceCwd=${overrideCwd}`,
+    );
+    expect(firstTextContent(result.content)).toContain(
+      "workspaceSource=explicit-override",
+    );
   });
 });

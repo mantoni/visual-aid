@@ -7,7 +7,7 @@ Define how a `visual-aid` source checkout can serve MCP traffic for another work
 Related decisions:
 
 - [0014-single-window-workspace-tabs.md](../decisions/0014-single-window-workspace-tabs.md)
-- [0018-source-checkout-cross-workspace-testing.md](../decisions/0018-source-checkout-cross-workspace-testing.md)
+- [0022-tool-cwd-workspace-resolution.md](../decisions/0022-tool-cwd-workspace-resolution.md)
 
 ## Preconditions
 
@@ -21,8 +21,9 @@ Related decisions:
 - Workspace identity in the registry follows the target workspace, not the source checkout.
 - The registry stores workspace references and session paths without embedding the live session payloads.
 - Cross-workspace source testing keeps the same shared registry model and single-window workspace tabs.
-- A generic MCP config may point at this checkout's server entrypoint while the server process cwd determines the active workspace.
-- Client roots and shell cwd environment variables do not change workspace identity unless an explicit workspace override is configured.
+- MCP tool calls may override workspace identity explicitly with a `cwd` argument when the caller knows the target workspace.
+- Without an explicit override, workspace identity follows `process.cwd()`.
+- Shell cwd environment variables do not change workspace identity unless an explicit workspace override is configured.
 
 ## Scenarios
 
@@ -57,14 +58,6 @@ When `visual-aid.show` records a payload
 Then `/` remains the active workspace
 And shell cwd environment variables do not change the selected workspace
 
-### VXT-WORKSPACE-005 Client roots do not override the process cwd
-
-Given the MCP server runs from the `visual-aid` source checkout
-And the MCP client exposes another workspace as its active file root
-When `visual-aid.show` records a payload
-Then the server process cwd remains the active workspace
-And client roots do not change the selected workspace
-
 ### VXT-WORKSPACE-006 Registry entries do not duplicate session content
 
 Given the MCP server records a payload for a workspace
@@ -72,8 +65,16 @@ When the shared registry file is written
 Then the registry entry stores the workspace identity and session path
 And the registry entry does not embed the live session payloads
 
+### VXT-WORKSPACE-007 Tool arguments can override workspace cwd
+
+Given the MCP server process runs from `/`
+And no explicit environment override is configured
+When `visual-aid.show` receives a `cwd` argument for another workspace
+Then that argument becomes the active workspace
+And the session is written under that workspace
+
 ## Test Mapping
 
 - `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-001`, `VXT-WORKSPACE-004`
-- `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-006`
-- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`, `VXT-WORKSPACE-004`, `VXT-WORKSPACE-005`, `VXT-WORKSPACE-006`
+- `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-003`, `VXT-WORKSPACE-006`
+- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`, `VXT-WORKSPACE-004`, `VXT-WORKSPACE-006`, `VXT-WORKSPACE-007`

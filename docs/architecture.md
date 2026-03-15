@@ -61,7 +61,7 @@ The first live bridge between the MCP server and the desktop app is file-based:
 
 - the MCP server writes the current session state to a JSON file
 - the MCP server writes the active workspace id plus per-workspace session paths to a shared registry file
-- the MCP server may target a workspace identity that differs from its source checkout through an explicit workspace override
+- the MCP server resolves workspace identity from a tool `cwd` argument first, then from an explicit environment override, then from `process.cwd()`
 - the Tauri host exposes a command that assembles renderer-facing workspace state from the registry plus referenced session files
 - the Tauri host keeps a last known good non-empty workspace-state snapshot derived from the registry path for local recovery
 - the Tauri host watches the shared registry path and emits renderer updates when the assembled workspace state changes
