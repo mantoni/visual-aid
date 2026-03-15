@@ -23,6 +23,8 @@ let rendererPromise: Promise<MermaidRenderer> | null = null;
 let initialized = false;
 let initializedAppearance: MermaidAppearance | null = null;
 let renderSequence = 0;
+const mermaidFontSizePx = 17;
+const mermaidFontSize = `${mermaidFontSizePx}px`;
 
 const darkThemeVariables = {
   background: "#09111a",
@@ -52,6 +54,7 @@ const darkThemeVariables = {
   actorBkg: "#f0e7db",
   actorTextColor: "#09111a",
   actorBorder: "#f0e7db",
+  fontSize: mermaidFontSize,
 } as const;
 
 const darkEdgeLabelColor = "#f5f1e8";
@@ -102,6 +105,7 @@ const resolveMermaidConfig = (
       startOnLoad: false,
       securityLevel: "strict",
       darkMode: true,
+      fontSize: mermaidFontSizePx,
       theme: "base",
       themeVariables: darkThemeVariables,
     };
@@ -110,7 +114,11 @@ const resolveMermaidConfig = (
   return {
     startOnLoad: false,
     securityLevel: "strict",
+    fontSize: mermaidFontSizePx,
     theme: "neutral",
+    themeVariables: {
+      fontSize: mermaidFontSize,
+    },
   };
 };
 
@@ -163,6 +171,7 @@ const applySvgLayout = (diagram: HTMLElement) => {
   }
 
   const svgBounds = typeof svg.getBBox === "function" ? svg.getBBox() : null;
+  let svgWidth: number | null = null;
   if (
     svgBounds &&
     Number.isFinite(svgBounds.x) &&
@@ -171,6 +180,7 @@ const applySvgLayout = (diagram: HTMLElement) => {
     svgBounds.height > 0
   ) {
     const padding = 4;
+    svgWidth = svgBounds.width + padding * 2;
     svg.setAttribute(
       "viewBox",
       [
@@ -182,10 +192,29 @@ const applySvgLayout = (diagram: HTMLElement) => {
     );
   }
 
-  svg.setAttribute("width", "100%");
+  if (svgWidth === null) {
+    const viewBox = svg.getAttribute("viewBox");
+    if (viewBox) {
+      const [, , width] = viewBox.split(/[\s,]+/).map(Number);
+      if (Number.isFinite(width) && width > 0) {
+        svgWidth = width;
+      }
+    }
+  }
+
+  if (svgWidth !== null) {
+    const roundedWidth = Math.ceil(svgWidth);
+    svg.setAttribute("width", String(roundedWidth));
+    svg.style.width = "100%";
+    svg.style.minWidth = `${roundedWidth}px`;
+  } else {
+    svg.setAttribute("width", "100%");
+    svg.style.width = "100%";
+    svg.style.removeProperty("min-width");
+  }
+
   svg.removeAttribute("height");
   svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
-  svg.style.width = "100%";
   svg.style.maxWidth = "none";
   svg.style.height = "auto";
 };

@@ -78,7 +78,11 @@ describe("Mermaid renderer spec", () => {
     expect(initialize).toHaveBeenCalledWith({
       startOnLoad: false,
       securityLevel: "strict",
+      fontSize: 17,
       theme: "neutral",
+      themeVariables: {
+        fontSize: "17px",
+      },
     });
     expect(render).toHaveBeenCalledWith(
       "visual-aid-mermaid-0",
@@ -195,9 +199,11 @@ describe("Mermaid renderer spec", () => {
         startOnLoad: false,
         securityLevel: "strict",
         darkMode: true,
+        fontSize: 17,
         theme: "base",
         themeVariables: expect.objectContaining({
           background: "#09111a",
+          fontSize: "17px",
           mainBkg: "#f0e7db",
           lineColor: "#f0e7db",
           edgeLabelBackground: "#09111a",
@@ -210,7 +216,7 @@ describe("Mermaid renderer spec", () => {
     );
   });
 
-  it("VFR-MERMAID-005 dark mermaid payloads keep edge labels readable and stretch the svg", async () => {
+  it("VFR-MERMAID-005 dark mermaid payloads keep edge labels readable without shrinking wide diagrams", async () => {
     const render = vi.fn().mockResolvedValue({
       svg: [
         '<svg viewBox="0 0 400 120" style="max-width: 400px;">',
@@ -268,11 +274,12 @@ describe("Mermaid renderer spec", () => {
       ".payload-mermaid__diagram .labelBkg",
     );
 
-    expect(svg?.getAttribute("width")).toBe("100%");
+    expect(svg?.getAttribute("width")).toBe("128");
     expect(svg?.getAttribute("height")).toBeNull();
     expect(svg?.getAttribute("preserveAspectRatio")).toBe("xMinYMin meet");
     expect(svg?.getAttribute("viewBox")).toBe("6 6 128 48");
     expect(svg?.style.width).toBe("100%");
+    expect(svg?.style.minWidth).toBe("128px");
     expect(svg?.style.maxWidth).toBe("none");
     expect(edgeLabel?.style.color).toBe("rgb(245, 241, 232)");
     expect(edgeLabel?.style.fill).toBe("rgb(245, 241, 232)");
@@ -297,7 +304,11 @@ describe("Mermaid renderer spec", () => {
     expect(initialize).toHaveBeenCalledWith({
       startOnLoad: false,
       securityLevel: "strict",
+      fontSize: 17,
       theme: "neutral",
+      themeVariables: {
+        fontSize: "17px",
+      },
     });
     expect(render).toHaveBeenCalledWith(
       "visual-aid-mermaid-0",

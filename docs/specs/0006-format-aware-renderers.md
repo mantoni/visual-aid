@@ -127,12 +127,14 @@ Given a mermaid payload rendered while the app shell is in dark mode
 When the renderer hydrates the diagram
 Then the Mermaid renderer uses the dark-shell palette for that diagram
 
-### VFR-MERMAID-005 Mermaid payloads keep labels readable and fit the viewer width
+### VFR-MERMAID-005 Mermaid payloads keep labels readable without shrinking wide diagrams
 
 Given a mermaid payload rendered in the viewer
 When the renderer hydrates the diagram
 Then edge labels remain readable against the active diagram surface
-And the SVG is cropped to the graph bounds and stretched to the viewer width without centering the diagram in extra horizontal space
+And the SVG is cropped to the graph bounds
+And diagrams fill the viewer width when they fit
+And wide diagrams keep a larger natural width instead of shrinking labels to fit the panel
 
 ## Test Mapping
 
