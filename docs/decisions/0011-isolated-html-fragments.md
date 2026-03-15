@@ -20,6 +20,7 @@ Specifically:
 
 - the renderer treats `content` as fragment markup rather than a full standalone page contract
 - the app renders the fragment inside a sandboxed iframe document
+- the iframe is sized to the available document viewport height so the iframe remains the primary scroll surface for HTML payloads
 - the iframe document includes app-owned base styles for common content elements
 - scripts are not executed inside the HTML surface
 
@@ -31,6 +32,7 @@ Positive consequences:
 
 - HTML artifacts can use rich markup without affecting the host shell
 - the app can provide a readable default presentation for common HTML fragments
+- the app can dedicate the full document viewport to HTML previews without making the outer shell scroll
 - the renderer contract becomes more predictable for testing and persistence
 
 Costs and constraints:

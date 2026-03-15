@@ -26,7 +26,7 @@ Related decisions:
 - Diff lines are visually classified by their line prefix and role.
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
 - Mermaid payloads follow the active shell theme when the diagram is rendered.
-- HTML payloads still render as direct markup.
+- HTML payloads render as isolated fragment markup inside a sandboxed iframe surface.
 
 ## Scenarios
 

@@ -27,6 +27,7 @@ Related decisions:
 - The recents sheet uses the same translucent blurred glass treatment as the sticky toolbar.
 - On narrow screens, the recents toggle remains on the toolbar's top row and stays aligned to the right.
 - HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
+- HTML payloads size their iframe to the available document viewport height so the iframe remains the scrolling surface and the outer document shell avoids a scrollbar.
 
 ## Scenarios
 
@@ -58,6 +59,14 @@ Given a renderer state with an HTML payload
 When the renderer output is generated
 Then the payload appears inside a sandboxed HTML iframe
 And the payload markup is stored in the iframe document source rather than injected into the host DOM
+
+### VAR-HTML-002 HTML payloads fill the available document viewport
+
+Given a renderer state with an HTML payload
+When the HTML iframe finishes loading or the document viewport height changes
+Then the iframe height matches the available document viewport height
+And the iframe remains the scrolling surface for the payload
+And the outer document shell avoids a scrollbar for the HTML payload
 
 ### VAR-HISTORY-001 History is reverse chronological with the newest item active
 
@@ -111,5 +120,5 @@ And the sheet uses the same backdrop blur recipe as the sticky toolbar
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`, `VAR-HISTORY-003`, `VAR-LAYOUT-002`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HTML-002`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`, `VAR-HISTORY-003`, `VAR-LAYOUT-002`
 - `tests/ui/styles.test.ts`: `VAR-LAYOUT-003`, `VAR-LAYOUT-004`

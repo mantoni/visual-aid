@@ -459,6 +459,7 @@ p {
   display: block;
   width: 100%;
   min-height: 420px;
+  height: 420px;
   border: 0;
   border-radius: 14px;
   background: var(--code-block-bg);
@@ -1212,6 +1213,19 @@ p {
   overflow: visible;
 }
 
+.shell--document.shell--document-html {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.shell--document.shell--document-html .app-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .document-toolbar {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1464,6 +1478,19 @@ p {
   padding: 0;
 }
 
+.shell--document.shell--document-html .document-stage {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+
+.shell--document.shell--document-html .viewer-surface {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .viewer-surface > .payload-pre,
 .viewer-surface > .payload-html,
 .viewer-surface > .payload-markdown,
@@ -1491,18 +1518,20 @@ p {
   border-radius: 10px;
 }
 
-.viewer-surface > .payload-html {
-  overflow: visible;
+.viewer-surface--html > .payload-html {
+  height: 100%;
+  overflow: hidden;
 }
 
-.viewer-surface > .payload-html .payload-html__frame {
-  min-height: calc(100vh - var(--document-toolbar-height));
+.viewer-surface--html > .payload-html .payload-html__frame {
+  height: 100%;
+  min-height: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
 }
 
-.viewer-surface > .payload-html.payload-html--loading {
+.viewer-surface--html > .payload-html.payload-html--loading {
   background: var(--bg-canvas);
 }
 

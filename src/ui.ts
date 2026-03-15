@@ -18,7 +18,7 @@ import {
   visibleWorkspaceState,
   type VisualAidState,
 } from "./view-model";
-import { renderInto } from "./render";
+import { cleanupRenderEffects, renderInto } from "./render";
 
 type BootstrapOptions = {
   bootstrapPayload?: VisualAidPayload;
@@ -376,6 +376,7 @@ export const bootstrapApp = async (
   return () => {
     stopBridge();
     stopThemeSync();
+    cleanupRenderEffects(target);
     window.removeEventListener("visual-aid:show", onShowEvent);
     window.removeEventListener("visual-aid:clear", onClearEvent);
     target.removeEventListener("click", onHistoryClick);

@@ -1,15 +1,19 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { emptySession } from "../../src/bridge";
-import { renderAppHtml } from "../../src/render";
+import { renderAppHtml, renderInto } from "../../src/render";
 import { createInitialState } from "../../src/view-model";
 
 const renderDocument = (html: string) => {
   document.body.innerHTML = `<div id="app">${html}</div>`;
   return document.body;
 };
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("Renderer output spec", () => {
   it("VAR-EMPTY-001 empty sessions show the branded splash state", () => {
@@ -70,13 +74,80 @@ describe("Renderer output spec", () => {
     const frame = body.querySelector<HTMLIFrameElement>(".payload-html__frame");
 
     expect(frame).not.toBeNull();
-    expect(frame?.getAttribute("sandbox")).toBe("");
+    expect(frame?.getAttribute("sandbox")).toBe("allow-same-origin");
     expect(frame?.getAttribute("srcdoc")).toContain(
       "<article><strong>Rendered</strong> HTML</article>",
     );
     expect(frame?.getAttribute("srcdoc")).toContain(".payload-html-fragment");
     expect(body.querySelector(".payload-html article")).toBeNull();
     expect(body.querySelector(".payload-pre")).toBeNull();
+  });
+
+  it("VAR-HTML-002 HTML payloads size the iframe to the available viewport", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const originalGetComputedStyle = window.getComputedStyle.bind(window);
+
+    renderInto(
+      root,
+      createInitialState(false, {
+        version: 1,
+        format: "html",
+        title: "Viewport HTML Example",
+        content: "<section style='height: 600px;'>Viewport</section>",
+      }),
+    );
+
+    const container = root.querySelector<HTMLElement>(".payload-html");
+    const frame = root.querySelector<HTMLIFrameElement>(".payload-html__frame");
+    const toolbar = root.querySelector<HTMLElement>(".document-toolbar");
+
+    expect(root.querySelector(".shell--document-html")).not.toBeNull();
+    expect(frame).not.toBeNull();
+    expect(container).not.toBeNull();
+    expect(toolbar).not.toBeNull();
+
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+
+    vi.spyOn(toolbar!, "getBoundingClientRect").mockReturnValue({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 180,
+      top: 0,
+      right: 0,
+      bottom: 180,
+      left: 0,
+      toJSON: () => ({}),
+    });
+
+    vi.spyOn(window, "getComputedStyle").mockImplementation((element) => {
+      if (element === container) {
+        return {
+          paddingTop: "24px",
+          paddingBottom: "28px",
+        } as CSSStyleDeclaration;
+      }
+
+      return originalGetComputedStyle(element);
+    });
+
+    frame?.dispatchEvent(new Event("load"));
+
+    expect(frame?.style.height).toBe("768px");
+
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1200,
+    });
+
+    window.dispatchEvent(new Event("resize"));
+
+    expect(frame?.style.height).toBe("968px");
+    expect(container?.classList.contains("payload-html--loading")).toBe(false);
   });
 
   it("VAR-HISTORY-001 history is reverse chronological with the newest item active", () => {

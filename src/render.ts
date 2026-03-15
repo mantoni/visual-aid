@@ -438,9 +438,16 @@ const htmlFragmentStyles = [
   "    --va-code-bg: rgba(226, 232, 238, 0.9);",
   "  }",
   "}",
+  "html {",
+  "  margin: 0;",
+  "  padding: 0;",
+  "  box-sizing: border-box;",
+  "}",
+  "*, *::before, *::after {",
+  "  box-sizing: inherit;",
+  "}",
   "body {",
   "  margin: 0;",
-  "  padding: 20px;",
   "  background: var(--va-bg);",
   "  color: var(--va-text);",
   "}",
@@ -504,6 +511,46 @@ const htmlFragmentStyles = [
   "}",
 ].join("\n");
 
+const minimumHtmlFrameHeight = 420;
+const htmlHydrationCleanupByTarget = new WeakMap<HTMLElement, () => void>();
+
+const parseCssPixels = (value: string) => {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const measureAvailableHtmlFrameHeight = (frame: HTMLIFrameElement) => {
+  if (typeof window === "undefined") {
+    return minimumHtmlFrameHeight;
+  }
+
+  const container = frame.closest<HTMLElement>(".payload-html");
+  const toolbar =
+    frame
+      .closest<HTMLElement>(".shell--document")
+      ?.querySelector<HTMLElement>(".document-toolbar") ??
+    frame.ownerDocument.querySelector<HTMLElement>(".document-toolbar");
+  const toolbarHeight =
+    toolbar?.getBoundingClientRect().height ?? toolbar?.offsetHeight ?? 0;
+  const containerStyles = container ? window.getComputedStyle(container) : null;
+  const containerPadding =
+    (containerStyles ? parseCssPixels(containerStyles.paddingTop) : 0) +
+    (containerStyles ? parseCssPixels(containerStyles.paddingBottom) : 0);
+
+  return Math.max(
+    minimumHtmlFrameHeight,
+    window.innerHeight - toolbarHeight - containerPadding,
+  );
+};
+
+const syncHtmlFrameHeight = (frame: HTMLIFrameElement) => {
+  const nextHeight = measureAvailableHtmlFrameHeight(frame);
+
+  if (nextHeight > 0) {
+    frame.style.height = `${nextHeight}px`;
+  }
+};
+
 const renderHtml = (content: string) => {
   const srcdoc = [
     "<!doctype html>",
@@ -524,7 +571,7 @@ const renderHtml = (content: string) => {
       <iframe
         class="payload-html__frame"
         title="HTML payload"
-        sandbox
+        sandbox="allow-same-origin"
         referrerpolicy="no-referrer"
         srcdoc="${escapeHtmlAttribute(srcdoc)}"
       ></iframe>
@@ -532,24 +579,53 @@ const renderHtml = (content: string) => {
   `;
 };
 
+export const cleanupRenderEffects = (target: HTMLElement) => {
+  htmlHydrationCleanupByTarget.get(target)?.();
+  htmlHydrationCleanupByTarget.delete(target);
+};
+
 const hydrateHtmlPayloads = (target: HTMLElement) => {
-  target
-    .querySelectorAll<HTMLIFrameElement>(".payload-html__frame")
-    .forEach((frame) => {
-      const container = frame.closest<HTMLElement>(".payload-html");
+  const frames = Array.from(
+    target.querySelectorAll<HTMLIFrameElement>(".payload-html__frame"),
+  );
 
-      if (!container) {
-        return;
-      }
+  if (frames.length === 0) {
+    htmlHydrationCleanupByTarget.delete(target);
+    return;
+  }
 
-      container.classList.add("payload-html--loading");
-
-      const markReady = () => {
-        container.classList.remove("payload-html--loading");
-      };
-
-      frame.addEventListener("load", markReady, { once: true });
+  const resizeFrames = () => {
+    frames.forEach((frame) => {
+      syncHtmlFrameHeight(frame);
     });
+  };
+
+  window.addEventListener("resize", resizeFrames);
+
+  frames.forEach((frame) => {
+    const container = frame.closest<HTMLElement>(".payload-html");
+
+    if (!container) {
+      return;
+    }
+
+    container.classList.add("payload-html--loading");
+
+    const markReady = () => {
+      syncHtmlFrameHeight(frame);
+      container.classList.remove("payload-html--loading");
+    };
+
+    frame.addEventListener("load", markReady, { once: true });
+
+    if (frame.contentDocument?.readyState === "complete") {
+      markReady();
+    }
+  });
+
+  htmlHydrationCleanupByTarget.set(target, () => {
+    window.removeEventListener("resize", resizeFrames);
+  });
 };
 
 export const renderContent = (payload: VisualAidPayload) => {
@@ -803,7 +879,9 @@ export const renderAppHtml = (state: VisualAidState) => {
       : (state.session.items[selectedIndex] ?? null);
 
   return `
-    <div class="shell${current ? " shell--document" : " shell--splash"}">
+    <div class="shell${current ? " shell--document" : " shell--splash"}${
+      current?.format === "html" ? " shell--document-html" : ""
+    }">
       <div class="app-frame">
         ${
           current
@@ -815,7 +893,9 @@ export const renderAppHtml = (state: VisualAidState) => {
               )}
               ${renderHistorySheet(state.session, selectedIndex, state.historyOpen === true)}
               <main class="document-stage">
-                <section class="viewer-surface" aria-label="Current payload">
+                <section class="viewer-surface${
+                  current.format === "html" ? " viewer-surface--html" : ""
+                }" aria-label="Current payload">
                   ${renderContent(current)}
                 </section>
               </main>
@@ -828,6 +908,7 @@ export const renderAppHtml = (state: VisualAidState) => {
 };
 
 export const renderInto = (target: HTMLElement, state: VisualAidState) => {
+  cleanupRenderEffects(target);
   target.innerHTML = renderAppHtml(state);
   hydrateHtmlPayloads(target);
   void hydrateMermaidPayloads(target).catch((error) => {
