@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "visual-aid",
+  "productName": "Visual AId",
   "version": "0.1.1",
   "identifier": "dev.visualaid.desktop",
   "build": {
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "visual-aid",
+        "title": "Visual AId",
         "width": 1440,
         "height": 960,
         "minWidth": 960,

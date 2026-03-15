@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define the visible renderer behavior for the current payload area, history list, metadata panel, and empty states.
+Define the visible renderer behavior for the splash state, current payload area, history list, and metadata panel.
 
 Related decisions:
 
@@ -18,7 +18,7 @@ Related decisions:
 
 ## Invariants
 
-- Empty sessions show explicit empty-state messaging.
+- Empty sessions show a branded splash screen rather than the payload viewer panels.
 - The current payload panel reflects the selected session item.
 - History is shown in reverse chronological order with the selected item marked active.
 - HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
@@ -26,12 +26,13 @@ Related decisions:
 
 ## Scenarios
 
-### VAR-EMPTY-001 Empty sessions show waiting and empty states
+### VAR-EMPTY-001 Empty sessions show the branded splash state
 
 Given a renderer state with no session items
 When the renderer output is generated
-Then the current payload title is `Waiting For Payloads`
-And the empty-state message is visible
+Then the splash title is `Visual AId`
+And the splash waiting message is visible
+And the payload viewer panel is not rendered
 
 ### VAR-MARKDOWN-001 Markdown payloads render in the markdown container
 

@@ -92,6 +92,7 @@ The baseline document set is:
 - [docs/decisions/0025-embedded-diff-in-markdown.md](docs/decisions/0025-embedded-diff-in-markdown.md): render diff fences inside Markdown with the structured diff viewer
 - [docs/decisions/0026-sanitized-html-in-markdown.md](docs/decisions/0026-sanitized-html-in-markdown.md): render sanitized raw HTML snippets inside Markdown while keeping standalone HTML isolated
 - [docs/decisions/0027-remove-excalidraw-format.md](docs/decisions/0027-remove-excalidraw-format.md): remove Excalidraw as a first-class payload format
+- [docs/decisions/0028-app-shell-splash-and-theme.md](docs/decisions/0028-app-shell-splash-and-theme.md): define the branded splash state, app chrome, and adaptive light/dark shell theming
 
 ## Documentation Rules
 

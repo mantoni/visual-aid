@@ -20,6 +20,7 @@ import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
 import { hydrateMermaidPayloads } from "./mermaid";
 import {
+  appDisplayName,
   formatLabels,
   resolveSelectedIndex,
   type VisualAidState,
@@ -419,14 +420,44 @@ const renderJson = (content: string) => {
 
 const htmlFragmentStyles = [
   ":root {",
-  '  color-scheme: dark;',
-  '  font-family: "Avenir Next", "Segoe UI", sans-serif;',
+  '  color-scheme: light dark;',
+  '  font-family: "Avenir Next", "SF Pro Display", "Segoe UI", sans-serif;',
+  "  --va-bg: #0d141b;",
+  "  --va-surface: rgba(6, 11, 16, 0.78);",
+  "  --va-border: rgba(143, 208, 244, 0.18);",
+  "  --va-text: #f5f1e8;",
+  "  --va-muted: rgba(245, 241, 232, 0.78);",
+  "  --va-accent: #f0b16c;",
+  "  --va-accent-line: rgba(240, 177, 108, 0.72);",
+  "  --va-accent-soft: rgba(240, 177, 108, 0.08);",
+  "  --va-accent-border: rgba(240, 177, 108, 0.22);",
+  "  --va-link: #8fd0f4;",
+  "  --va-link-soft: rgba(143, 208, 244, 0.12);",
+  "  --va-link-border: rgba(143, 208, 244, 0.2);",
+  "  --va-code-bg: rgba(5, 7, 10, 0.62);",
+  "}",
+  "@media (prefers-color-scheme: light) {",
+  "  :root {",
+  "    --va-bg: #f7f2e9;",
+  "    --va-surface: rgba(255, 255, 255, 0.92);",
+  "    --va-border: rgba(44, 64, 82, 0.14);",
+  "    --va-text: #1d2430;",
+  "    --va-muted: rgba(29, 36, 48, 0.72);",
+  "    --va-accent: #b96e2b;",
+  "    --va-accent-line: rgba(185, 110, 43, 0.64);",
+  "    --va-accent-soft: rgba(185, 110, 43, 0.08);",
+  "    --va-accent-border: rgba(185, 110, 43, 0.2);",
+  "    --va-link: #1b6f92;",
+  "    --va-link-soft: rgba(27, 111, 146, 0.1);",
+  "    --va-link-border: rgba(27, 111, 146, 0.16);",
+  "    --va-code-bg: rgba(226, 232, 238, 0.9);",
+  "  }",
   "}",
   "body {",
   "  margin: 0;",
   "  padding: 20px;",
-  "  background: #0b1118;",
-  "  color: #f2eee6;",
+  "  background: var(--va-bg);",
+  "  color: var(--va-text);",
   "}",
   ".payload-html-doc {",
   "  line-height: 1.6;",
@@ -453,12 +484,12 @@ const htmlFragmentStyles = [
   "}",
   "th, td {",
   "  padding: 0.65rem 0.75rem;",
-  "  border: 1px solid rgba(143, 208, 244, 0.18);",
+  "  border: 1px solid var(--va-border);",
   "  text-align: left;",
   "  vertical-align: top;",
   "}",
   "th {",
-  "  background: rgba(143, 208, 244, 0.12);",
+  "  background: var(--va-link-soft);",
   "}",
   "pre, code {",
   '  font-family: "JetBrains Mono", "SFMono-Regular", monospace;',
@@ -466,25 +497,25 @@ const htmlFragmentStyles = [
   "pre {",
   "  padding: 1rem;",
   "  border-radius: 12px;",
-  "  background: rgba(5, 7, 10, 0.62);",
+  "  background: var(--va-code-bg);",
   "  overflow: auto;",
   "}",
   "blockquote {",
   "  padding-left: 1rem;",
-  "  border-left: 3px solid rgba(240, 177, 108, 0.72);",
-  "  color: rgba(242, 238, 230, 0.82);",
+  "  border-left: 3px solid var(--va-accent-line);",
+  "  color: var(--va-muted);",
   "}",
   ".va-callout {",
   "  padding: 1rem 1.1rem;",
   "  border-radius: 14px;",
-  "  border: 1px solid rgba(240, 177, 108, 0.22);",
-  "  background: rgba(240, 177, 108, 0.08);",
+  "  border: 1px solid var(--va-accent-border);",
+  "  background: var(--va-accent-soft);",
   "}",
   ".va-card {",
   "  padding: 1rem 1.1rem;",
   "  border-radius: 14px;",
-  "  border: 1px solid rgba(143, 208, 244, 0.2);",
-  "  background: rgba(143, 208, 244, 0.08);",
+  "  border: 1px solid var(--va-link-border);",
+  "  background: var(--va-link-soft);",
   "}",
 ].join("\n");
 
@@ -554,41 +585,43 @@ export const renderMetadata = (payload: VisualAidPayload) => {
   )}</code></pre>`;
 };
 
-export const renderAppHtml = (state: VisualAidState) => {
-  const selectedWorkspaceId =
-    state.selectedWorkspaceId ?? state.workspaceState?.activeWorkspaceId ?? null;
-  const selectedIndex = resolveSelectedIndex(state.session, state.selectedIndex);
-  const current =
-    selectedIndex === null ? null : state.session.items[selectedIndex] ?? null;
-  const workspaceTabs =
-    state.workspaceState && state.workspaceState.workspaces.length > 1
-      ? `
-        <nav class="workspace-tabs" aria-label="Workspaces">
-          ${state.workspaceState.workspaces
-            .map((workspace) => {
-              const isActive = workspace.id === selectedWorkspaceId;
+const renderWorkspaceTabs = (
+  workspaceState: VisualAidState["workspaceState"],
+  selectedWorkspaceId: string | null,
+) =>
+  workspaceState && workspaceState.workspaces.length > 1
+    ? `
+      <nav class="workspace-tabs" aria-label="Workspaces">
+        ${workspaceState.workspaces
+          .map((workspace) => {
+            const isActive = workspace.id === selectedWorkspaceId;
 
-              return `
-                <button
-                  class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
-                  type="button"
-                  data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
-                  aria-pressed="${isActive ? "true" : "false"}"
-                >
-                  <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
-                  <span class="workspace-tab__path">${escapeHtml(workspace.cwd)}</span>
-                </button>
-              `;
-            })
-            .join("")}
-        </nav>
-      `
-      : "";
-  const history = state.session.items
+            return `
+              <button
+                class="workspace-tab${isActive ? " workspace-tab--active" : ""}"
+                type="button"
+                data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+                aria-pressed="${isActive ? "true" : "false"}"
+              >
+                <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
+                <span class="workspace-tab__path">${escapeHtml(workspace.cwd)}</span>
+              </button>
+            `;
+          })
+          .join("")}
+      </nav>
+    `
+    : "";
+
+const renderHistory = (
+  session: VisualAidState["session"],
+  selectedIndex: number | null,
+) =>
+  session.items
     .slice()
     .reverse()
     .map((item, index) => {
-      const sessionIndex = state.session.items.length - 1 - index;
+      const sessionIndex = session.items.length - 1 - index;
       const title = item.title ?? `${formatLabels[item.format]} payload`;
 
       return `
@@ -605,64 +638,115 @@ export const renderAppHtml = (state: VisualAidState) => {
     })
     .join("");
 
-  return `
-    <div class="shell">
-      <header class="hero">
-        <div>
-          <p class="eyebrow">Agent Visualization Surface</p>
-          <h1>visual-aid</h1>
-          <p class="hero__copy">
-            A desktop surface for structured agent output. The app renders format-aware payloads, keeps session history in the sidebar, and can recover the last good local session snapshot.
-          </p>
+const renderSplash = (status: string) => `
+  <main class="splash-layout">
+    <section class="panel panel--splash splash" aria-label="Welcome">
+      <div class="splash__content">
+        <p class="eyebrow">Agent Visualization Surface</p>
+        <h1>${appDisplayName}</h1>
+        <p class="splash__lead">A polished surface for inspecting structured agent output.</p>
+        <p class="splash__copy">
+          Start by sending a <code>visual-aid.show</code> payload. Markdown, code, JSON,
+          unified diff, Mermaid, and HTML payloads all render in place once content arrives.
+        </p>
+        <div class="splash__formats" aria-label="Supported payloads">
+          <span class="splash__format">Markdown</span>
+          <span class="splash__format">Source Code</span>
+          <span class="splash__format">JSON</span>
+          <span class="splash__format">Unified Diff</span>
+          <span class="splash__format">Mermaid</span>
+          <span class="splash__format">HTML</span>
         </div>
-        <div class="status-card">
-          <span class="status-card__label">Status</span>
-          <strong>${escapeHtml(state.status)}</strong>
-        </div>
-      </header>
-      ${workspaceTabs}
-      <main class="layout">
-        <section class="panel panel--viewer">
-          <div class="panel__header">
-            <div>
-              <p class="panel__label">Current Payload</p>
-              <h2>${escapeHtml(current?.title ?? "Waiting For Payloads")}</h2>
-            </div>
-            <span class="format-chip">${escapeHtml(
-              current ? formatLabels[current.format] : "Idle",
-            )}</span>
-          </div>
-          <p class="panel__summary">
-            ${escapeHtml(
-              current?.summary ??
-                "Dispatch a visual-aid.show payload to replace or append content here.",
-            )}
-          </p>
-          ${current ? renderContent(current) : '<div class="empty-state">No payload has been received yet.</div>'}
+      </div>
+      <div class="splash__aside">
+        <section class="splash-card">
+          <p class="panel__label">Status</p>
+          <h2>${escapeHtml(status)}</h2>
+          <p>Waiting for the first payload in this workspace.</p>
         </section>
-        <aside class="sidebar">
-          <section class="panel">
-            <div class="panel__header">
-              <div>
-                <p class="panel__label">Payload History</p>
-                <h2>${state.session.items.length} item${state.session.items.length === 1 ? "" : "s"}</h2>
-              </div>
+        <section class="splash-card">
+          <p class="panel__label">Session Flow</p>
+          <h2>Replace or Append</h2>
+          <p>Replace refreshes the main view. Append preserves a navigable history for review.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+`;
+
+export const renderAppHtml = (state: VisualAidState) => {
+  const selectedWorkspaceId =
+    state.selectedWorkspaceId ?? state.workspaceState?.activeWorkspaceId ?? null;
+  const selectedIndex = resolveSelectedIndex(state.session, state.selectedIndex);
+  const current =
+    selectedIndex === null ? null : state.session.items[selectedIndex] ?? null;
+  const workspaceTabs = renderWorkspaceTabs(state.workspaceState, selectedWorkspaceId);
+  const history = renderHistory(state.session, selectedIndex);
+
+  return `
+    <div class="shell${current ? "" : " shell--splash"}">
+      <div class="app-frame">
+        <div class="app-chrome">
+          <div class="app-brand" aria-label="Application name">
+            <span class="app-brand__mark">VA</span>
+            <div class="app-brand__copy">
+              <strong class="app-brand__name">${appDisplayName}</strong>
+              <span class="app-brand__meta">Structured output surface</span>
             </div>
-            <div class="history-list">
-              ${history || '<div class="empty-state empty-state--compact">History is empty.</div>'}
-            </div>
-          </section>
-          <section class="panel">
-            <div class="panel__header">
-              <div>
-                <p class="panel__label">Metadata</p>
-                <h2>Envelope Details</h2>
-              </div>
-            </div>
-            ${current ? renderMetadata(current) : '<div class="empty-state empty-state--compact">No envelope loaded.</div>'}
-          </section>
-        </aside>
-      </main>
+          </div>
+          <div class="app-status">
+            <span class="app-status__label">Status</span>
+            <strong>${escapeHtml(state.status)}</strong>
+          </div>
+        </div>
+        ${workspaceTabs}
+        ${
+          current
+            ? `
+              <main class="layout">
+                <section class="panel panel--viewer">
+                  <div class="panel__header">
+                    <div>
+                      <p class="panel__label">Current Payload</p>
+                      <h2>${escapeHtml(current.title ?? "Untitled Payload")}</h2>
+                    </div>
+                    <span class="format-chip">${escapeHtml(formatLabels[current.format])}</span>
+                  </div>
+                  <p class="panel__summary">
+                    ${escapeHtml(
+                      current.summary ??
+                        "Dispatch a visual-aid.show payload to replace or append content here.",
+                    )}
+                  </p>
+                  ${renderContent(current)}
+                </section>
+                <aside class="sidebar">
+                  <section class="panel">
+                    <div class="panel__header">
+                      <div>
+                        <p class="panel__label">Payload History</p>
+                        <h2>${state.session.items.length} item${state.session.items.length === 1 ? "" : "s"}</h2>
+                      </div>
+                    </div>
+                    <div class="history-list">
+                      ${history || '<div class="empty-state empty-state--compact">History is empty.</div>'}
+                    </div>
+                  </section>
+                  <section class="panel">
+                    <div class="panel__header">
+                      <div>
+                        <p class="panel__label">Metadata</p>
+                        <h2>Envelope Details</h2>
+                      </div>
+                    </div>
+                    ${renderMetadata(current)}
+                  </section>
+                </aside>
+              </main>
+            `
+            : renderSplash(state.status)
+        }
+      </div>
     </div>
   `;
 };

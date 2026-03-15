@@ -23,10 +23,75 @@ const eventPayload = {
   content: "# Event Content",
 };
 
+const installMatchMedia = (initialMatches: boolean) => {
+  let matches = initialMatches;
+  const listeners = new Set<EventListenerOrEventListenerObject>();
+  let mediaQuery: MediaQueryList;
+  const notifyListener = (
+    listener: EventListenerOrEventListenerObject,
+    event: MediaQueryListEvent,
+  ) => {
+    if (typeof listener === "function") {
+      listener.call(mediaQuery, event);
+      return;
+    }
+
+    listener.handleEvent(event);
+  };
+
+  mediaQuery = {
+    get matches() {
+      return matches;
+    },
+    media: "(prefers-color-scheme: dark)",
+    onchange: null,
+    addEventListener: (_type: string, listener: EventListenerOrEventListenerObject | null) => {
+      if (listener) {
+        listeners.add(listener);
+      }
+    },
+    removeEventListener: (
+      _type: string,
+      listener: EventListenerOrEventListenerObject | null,
+    ) => {
+      if (listener) {
+        listeners.delete(listener);
+      }
+    },
+    addListener: (listener: (event: MediaQueryListEvent) => void) => {
+      listeners.add(listener as EventListener);
+    },
+    removeListener: (listener: (event: MediaQueryListEvent) => void) => {
+      listeners.delete(listener as EventListener);
+    },
+    dispatchEvent: (event: Event) => {
+      listeners.forEach((listener) =>
+        notifyListener(listener, event as MediaQueryListEvent),
+      );
+      return true;
+    },
+  } as MediaQueryList;
+
+  vi.stubGlobal("matchMedia", vi.fn(() => mediaQuery));
+
+  return {
+    setMatches(nextMatches: boolean) {
+      matches = nextMatches;
+      const event = {
+        matches,
+        media: mediaQuery.media,
+      } as MediaQueryListEvent;
+      listeners.forEach((listener) => notifyListener(listener, event));
+    },
+  };
+};
+
 afterEach(() => {
   document.body.innerHTML = "";
   delete window.__VISUAL_AID__;
   delete window.__VISUAL_AID_BOOTSTRAP__;
+  vi.unstubAllGlobals();
+  document.documentElement.style.removeProperty("color-scheme");
 });
 
 describe("Interactive UI spec", () => {
@@ -88,7 +153,7 @@ describe("Interactive UI spec", () => {
     cleanup();
   });
 
-  it("VUI-EVENT-003 clear events reset the UI to the empty state", async () => {
+  it("VUI-EVENT-003 clear events reset the UI to the splash state", async () => {
     const cleanup = await bootstrapApp(setupRoot(), {
       isTauriEnvironment: () => false,
       bootstrapPayload: {
@@ -102,10 +167,11 @@ describe("Interactive UI spec", () => {
 
     window.dispatchEvent(new Event("visual-aid:clear"));
 
-    expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Waiting For Payloads",
+    expect(document.querySelector(".splash h1")?.textContent).toBe("Visual AId");
+    expect(document.querySelector(".panel--viewer")).toBeNull();
+    expect(document.body.textContent).toContain(
+      "Waiting for the first payload in this workspace.",
     );
-    expect(document.body.textContent).toContain("No payload has been received yet.");
 
     cleanup();
   });
@@ -188,7 +254,7 @@ describe("Interactive UI spec", () => {
     expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
       "Polled Payload",
     );
-    expect(document.querySelector(".status-card strong")?.textContent).toBe(
+    expect(document.querySelector(".app-status strong")?.textContent).toBe(
       "Received HTML payload",
     );
     expect(
@@ -264,6 +330,21 @@ describe("Interactive UI spec", () => {
       true,
     );
     expect(document.querySelector(".payload-html__frame")).not.toBeNull();
+
+    cleanup();
+  });
+
+  it("VUI-THEME-001 bootstrap follows preferred color scheme changes", async () => {
+    const matchMedia = installMatchMedia(true);
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => false,
+    });
+
+    expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe("dark");
+
+    matchMedia.setMatches(false);
+
+    expect(document.querySelector("#app")?.getAttribute("data-theme")).toBe("light");
 
     cleanup();
   });

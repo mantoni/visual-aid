@@ -12,7 +12,7 @@ const renderDocument = (html: string) => {
 };
 
 describe("Renderer output spec", () => {
-  it("VAR-EMPTY-001 empty sessions show waiting and empty states", () => {
+  it("VAR-EMPTY-001 empty sessions show the branded splash state", () => {
     const html = renderAppHtml({
       session: emptySession(),
       status: "Cleared",
@@ -20,11 +20,10 @@ describe("Renderer output spec", () => {
     });
     const body = renderDocument(html);
 
-    expect(body.querySelector(".panel--viewer h2")?.textContent).toBe(
-      "Waiting For Payloads",
-    );
-    expect(body.textContent).toContain("No payload has been received yet.");
-    expect(body.textContent).toContain("History is empty.");
+    expect(body.querySelector(".splash h1")?.textContent).toBe("Visual AId");
+    expect(body.querySelector(".panel--viewer")).toBeNull();
+    expect(body.textContent).toContain("Waiting for the first payload in this workspace.");
+    expect(body.querySelector(".app-status strong")?.textContent).toBe("Cleared");
   });
 
   it("VAR-MARKDOWN-001 markdown payloads render in the markdown container", () => {

@@ -20,9 +20,10 @@ Related decisions:
 
 - Valid `visual-aid:show` events update the live DOM.
 - Invalid `visual-aid:show` payloads are ignored.
-- `visual-aid:clear` resets the UI to the empty state.
+- `visual-aid:clear` resets the UI to the splash state.
 - History-item clicks switch the current payload view to the selected session item.
 - Host-driven session updates replace the rendered content in Tauri mode.
+- The shell follows the system color scheme and updates when that preference changes.
 
 ## Scenarios
 
@@ -38,11 +39,11 @@ Given a bootstrapped non-Tauri app shell
 When an invalid `visual-aid:show` custom event is dispatched
 Then the existing rendered payload remains unchanged
 
-### VUI-EVENT-003 Clear events reset the UI to the empty state
+### VUI-EVENT-003 Clear events reset the UI to the splash state
 
 Given a bootstrapped non-Tauri app shell with rendered content
 When a `visual-aid:clear` event is dispatched
-Then the empty-state message becomes visible
+Then the splash waiting message becomes visible
 
 ### VUI-HISTORY-001 Clicking a history item updates the current payload view
 
@@ -57,6 +58,12 @@ Given a bootstrapped Tauri app shell
 When the desktop bridge delivers a session update
 Then the current payload title and status update in the DOM
 
+### VUI-THEME-001 Bootstrap follows preferred color scheme changes
+
+Given a bootstrapped app shell
+When the system preferred color scheme changes
+Then the root app theme attribute updates to match
+
 ## Test Mapping
 
-- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-BRIDGE-001`
+- `tests/ui/bootstrap.test.ts`: `VUI-EVENT-001`, `VUI-EVENT-002`, `VUI-EVENT-003`, `VUI-HISTORY-001`, `VUI-BRIDGE-001`, `VUI-THEME-001`

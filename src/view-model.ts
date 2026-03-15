@@ -13,6 +13,8 @@ export type VisualAidState = {
   selectedWorkspaceId?: string | null;
 };
 
+export const appDisplayName = "Visual AId";
+
 export const formatLabels: Record<VisualAidPayload["format"], string> = {
   markdown: "Markdown",
   code: "Source Code",
@@ -25,10 +27,10 @@ export const formatLabels: Record<VisualAidPayload["format"], string> = {
 export const samplePayload: VisualAidPayload = {
   version: 1,
   format: "markdown",
-  title: "visual-aid Ready",
+  title: `${appDisplayName} Ready`,
   summary: "The app shell is ready for MCP payloads and local session recovery.",
   content: [
-    "# visual-aid",
+    `# ${appDisplayName}`,
     "",
     "The renderer shell is ready for structured payloads.",
     "",

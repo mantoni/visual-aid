@@ -37,6 +37,8 @@ declare global {
   }
 }
 
+type AppTheme = "dark" | "light";
+
 const isPayload = (value: unknown): value is VisualAidPayload => {
   if (!value || typeof value !== "object") {
     return false;
@@ -48,6 +50,47 @@ const isPayload = (value: unknown): value is VisualAidPayload => {
     typeof payload.format === "string" &&
     typeof payload.content === "string"
   );
+};
+
+const syncAppTheme = (target: HTMLElement) => {
+  const mediaQuery =
+    typeof window.matchMedia === "function"
+      ? window.matchMedia("(prefers-color-scheme: dark)")
+      : null;
+  const applyTheme = (theme: AppTheme) => {
+    target.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  };
+  const syncTheme = () => {
+    applyTheme(mediaQuery ? (mediaQuery.matches ? "dark" : "light") : "dark");
+  };
+
+  syncTheme();
+
+  if (!mediaQuery) {
+    return () => {
+      delete target.dataset.theme;
+      document.documentElement.style.removeProperty("color-scheme");
+    };
+  }
+
+  if (typeof mediaQuery.addEventListener === "function") {
+    mediaQuery.addEventListener("change", syncTheme);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncTheme);
+      delete target.dataset.theme;
+      document.documentElement.style.removeProperty("color-scheme");
+    };
+  }
+
+  mediaQuery.addListener(syncTheme);
+
+  return () => {
+    mediaQuery.removeListener(syncTheme);
+    delete target.dataset.theme;
+    document.documentElement.style.removeProperty("color-scheme");
+  };
 };
 
 export const bootstrapApp = async (
@@ -180,6 +223,7 @@ export const bootstrapApp = async (
   window.addEventListener("visual-aid:clear", onClearEvent);
   target.addEventListener("click", onHistoryClick);
   target.addEventListener("click", onWorkspaceTabClick);
+  const stopThemeSync = syncAppTheme(target);
 
   renderInto(target, state);
 
@@ -193,6 +237,7 @@ export const bootstrapApp = async (
 
   return () => {
     stopBridge();
+    stopThemeSync();
     window.removeEventListener("visual-aid:show", onShowEvent);
     window.removeEventListener("visual-aid:clear", onClearEvent);
     target.removeEventListener("click", onHistoryClick);
