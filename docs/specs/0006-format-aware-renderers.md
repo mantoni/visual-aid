@@ -25,6 +25,7 @@ Related decisions:
 - JSON payloads expose parsed structure when valid and keep a readable raw fallback when invalid.
 - Diff lines are visually classified by their line prefix and role.
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
+- Mermaid payloads follow the active shell theme when the diagram is rendered.
 - HTML payloads still render as direct markup.
 
 ## Scenarios
@@ -113,7 +114,27 @@ When the renderer attempts to hydrate the payload view
 Then the UI shows a readable fallback message
 And the Mermaid source is visible for inspection
 
+### VFR-MERMAID-003 Mermaid payloads recover from invalid cylinder shorthand
+
+Given a mermaid payload that uses invalid flowchart cylinder shorthand such as `[((...))]`
+When the renderer can normalize that shorthand into valid Mermaid syntax
+Then the viewer renders the diagram instead of falling back to source
+And the original Mermaid source remains available in the payload view
+
+### VFR-MERMAID-004 Mermaid payloads follow the active shell theme
+
+Given a mermaid payload rendered while the app shell is in dark mode
+When the renderer hydrates the diagram
+Then the Mermaid renderer uses the dark-shell palette for that diagram
+
+### VFR-MERMAID-005 Mermaid payloads keep labels readable and fit the viewer width
+
+Given a mermaid payload rendered in the viewer
+When the renderer hydrates the diagram
+Then edge labels remain readable against the active diagram surface
+And the SVG is cropped to the graph bounds and stretched to the viewer width without centering the diagram in extra horizontal space
+
 ## Test Mapping
 
 - `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-005`, `VFR-MARKDOWN-006`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`
-- `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-004`
+- `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`, `VFR-MERMAID-003`, `VFR-MERMAID-004`, `VFR-MERMAID-005`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-004`

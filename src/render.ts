@@ -531,6 +531,26 @@ const renderHtml = (content: string) => {
   `;
 };
 
+const hydrateHtmlPayloads = (target: HTMLElement) => {
+  target
+    .querySelectorAll<HTMLIFrameElement>(".payload-html__frame")
+    .forEach((frame) => {
+      const container = frame.closest<HTMLElement>(".payload-html");
+
+      if (!container) {
+        return;
+      }
+
+      container.classList.add("payload-html--loading");
+
+      const markReady = () => {
+        container.classList.remove("payload-html--loading");
+      };
+
+      frame.addEventListener("load", markReady, { once: true });
+    });
+};
+
 export const renderContent = (payload: VisualAidPayload) => {
   if (payload.format === "markdown") {
     return renderMarkdown(payload.content);
@@ -782,6 +802,7 @@ export const renderAppHtml = (state: VisualAidState) => {
 
 export const renderInto = (target: HTMLElement, state: VisualAidState) => {
   target.innerHTML = renderAppHtml(state);
+  hydrateHtmlPayloads(target);
   void hydrateMermaidPayloads(target).catch((error) => {
     console.error("Failed to hydrate Mermaid payloads:", error);
   });
