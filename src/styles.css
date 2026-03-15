@@ -1195,6 +1195,9 @@ p {
 }
 
 .shell--document {
+  --document-toolbar-height: 52px;
+  --document-glass-bg: rgba(12, 18, 27, 0.68);
+  --document-glass-backdrop: saturate(1.35) blur(18px);
   padding: 0;
 }
 
@@ -1212,6 +1215,7 @@ p {
 .document-toolbar {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "start center end";
   position: sticky;
   top: 0;
   z-index: 20;
@@ -1220,13 +1224,13 @@ p {
   min-height: 52px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--shell-border);
-  background: rgba(12, 18, 27, 0.68);
-  backdrop-filter: saturate(1.35) blur(18px);
-  -webkit-backdrop-filter: saturate(1.35) blur(18px);
+  background: var(--document-glass-bg);
+  backdrop-filter: var(--document-glass-backdrop);
+  -webkit-backdrop-filter: var(--document-glass-backdrop);
 }
 
-#app[data-theme="light"] .document-toolbar {
-  background: rgba(252, 250, 246, 0.72);
+#app[data-theme="light"] .shell--document {
+  --document-glass-bg: rgba(252, 250, 246, 0.72);
 }
 
 .document-toolbar__start,
@@ -1236,10 +1240,20 @@ p {
   min-width: 0;
 }
 
+.document-toolbar__start {
+  grid-area: start;
+}
+
 .document-toolbar__center {
+  grid-area: center;
   display: flex;
   align-items: center;
   min-width: 0;
+}
+
+.document-toolbar__end {
+  grid-area: end;
+  justify-content: flex-end;
 }
 
 .document-toolbar__title-row {
@@ -1340,8 +1354,7 @@ p {
 }
 
 .document-stage {
-  position: relative;
-  min-height: calc(100vh - 52px);
+  min-height: calc(100vh - var(--document-toolbar-height));
   background: transparent;
 }
 
@@ -1382,7 +1395,7 @@ p {
 }
 
 .viewer-surface > .payload-html .payload-html__frame {
-  min-height: calc(100vh - 52px);
+  min-height: calc(100vh - var(--document-toolbar-height));
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -1397,8 +1410,9 @@ p {
 }
 
 .history-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 24;
   pointer-events: none;
 }
 
@@ -1414,15 +1428,15 @@ p {
 
 .history-sheet {
   position: absolute;
-  top: 10px;
+  top: calc(var(--document-toolbar-height) + 10px);
   right: 12px;
-  width: min(300px, calc(100% - 24px));
-  max-height: min(420px, calc(100% - 22px));
+  width: min(300px, calc(100vw - 24px));
+  max-height: min(420px, calc(100vh - var(--document-toolbar-height) - 22px));
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   border: 1px solid var(--shell-border);
   border-radius: 12px;
-  background: color-mix(in srgb, var(--shell-bg-strong) 96%, transparent);
+  background: var(--document-glass-bg);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
   opacity: 0;
   overflow: hidden;
@@ -1430,7 +1444,8 @@ p {
   transform: none;
   transform-origin: top right;
   transition: none;
-  backdrop-filter: blur(14px);
+  backdrop-filter: var(--document-glass-backdrop);
+  -webkit-backdrop-filter: var(--document-glass-backdrop);
 }
 
 .history-overlay--open {
@@ -1489,21 +1504,29 @@ p {
 }
 
 @media (max-width: 1100px) {
+  .shell--document {
+    --document-toolbar-height: 96px;
+  }
+
   .document-toolbar {
-    grid-template-columns: 1fr;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "start end"
+      "center center";
+    align-items: start;
+    row-gap: 10px;
   }
 
   .document-toolbar__end {
     justify-content: flex-end;
   }
-
-  .document-stage {
-    min-height: calc(100vh - 104px);
-  }
 }
 
 @media (max-width: 960px) {
+  .shell--document {
+    --document-toolbar-height: 96px;
+  }
+
   .shell--document {
     padding: 0;
   }
@@ -1532,12 +1555,8 @@ p {
   }
 
   .history-toggle {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .document-stage {
-    min-height: calc(100vh - 96px);
+    width: auto;
+    justify-content: flex-end;
   }
 
   .viewer-surface {
@@ -1545,10 +1564,9 @@ p {
   }
 
   .history-sheet {
-    top: 8px;
+    top: calc(var(--document-toolbar-height) + 8px);
     right: 10px;
-    left: 10px;
-    width: auto;
-    max-height: min(360px, calc(100% - 16px));
+    width: min(320px, calc(100vw - 20px));
+    max-height: min(360px, calc(100vh - var(--document-toolbar-height) - 16px));
   }
 }

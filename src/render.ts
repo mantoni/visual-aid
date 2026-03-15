@@ -777,7 +777,6 @@ export const renderAppHtml = (state: VisualAidState) => {
     selectedIndex === null
       ? null
       : (state.session.items[selectedIndex] ?? null);
-  const historyOpen = state.historyOpen === true;
 
   return `
     <div class="shell${current ? " shell--document" : " shell--splash"}">
@@ -786,11 +785,11 @@ export const renderAppHtml = (state: VisualAidState) => {
           current
             ? `
               ${renderDocumentToolbar(state, current, selectedWorkspaceId)}
+              ${renderHistorySheet(state.session, selectedIndex, state.historyOpen === true)}
               <main class="document-stage">
                 <section class="viewer-surface" aria-label="Current payload">
                   ${renderContent(current)}
                 </section>
-                ${renderHistorySheet(state.session, selectedIndex, historyOpen)}
               </main>
             `
             : renderSplash(state.status)

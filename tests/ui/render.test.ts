@@ -247,6 +247,38 @@ describe("Renderer output spec", () => {
     ).toBe(false);
   });
 
+  it("VAR-LAYOUT-002 the recents sheet is anchored to the sticky toolbar", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T10:15:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "First",
+              content: "# First",
+            },
+            {
+              version: 1,
+              format: "code",
+              title: "Second",
+              content: "const second = true;",
+            },
+          ],
+        },
+        status: "Received Source Code payload",
+        selectedIndex: 1,
+        historyOpen: true,
+      }),
+    );
+
+    expect(body.querySelector(".app-frame > .history-overlay")).not.toBeNull();
+    expect(body.querySelector(".document-stage .history-sheet")).toBeNull();
+  });
+
   it("VFR-MARKDOWN-001 markdown headings and lists render semantically", () => {
     const body = renderDocument(
       renderAppHtml({

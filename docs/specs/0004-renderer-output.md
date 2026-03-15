@@ -23,6 +23,9 @@ Related decisions:
 - The current payload view reflects the selected session item.
 - The active shell uses a compact toolbar instead of in-content app branding or global status copy.
 - History is available from a toggleable recents sheet and is shown in reverse chronological order with the selected item marked active.
+- The recents sheet stays anchored to the sticky toolbar instead of scrolling away with the document content.
+- The recents sheet uses the same translucent blurred glass treatment as the sticky toolbar.
+- On narrow screens, the recents toggle remains on the toolbar's top row and stays aligned to the right.
 - HTML payloads render inside a sandboxed iframe surface rather than the host DOM.
 
 ## Scenarios
@@ -85,6 +88,28 @@ When the renderer output is generated
 Then the recents toggle reports a collapsed state
 And the recents sheet is not open
 
+### VAR-LAYOUT-002 The recents sheet is anchored to the sticky toolbar
+
+Given a renderer state with a current payload and open recents
+When the renderer output is generated
+Then the recents sheet is rendered outside the scrolling document stage
+And the recents sheet remains anchored below the sticky toolbar
+
+### VAR-LAYOUT-003 Narrow-screen toolbar rules keep recents on the top row
+
+Given the renderer stylesheet for payload sessions
+When the narrow-screen toolbar rules are inspected
+Then the toolbar keeps a two-column top row with workspace tabs on the left
+And the recents control remains in the right-hand toolbar actions region
+
+### VAR-LAYOUT-004 The recents sheet reuses the toolbar glass styling
+
+Given the renderer stylesheet for payload sessions
+When the recents sheet rules are inspected
+Then the sheet uses the shared document glass background
+And the sheet uses the same backdrop blur recipe as the sticky toolbar
+
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`, `VAR-HISTORY-003`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-LAYOUT-001`, `VAR-HISTORY-002`, `VAR-HISTORY-003`, `VAR-LAYOUT-002`
+- `tests/ui/styles.test.ts`: `VAR-LAYOUT-003`, `VAR-LAYOUT-004`
