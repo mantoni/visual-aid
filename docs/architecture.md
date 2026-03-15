@@ -63,6 +63,7 @@ The first live bridge between the MCP server and the desktop app is file-based:
 - the MCP server writes the active workspace id plus per-workspace session paths to a shared registry file
 - the MCP server resolves workspace identity from a tool `cwd` argument first, then from an explicit environment override, then from `process.cwd()`
 - the Tauri host exposes a command that assembles renderer-facing workspace state from the registry plus referenced session files
+- the Tauri host exposes a command that closes a workspace tab by deleting its session file and removing its registry entry
 - the Tauri host keeps a last known good non-empty workspace-state snapshot derived from the registry path for local recovery
 - the Tauri host watches the shared registry path and emits renderer updates when the assembled workspace state changes
 - the MCP server can auto-discover a local app bundle or release binary for launch in development

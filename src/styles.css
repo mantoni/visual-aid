@@ -93,7 +93,11 @@ pre {
       transparent 36%
     ),
     linear-gradient(155deg, rgba(13, 20, 31, 0.92), rgba(7, 12, 19, 0.96));
-  --mermaid-surface: linear-gradient(180deg, rgba(13, 20, 31, 0.98), rgba(8, 14, 22, 0.96));
+  --mermaid-surface: linear-gradient(
+    180deg,
+    rgba(13, 20, 31, 0.98),
+    rgba(8, 14, 22, 0.96)
+  );
   --frame-shadow:
     0 24px 80px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
@@ -190,8 +194,10 @@ p {
   padding: 24px;
 }
 
-.shell--splash .app-frame {
-  min-height: calc(100vh - 48px);
+.shell--splash {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
 }
 
 .app-frame {
@@ -997,6 +1003,8 @@ p {
 
 .splash-layout {
   display: block;
+  flex: 1;
+  min-height: 100vh;
 }
 
 .splash {
@@ -1004,8 +1012,10 @@ p {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.86fr);
   gap: 0;
-  min-height: min(78vh, 760px);
+  min-height: 100vh;
+  border-radius: 0;
   background: var(--splash-gradient);
+  overflow: hidden;
 }
 
 .splash::before {
@@ -1039,7 +1049,7 @@ p {
 }
 
 .splash__lead {
-  max-width: 22ch;
+  max-width: 28ch;
   font-size: 1.45rem;
   font-weight: 600;
   line-height: 1.25;
@@ -1151,6 +1161,10 @@ p {
 @media (max-width: 960px) {
   .shell {
     padding: 16px;
+  }
+
+  .shell--splash {
+    padding: 0;
   }
 
   .app-frame {

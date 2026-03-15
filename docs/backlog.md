@@ -13,7 +13,7 @@ Capture the currently intended product backlog in one place so future agent sess
 
 - Tighten the diff renderer layout so unified diffs read less spaciously.
 - Add dark-mode-aware styling to rendered Mermaid diagrams.
-- Support closing, renaming, and reordering workspace tabs without adding multi-window support.
+- Support renaming and reordering workspace tabs without adding multi-window support.
 - Define a separate full-document HTML format for interactive web feature or site previews instead of broadening fragment-oriented `html`.
 - Continue Milestone 3 usability work on layout, payload handling, and everyday workflow polish.
 

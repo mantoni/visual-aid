@@ -23,7 +23,7 @@ Related decisions:
 - The active workspace controls the available recents history, current payload view, and toolbar title.
 - When a workspace receives a new session update from the desktop bridge, that workspace becomes active.
 - Clicking a workspace tab switches the visible session locally without mutating other workspace histories.
-- Closing a workspace tab removes it from the local tab strip without mutating the underlying workspace history.
+- Closing a workspace tab deletes that workspace session from disk and removes it from the bridge-backed workspace state.
 
 ## Scenarios
 
@@ -55,14 +55,23 @@ When the renderer output is generated
 Then each workspace tab exposes its full working directory path through a hover tooltip
 And each workspace tab includes a close control
 
-### VWT-TABS-004 Closing an active workspace tab reveals another workspace
+### VWT-TABS-004 Closing an active workspace tab deletes its session and reveals another workspace
 
 Given the desktop app is showing three workspace sessions
 When the user closes the active workspace tab
 Then that workspace tab is removed from the visible tab strip
+And that workspace session is removed from the bridge-backed workspace state
 And another visible workspace becomes active
+
+### VWT-TABS-005 Closing the last workspace tab clears the window
+
+Given the desktop app is showing one workspace session
+When the user closes the last visible workspace tab
+Then that workspace session is removed from the bridge-backed workspace state
+And the app returns to the splash state
 
 ## Test Mapping
 
 - `tests/ui/render.test.ts`: `VWT-TABS-001`, `VWT-TABS-003`
-- `tests/ui/bootstrap.test.ts`: `VWT-TABS-002`, `VWT-BRIDGE-001`, `VWT-TABS-004`
+- `tests/ui/bootstrap.test.ts`: `VWT-TABS-002`, `VWT-BRIDGE-001`, `VWT-TABS-004`, `VWT-TABS-005`
+- `src-tauri/src/main.rs`: `VWT-TABS-004`, `VWT-TABS-005`

@@ -54,6 +54,7 @@ The app currently supports:
 - `html`
 
 When multiple working directories send payloads through the shared registry, the app keeps them in one window and shows each working directory as a top-level tab.
+Closing a workspace tab deletes that workspace's session file and removes it from the shared registry, including when it is the last visible tab.
 
 Use `visual-aid` when the artifact is easier to inspect visually than in terminal text alone, such as:
 

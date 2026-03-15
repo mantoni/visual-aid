@@ -23,7 +23,6 @@ import {
   appDisplayName,
   formatLabels,
   resolveSelectedIndex,
-  visibleWorkspaceState,
   type VisualAidState,
 } from "./view-model";
 
@@ -671,14 +670,37 @@ const renderWorkspaceTabs = (
       return "";
     }
 
+    const closeLabel = `Close ${workspace.label} tab`;
+    const tooltipId = "workspace-tooltip-0";
+
     return `
       <div class="workspace-switcher workspace-switcher--single" aria-label="Workspace">
-        <span
-          class="workspace-pill"
-          title="${escapeHtmlAttribute(workspace.cwd)}"
-        >
-          ${escapeHtml(workspace.label)}
-        </span>
+        <div class="workspace-tab-item workspace-tab-item--active">
+          <button
+            class="workspace-tab workspace-tab--active"
+            type="button"
+            data-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+            aria-pressed="true"
+            aria-describedby="${escapeHtmlAttribute(tooltipId)}"
+          >
+            <span class="workspace-tab__label">${escapeHtml(workspace.label)}</span>
+          </button>
+          <button
+            class="workspace-tab__close"
+            type="button"
+            data-close-workspace-id="${escapeHtmlAttribute(workspace.id)}"
+            aria-label="${escapeHtmlAttribute(closeLabel)}"
+          >
+            <span class="workspace-tab__close-icon" aria-hidden="true">x</span>
+          </button>
+          <span
+            id="${escapeHtmlAttribute(tooltipId)}"
+            class="workspace-tab__tooltip"
+            role="tooltip"
+          >
+            ${escapeHtml(workspace.cwd)}
+          </span>
+        </div>
       </div>
     `;
   }
@@ -826,7 +848,7 @@ const renderDocumentToolbar = (
 
 const renderSplash = (status: string) => `
   <main class="splash-layout">
-    <section class="panel panel--splash splash" aria-label="Welcome">
+    <section class="splash" aria-label="Welcome">
       <div class="splash__content">
         <p class="eyebrow">Agent Visualization Surface</p>
         <h1>${appDisplayName}</h1>
@@ -861,13 +883,9 @@ const renderSplash = (status: string) => `
 `;
 
 export const renderAppHtml = (state: VisualAidState) => {
-  const renderedWorkspaceState = visibleWorkspaceState(
-    state.workspaceState,
-    state.hiddenWorkspaceIds,
-  );
   const selectedWorkspaceId =
     state.selectedWorkspaceId ??
-    renderedWorkspaceState?.activeWorkspaceId ??
+    state.workspaceState?.activeWorkspaceId ??
     null;
   const selectedIndex = resolveSelectedIndex(
     state.session,
@@ -882,15 +900,11 @@ export const renderAppHtml = (state: VisualAidState) => {
     <div class="shell${current ? " shell--document" : " shell--splash"}${
       current?.format === "html" ? " shell--document-html" : ""
     }">
-      <div class="app-frame">
-        ${
-          current
-            ? `
-              ${renderDocumentToolbar(
-                { ...state, workspaceState: renderedWorkspaceState },
-                current,
-                selectedWorkspaceId,
-              )}
+      ${
+        current
+          ? `
+            <div class="app-frame">
+              ${renderDocumentToolbar(state, current, selectedWorkspaceId)}
               ${renderHistorySheet(state.session, selectedIndex, state.historyOpen === true)}
               <main class="document-stage">
                 <section class="viewer-surface${
@@ -899,10 +913,10 @@ export const renderAppHtml = (state: VisualAidState) => {
                   ${renderContent(current)}
                 </section>
               </main>
-            `
-            : renderSplash(state.status)
-        }
-      </div>
+            </div>
+          `
+          : renderSplash(state.status)
+      }
     </div>
   `;
 };

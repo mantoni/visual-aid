@@ -64,8 +64,9 @@ const canonicalizeValue = (value: unknown): unknown => {
 export const sessionSnapshot = (session: VisualAidSession) =>
   JSON.stringify(canonicalizeValue(session));
 
-export const workspaceStateSnapshot = (workspaceState: VisualAidWorkspaceState) =>
-  JSON.stringify(canonicalizeValue(workspaceState));
+export const workspaceStateSnapshot = (
+  workspaceState: VisualAidWorkspaceState,
+) => JSON.stringify(canonicalizeValue(workspaceState));
 
 export const isTauriEnvironment = () =>
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -81,6 +82,9 @@ export const emptyWorkspaceState = (): VisualAidWorkspaceState => ({
   activeWorkspaceId: null,
   workspaces: [],
 });
+
+export const closeWorkspaceSession = (workspaceId: string) =>
+  invoke<VisualAidWorkspaceState>("close_workspace", { workspaceId });
 
 export const syncWorkspaceState = async (
   lastSeen: string,
@@ -122,7 +126,9 @@ export const startSessionBridge = async (
     (() => invoke<VisualAidWorkspaceState>("read_workspace_state"));
   const subscribeWorkspaceState =
     options?.subscribeWorkspaceState ??
-    ((handleWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void) =>
+    ((
+      handleWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void,
+    ) =>
       listen<VisualAidWorkspaceState>(SESSION_UPDATED_EVENT, (event) => {
         handleWorkspaceState(event.payload);
       }));

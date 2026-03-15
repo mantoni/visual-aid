@@ -26,6 +26,7 @@ describe("Renderer output spec", () => {
 
     expect(body.querySelector(".splash h1")?.textContent).toBe("Visual AId");
     expect(body.querySelector(".viewer-surface")).toBeNull();
+    expect(body.querySelector(".app-frame")).toBeNull();
     expect(body.textContent).toContain(
       "Waiting for the first payload in this workspace.",
     );
@@ -347,10 +348,12 @@ describe("Renderer output spec", () => {
     );
 
     const tabs = body.querySelectorAll<HTMLButtonElement>(".workspace-tab");
-    const closeButtons =
-      body.querySelectorAll<HTMLButtonElement>(".workspace-tab__close");
-    const tooltips =
-      body.querySelectorAll<HTMLSpanElement>(".workspace-tab__tooltip");
+    const closeButtons = body.querySelectorAll<HTMLButtonElement>(
+      ".workspace-tab__close",
+    );
+    const tooltips = body.querySelectorAll<HTMLSpanElement>(
+      ".workspace-tab__tooltip",
+    );
 
     expect(tabs[0]?.hasAttribute("title")).toBe(false);
     expect(tabs[1]?.hasAttribute("title")).toBe(false);
@@ -360,6 +363,59 @@ describe("Renderer output spec", () => {
     expect(closeButtons[0]?.getAttribute("aria-label")).toBe(
       "Close project-one tab",
     );
+  });
+
+  it("VWT-TABS-005 the last workspace still renders a close control", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        workspaceState: {
+          activeWorkspaceId: "/tmp/project-one",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:15:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Project One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        selectedWorkspaceId: "/tmp/project-one",
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-15T09:15:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "markdown",
+              title: "Project One",
+              content: "# One",
+            },
+          ],
+        },
+        status: "Received Markdown payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(
+      body.querySelector<HTMLButtonElement>(
+        '.workspace-tab__close[data-close-workspace-id="/tmp/project-one"]',
+      ),
+    ).not.toBeNull();
   });
 
   it("VAR-HISTORY-003 recents are hidden until the user opens them", () => {

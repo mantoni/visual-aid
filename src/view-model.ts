@@ -12,7 +12,6 @@ export type VisualAidState = {
   historyOpen?: boolean;
   workspaceState?: VisualAidWorkspaceState;
   selectedWorkspaceId?: string | null;
-  hiddenWorkspaceIds?: string[];
 };
 
 export const appDisplayName = "Visual AId";
@@ -112,29 +111,6 @@ export const sessionForWorkspaceState = (
   return workspace?.session ?? emptySession();
 };
 
-export const visibleWorkspaceState = (
-  workspaceState: VisualAidWorkspaceState | undefined,
-  hiddenWorkspaceIds: readonly string[] | undefined,
-) => {
-  if (!workspaceState || hiddenWorkspaceIds?.length === 0) {
-    return workspaceState;
-  }
-
-  const hiddenWorkspaceIdSet = new Set(hiddenWorkspaceIds);
-  const workspaces = workspaceState.workspaces.filter(
-    (workspace) => !hiddenWorkspaceIdSet.has(workspace.id),
-  );
-
-  return {
-    activeWorkspaceId: workspaces.some(
-      (workspace) => workspace.id === workspaceState.activeWorkspaceId,
-    )
-      ? workspaceState.activeWorkspaceId
-      : workspaces[0]?.id ?? null,
-    workspaces,
-  };
-};
-
 export const newestItemIndex = (session: VisualAidSession) =>
   session.items.length === 0 ? null : session.items.length - 1;
 
@@ -197,8 +173,37 @@ export const createInitialState = (
       : "Renderer shell ready",
     selectedIndex: newestItemIndex(session),
     historyOpen: false,
-    hiddenWorkspaceIds: [],
     selectedWorkspaceId,
+  };
+};
+
+export const removeWorkspaceFromState = (
+  workspaceState: VisualAidWorkspaceState,
+  workspaceId: string,
+): VisualAidWorkspaceState => {
+  const existingIndex = workspaceState.workspaces.findIndex(
+    (workspace) => workspace.id === workspaceId,
+  );
+
+  if (existingIndex === -1) {
+    return workspaceState;
+  }
+
+  const workspaces = workspaceState.workspaces.filter(
+    (workspace) => workspace.id !== workspaceId,
+  );
+  const activeWorkspaceId =
+    workspaceState.activeWorkspaceId === workspaceId ||
+    !workspaces.some(
+      (workspace) => workspace.id === workspaceState.activeWorkspaceId,
+    )
+      ? ((workspaces[existingIndex] ?? workspaces[existingIndex - 1])?.id ??
+        null)
+      : workspaceState.activeWorkspaceId;
+
+  return {
+    activeWorkspaceId,
+    workspaces,
   };
 };
 

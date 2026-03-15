@@ -387,9 +387,56 @@ describe("Interactive UI spec", () => {
     cleanup();
   });
 
-  it("VWT-TABS-004 closing an active workspace tab reveals another workspace", async () => {
+  it("VWT-TABS-004 closing an active workspace tab deletes its session and reveals another workspace", async () => {
+    const closeWorkspace = vi.fn(
+      async (): Promise<VisualAidWorkspaceState> => ({
+        activeWorkspaceId: "/tmp/project-three",
+        workspaces: [
+          {
+            id: "/tmp/project-one",
+            cwd: "/tmp/project-one",
+            label: "project-one",
+            sessionPath: "/tmp/project-one/.visual-aid/session.json",
+            session: {
+              openedAt: null,
+              lastAction: "show",
+              updatedAt: "2026-03-15T09:24:00.000Z",
+              items: [
+                {
+                  version: 1,
+                  format: "markdown",
+                  title: "Workspace One",
+                  content: "# One",
+                },
+              ],
+            },
+          },
+          {
+            id: "/tmp/project-three",
+            cwd: "/tmp/project-three",
+            label: "project-three",
+            sessionPath: "/tmp/project-three/.visual-aid/session.json",
+            session: {
+              openedAt: null,
+              lastAction: "show",
+              updatedAt: "2026-03-15T09:26:00.000Z",
+              items: [
+                {
+                  version: 1,
+                  format: "code",
+                  title: "Workspace Three",
+                  content: "const three = true;",
+                  language: "typescript",
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    );
     const cleanup = await bootstrapApp(setupRoot(), {
       isTauriEnvironment: () => true,
+      closeWorkspace,
       startSessionBridge: async (onWorkspaceState) => {
         onWorkspaceState({
           activeWorkspaceId: "/tmp/project-two",
@@ -465,20 +512,80 @@ describe("Interactive UI spec", () => {
       )
       ?.click();
 
+    await Promise.resolve();
+
     expect(
       document.querySelectorAll<HTMLButtonElement>(".workspace-tab"),
     ).toHaveLength(2);
     expect(
-      document
-        .querySelector<HTMLButtonElement>(
-          '.workspace-tab[data-workspace-id="/tmp/project-two"]',
-        ),
+      document.querySelector<HTMLButtonElement>(
+        '.workspace-tab[data-workspace-id="/tmp/project-two"]',
+      ),
     ).toBeNull();
+    expect(closeWorkspace).toHaveBeenCalledWith("/tmp/project-two");
     expect(
       document.querySelector(".document-toolbar__title")?.textContent,
-    ).toBe("Workspace One");
-    expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
-      "One",
+    ).toBe("Workspace Three");
+    expect(document.querySelector(".payload-code")).not.toBeNull();
+
+    cleanup();
+  });
+
+  it("VWT-TABS-005 closing the last workspace tab returns to the splash state", async () => {
+    const closeWorkspace = vi.fn(
+      async (): Promise<VisualAidWorkspaceState> => ({
+        activeWorkspaceId: null,
+        workspaces: [],
+      }),
+    );
+    const cleanup = await bootstrapApp(setupRoot(), {
+      isTauriEnvironment: () => true,
+      closeWorkspace,
+      startSessionBridge: async (onWorkspaceState) => {
+        onWorkspaceState({
+          activeWorkspaceId: "/tmp/project-one",
+          workspaces: [
+            {
+              id: "/tmp/project-one",
+              cwd: "/tmp/project-one",
+              label: "project-one",
+              sessionPath: "/tmp/project-one/.visual-aid/session.json",
+              session: {
+                openedAt: null,
+                lastAction: "show",
+                updatedAt: "2026-03-15T09:24:00.000Z",
+                items: [
+                  {
+                    version: 1,
+                    format: "markdown",
+                    title: "Workspace One",
+                    content: "# One",
+                  },
+                ],
+              },
+            },
+          ],
+        });
+
+        return () => {};
+      },
+    });
+
+    document
+      .querySelector<HTMLButtonElement>(
+        '.workspace-tab__close[data-close-workspace-id="/tmp/project-one"]',
+      )
+      ?.click();
+
+    await Promise.resolve();
+
+    expect(closeWorkspace).toHaveBeenCalledWith("/tmp/project-one");
+    expect(document.querySelector(".viewer-surface")).toBeNull();
+    expect(document.querySelector(".splash h1")?.textContent).toBe(
+      "Visual AId",
+    );
+    expect(document.body.textContent).toContain(
+      "Waiting for the first payload in this workspace.",
     );
 
     cleanup();

@@ -1,4 +1,5 @@
 import {
+  closeWorkspaceSession,
   emptyWorkspaceState,
   isTauriEnvironment,
   startSessionBridge,
@@ -10,12 +11,12 @@ import {
   applyLocalShowToWorkspaceState,
   createInitialState,
   newestItemIndex,
+  removeWorkspaceFromState,
   resolveSelectedIndex,
   resolveSelectedWorkspaceId,
   sessionForWorkspaceState,
   statusForSession,
   statusForWorkspaceState,
-  visibleWorkspaceState,
   type VisualAidState,
 } from "./view-model";
 import { cleanupRenderEffects, renderInto } from "./render";
@@ -27,6 +28,9 @@ type BootstrapOptions = {
   startSessionBridge?: (
     onWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void,
   ) => Promise<() => void> | (() => void);
+  closeWorkspace?: (
+    workspaceId: string,
+  ) => Promise<VisualAidWorkspaceState> | VisualAidWorkspaceState;
 };
 
 declare global {
@@ -128,12 +132,22 @@ export const bootstrapApp = async (
     useTauriBridge,
     options?.bootstrapPayload ?? window.__VISUAL_AID_BOOTSTRAP__,
   );
+  const closeWorkspace =
+    options?.closeWorkspace ??
+    ((workspaceId: string) =>
+      useTauriBridge
+        ? closeWorkspaceSession(workspaceId)
+        : removeWorkspaceFromState(
+            state.workspaceState ?? emptyWorkspaceState(),
+            workspaceId,
+          ));
 
   const syncHistoryVisibility = () => {
     const historyToggle = target.querySelector<HTMLButtonElement>(
       "[data-history-toggle]",
     );
-    const historyOverlay = target.querySelector<HTMLElement>(".history-overlay");
+    const historyOverlay =
+      target.querySelector<HTMLElement>(".history-overlay");
 
     historyToggle?.setAttribute(
       "aria-expanded",
@@ -156,18 +170,20 @@ export const bootstrapApp = async (
     workspaceState: VisualAidWorkspaceState,
     selectedWorkspaceId: string | null | undefined = state.selectedWorkspaceId,
   ) => {
-    const visibleState =
-      visibleWorkspaceState(workspaceState, state.hiddenWorkspaceIds) ??
-      emptyWorkspaceState();
-
     state.workspaceState = workspaceState;
     state.selectedWorkspaceId = resolveSelectedWorkspaceId(
-      visibleState,
+      workspaceState,
       selectedWorkspaceId,
     );
-    const session = sessionForWorkspaceState(visibleState, state.selectedWorkspaceId);
+    const session = sessionForWorkspaceState(
+      workspaceState,
+      state.selectedWorkspaceId,
+    );
     state.session = session;
-    state.status = statusForWorkspaceState(visibleState, state.selectedWorkspaceId);
+    state.status = statusForWorkspaceState(
+      workspaceState,
+      state.selectedWorkspaceId,
+    );
     state.selectedIndex = newestItemIndex(session);
     state.historyOpen = false;
     renderInto(target, state);
@@ -175,20 +191,12 @@ export const bootstrapApp = async (
 
   const setWorkspaceState = (
     workspaceState: VisualAidWorkspaceState,
-    options?: {
-      revealWorkspaceId?: string | null;
-    },
+    selectedWorkspaceId:
+      | string
+      | null
+      | undefined = workspaceState.activeWorkspaceId,
   ) => {
-    if (options?.revealWorkspaceId) {
-      state.hiddenWorkspaceIds = (state.hiddenWorkspaceIds ?? []).filter(
-        (workspaceId) => workspaceId !== options.revealWorkspaceId,
-      );
-    }
-
-    syncStateFromWorkspaceState(
-      workspaceState,
-      options?.revealWorkspaceId ?? workspaceState.activeWorkspaceId,
-    );
+    syncStateFromWorkspaceState(workspaceState, selectedWorkspaceId);
   };
 
   const show = (payload: VisualAidPayload) => {
@@ -199,6 +207,7 @@ export const bootstrapApp = async (
         payload,
         now(),
       ),
+      state.selectedWorkspaceId,
     );
   };
 
@@ -209,6 +218,7 @@ export const bootstrapApp = async (
         state.selectedWorkspaceId,
         now(),
       ),
+      state.selectedWorkspaceId,
     );
   };
 
@@ -269,12 +279,14 @@ export const bootstrapApp = async (
       return;
     }
 
-    const visibleState =
-      visibleWorkspaceState(state.workspaceState, state.hiddenWorkspaceIds) ??
-      emptyWorkspaceState();
-
-    state.selectedWorkspaceId = resolveSelectedWorkspaceId(visibleState, workspaceId);
-    state.session = sessionForWorkspaceState(visibleState, state.selectedWorkspaceId);
+    state.selectedWorkspaceId = resolveSelectedWorkspaceId(
+      state.workspaceState,
+      workspaceId,
+    );
+    state.session = sessionForWorkspaceState(
+      state.workspaceState,
+      state.selectedWorkspaceId,
+    );
     state.status = statusForSession(state.session);
     state.selectedIndex = newestItemIndex(state.session);
     state.historyOpen = false;
@@ -300,22 +312,13 @@ export const bootstrapApp = async (
       return;
     }
 
-    const visibleState =
-      visibleWorkspaceState(state.workspaceState, state.hiddenWorkspaceIds) ??
-      emptyWorkspaceState();
-
-    if (visibleState.workspaces.length <= 1) {
-      return;
-    }
-
-    state.hiddenWorkspaceIds = [
-      ...new Set([...(state.hiddenWorkspaceIds ?? []), workspaceId]),
-    ];
-
-    const nextSelectedWorkspaceId =
-      state.selectedWorkspaceId === workspaceId ? null : state.selectedWorkspaceId;
-
-    syncStateFromWorkspaceState(state.workspaceState, nextSelectedWorkspaceId);
+    void Promise.resolve(closeWorkspace(workspaceId))
+      .then((workspaceState) => {
+        setWorkspaceState(workspaceState, workspaceState.activeWorkspaceId);
+      })
+      .catch((error) => {
+        console.error("Failed to close visual-aid workspace:", error);
+      });
   };
 
   const onHistoryToggleClick = (event: Event) => {
@@ -367,9 +370,7 @@ export const bootstrapApp = async (
 
   if (useTauriBridge) {
     stopBridge = await connectSessionBridge((workspaceState) => {
-      setWorkspaceState(workspaceState, {
-        revealWorkspaceId: workspaceState.activeWorkspaceId,
-      });
+      setWorkspaceState(workspaceState, workspaceState.activeWorkspaceId);
     });
   }
 
