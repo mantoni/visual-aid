@@ -113,6 +113,7 @@ Useful commands:
 Environment variables:
 
 - `VISUAL_AID_SESSION_PATH`: override the JSON session file path for manual MCP or app runs; `npm start` uses `.visual-aid/dev-session.json`
+- `VISUAL_AID_REGISTRY_PATH`: override the shared workspace registry path used for multi-workspace session discovery
 - `VISUAL_AID_OPEN_COMMAND`: explicit command used by `visual-aid.open`
 - `VISUAL_AID_APP_PATH`: explicit app bundle path used by `visual-aid.open`
 

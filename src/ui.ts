@@ -2,15 +2,17 @@ import {
   isTauriEnvironment,
   startSessionBridge,
   type VisualAidPayload,
-  type VisualAidSession,
+  type VisualAidWorkspaceState,
 } from "./bridge";
 import {
-  applyLocalClear,
-  applyLocalShow,
+  applyLocalClearToWorkspaceState,
+  applyLocalShowToWorkspaceState,
   createInitialState,
   newestItemIndex,
   resolveSelectedIndex,
-  statusForSession,
+  resolveSelectedWorkspaceId,
+  sessionForWorkspaceState,
+  statusForWorkspaceState,
   type VisualAidState,
 } from "./view-model";
 import { renderInto } from "./render";
@@ -20,7 +22,7 @@ type BootstrapOptions = {
   isTauriEnvironment?: () => boolean;
   now?: () => string;
   startSessionBridge?: (
-    onSession: (session: VisualAidSession) => void,
+    onWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void,
   ) => Promise<() => void> | (() => void);
 };
 
@@ -64,19 +66,44 @@ export const bootstrapApp = async (
     options?.bootstrapPayload ?? window.__VISUAL_AID_BOOTSTRAP__,
   );
 
-  const setSession = (session: VisualAidSession) => {
+  const setWorkspaceState = (workspaceState: VisualAidWorkspaceState) => {
+    state.workspaceState = workspaceState;
+    state.selectedWorkspaceId = resolveSelectedWorkspaceId(
+      workspaceState,
+      workspaceState.activeWorkspaceId,
+    );
+    const session = sessionForWorkspaceState(
+      workspaceState,
+      state.selectedWorkspaceId,
+    );
     state.session = session;
-    state.status = statusForSession(session);
+    state.status = statusForWorkspaceState(
+      workspaceState,
+      state.selectedWorkspaceId,
+    );
     state.selectedIndex = newestItemIndex(session);
     renderInto(target, state);
   };
 
   const show = (payload: VisualAidPayload) => {
-    setSession(applyLocalShow(state.session, payload, now()));
+    setWorkspaceState(
+      applyLocalShowToWorkspaceState(
+        state.workspaceState ?? { activeWorkspaceId: null, workspaces: [] },
+        state.selectedWorkspaceId,
+        payload,
+        now(),
+      ),
+    );
   };
 
   const clear = () => {
-    setSession(applyLocalClear(state.session, now()));
+    setWorkspaceState(
+      applyLocalClearToWorkspaceState(
+        state.workspaceState ?? { activeWorkspaceId: null, workspaces: [] },
+        state.selectedWorkspaceId,
+        now(),
+      ),
+    );
   };
 
   window.__VISUAL_AID__ = { show, clear };
@@ -125,8 +152,8 @@ export const bootstrapApp = async (
   let stopBridge = () => {};
 
   if (useTauriBridge) {
-    stopBridge = await connectSessionBridge((session) => {
-      setSession(session);
+    stopBridge = await connectSessionBridge((workspaceState) => {
+      setWorkspaceState(workspaceState);
     });
   }
 

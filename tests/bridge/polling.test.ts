@@ -2,11 +2,34 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   emptySession,
-  sessionSnapshot,
   startSessionBridge,
-  type VisualAidSession,
-  syncSession,
+  syncWorkspaceState,
+  type VisualAidWorkspaceState,
+  workspaceStateSnapshot,
 } from "../../src/bridge";
+
+const workspaceState = (content: string): VisualAidWorkspaceState => ({
+  activeWorkspaceId: "/tmp/example",
+  workspaces: [
+    {
+      id: "/tmp/example",
+      cwd: "/tmp/example",
+      label: "example",
+      sessionPath: "/tmp/example/.visual-aid/session.json",
+      session: {
+        ...emptySession(),
+        lastAction: "show",
+        items: [
+          {
+            version: 1,
+            format: "markdown",
+            content,
+          },
+        ],
+      },
+    },
+  ],
+});
 
 describe("Desktop bridge spec", () => {
   afterEach(() => {
@@ -14,114 +37,124 @@ describe("Desktop bridge spec", () => {
   });
 
   it("VAB-BRIDGE-001 bridge emits when the session changes", async () => {
-    const session = {
-      ...emptySession(),
-      lastAction: "show" as const,
-      items: [
-        {
-          version: 1 as const,
-          format: "markdown" as const,
-          content: "# Example",
-        },
-      ],
-    };
-    const onSession = vi.fn();
+    const snapshot = workspaceState("# Example");
+    const onWorkspaceState = vi.fn();
 
-    const next = await syncSession("", async () => session, onSession);
+    const next = await syncWorkspaceState(
+      "",
+      async () => snapshot,
+      onWorkspaceState,
+    );
 
-    expect(onSession).toHaveBeenCalledWith(session);
+    expect(onWorkspaceState).toHaveBeenCalledWith(snapshot);
     expect(next).not.toBe("");
   });
 
   it("VAB-BRIDGE-002 bridge suppresses identical snapshots", async () => {
-    const session = {
-      ...emptySession(),
-      lastAction: "show" as const,
-      items: [
-        {
-          version: 1 as const,
-          format: "markdown" as const,
-          content: "# Example",
-        },
-      ],
-    };
-    const onSession = vi.fn();
+    const snapshot = workspaceState("# Example");
+    const onWorkspaceState = vi.fn();
     const stopListening = vi.fn();
-    let deliver: ((session: VisualAidSession) => void) | null = null;
+    let deliver: ((workspaceState: VisualAidWorkspaceState) => void) | null = null;
 
-    const stop = await startSessionBridge(onSession, {
+    const stop = await startSessionBridge(onWorkspaceState, {
       enabled: true,
-      invokeSession: vi.fn().mockResolvedValue(session),
-      subscribeSession: (handleSession) => {
-        deliver = handleSession;
+      invokeWorkspaceState: vi.fn().mockResolvedValue(snapshot),
+      subscribeWorkspaceState: (handleWorkspaceState) => {
+        deliver = handleWorkspaceState;
         return stopListening;
       },
     });
 
-    expect(onSession).toHaveBeenCalledTimes(1);
-    const deliverUpdate = deliver as ((session: VisualAidSession) => void) | null;
+    expect(onWorkspaceState).toHaveBeenCalledTimes(1);
+    const deliverUpdate =
+      deliver as ((workspaceState: VisualAidWorkspaceState) => void) | null;
     if (deliverUpdate) {
-      deliverUpdate(session);
+      deliverUpdate(snapshot);
     }
 
-    expect(onSession).toHaveBeenCalledTimes(1);
+    expect(onWorkspaceState).toHaveBeenCalledTimes(1);
 
     stop();
     expect(stopListening).toHaveBeenCalledTimes(1);
   });
 
   it("VAB-BRIDGE-003 bridge treats reordered metadata keys as the same snapshot", async () => {
-    const firstSession = {
-      ...emptySession(),
-      lastAction: "show" as const,
-      items: [
+    const firstWorkspaceState: VisualAidWorkspaceState = {
+      activeWorkspaceId: "/tmp/example",
+      workspaces: [
         {
-          version: 1 as const,
-          format: "mermaid" as const,
-          content: "graph TD\nA-->B",
-          metadata: {
-            source: "manual-test",
-            checkedAt: "2026-03-14T10:22:30+01:00",
+          id: "/tmp/example",
+          cwd: "/tmp/example",
+          label: "example",
+          sessionPath: "/tmp/example/.visual-aid/session.json",
+          session: {
+            ...emptySession(),
+            lastAction: "show",
+            items: [
+              {
+                version: 1,
+                format: "mermaid",
+                content: "graph TD\nA-->B",
+                metadata: {
+                  source: "manual-test",
+                  checkedAt: "2026-03-14T10:22:30+01:00",
+                },
+              },
+            ],
           },
         },
       ],
     };
-    const reorderedSession = {
-      ...emptySession(),
-      lastAction: "show" as const,
-      items: [
+    const reorderedWorkspaceState: VisualAidWorkspaceState = {
+      activeWorkspaceId: "/tmp/example",
+      workspaces: [
         {
-          version: 1 as const,
-          format: "mermaid" as const,
-          content: "graph TD\nA-->B",
-          metadata: {
-            checkedAt: "2026-03-14T10:22:30+01:00",
-            source: "manual-test",
+          id: "/tmp/example",
+          cwd: "/tmp/example",
+          label: "example",
+          sessionPath: "/tmp/example/.visual-aid/session.json",
+          session: {
+            ...emptySession(),
+            lastAction: "show",
+            items: [
+              {
+                version: 1,
+                format: "mermaid",
+                content: "graph TD\nA-->B",
+                metadata: {
+                  checkedAt: "2026-03-14T10:22:30+01:00",
+                  source: "manual-test",
+                },
+              },
+            ],
           },
         },
       ],
     };
-    const onSession = vi.fn();
+    const onWorkspaceState = vi.fn();
     const stopListening = vi.fn();
-    let deliver: ((session: VisualAidSession) => void) | null = null;
+    let deliver: ((workspaceState: VisualAidWorkspaceState) => void) | null = null;
 
-    await startSessionBridge(onSession, {
+    await startSessionBridge(onWorkspaceState, {
       enabled: true,
-      invokeSession: async () => firstSession,
-      subscribeSession: (handleSession) => {
-        deliver = handleSession;
+      invokeWorkspaceState: async () => firstWorkspaceState,
+      subscribeWorkspaceState: (handleWorkspaceState) => {
+        deliver = handleWorkspaceState;
         return stopListening;
       },
     });
 
-    onSession.mockClear();
-    const deliverUpdate = deliver as ((session: VisualAidSession) => void) | null;
+    onWorkspaceState.mockClear();
+    const deliverUpdate =
+      deliver as ((workspaceState: VisualAidWorkspaceState) => void) | null;
     if (deliverUpdate) {
-      deliverUpdate(reorderedSession);
+      deliverUpdate(reorderedWorkspaceState);
     }
 
-    expect(onSession).not.toHaveBeenCalled();
-    expect(sessionSnapshot(reorderedSession)).toBe(sessionSnapshot(firstSession));
+    expect(onWorkspaceState).not.toHaveBeenCalled();
+    expect(workspaceStateSnapshot(reorderedWorkspaceState)).toBe(
+      workspaceStateSnapshot(firstWorkspaceState),
+    );
     expect(stopListening).not.toHaveBeenCalled();
   });
 });

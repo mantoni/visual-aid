@@ -28,6 +28,19 @@ export type VisualAidSession = {
   items: VisualAidPayload[];
 };
 
+export type VisualAidWorkspace = {
+  id: string;
+  cwd: string;
+  label: string;
+  sessionPath: string;
+  session: VisualAidSession;
+};
+
+export type VisualAidWorkspaceState = {
+  activeWorkspaceId: string | null;
+  workspaces: VisualAidWorkspace[];
+};
+
 export const SESSION_UPDATED_EVENT = "visual-aid:session-updated";
 
 const canonicalizeValue = (value: unknown): unknown => {
@@ -51,6 +64,9 @@ const canonicalizeValue = (value: unknown): unknown => {
 export const sessionSnapshot = (session: VisualAidSession) =>
   JSON.stringify(canonicalizeValue(session));
 
+export const workspaceStateSnapshot = (workspaceState: VisualAidWorkspaceState) =>
+  JSON.stringify(canonicalizeValue(workspaceState));
+
 export const isTauriEnvironment = () =>
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
@@ -61,16 +77,21 @@ export const emptySession = (): VisualAidSession => ({
   items: [],
 });
 
-export const syncSession = async (
+export const emptyWorkspaceState = (): VisualAidWorkspaceState => ({
+  activeWorkspaceId: null,
+  workspaces: [],
+});
+
+export const syncWorkspaceState = async (
   lastSeen: string,
-  invokeSession: () => Promise<VisualAidSession>,
-  onSession: (session: VisualAidSession) => void,
+  invokeWorkspaceState: () => Promise<VisualAidWorkspaceState>,
+  onWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void,
 ) => {
-  const session = await invokeSession();
-  const next = sessionSnapshot(session);
+  const workspaceState = await invokeWorkspaceState();
+  const next = workspaceStateSnapshot(workspaceState);
 
   if (next !== lastSeen) {
-    onSession(session);
+    onWorkspaceState(workspaceState);
   }
 
   return next;
@@ -78,15 +99,15 @@ export const syncSession = async (
 
 type SessionBridgeOptions = {
   enabled?: boolean;
-  invokeSession?: () => Promise<VisualAidSession>;
-  subscribeSession?: (
-    onSession: (session: VisualAidSession) => void,
+  invokeWorkspaceState?: () => Promise<VisualAidWorkspaceState>;
+  subscribeWorkspaceState?: (
+    onWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void,
   ) => Promise<() => void> | (() => void);
   onError?: (error: unknown) => void;
 };
 
 export const startSessionBridge = async (
-  onSession: (session: VisualAidSession) => void,
+  onWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void,
   options?: SessionBridgeOptions,
 ) => {
   const enabled = options?.enabled ?? isTauriEnvironment();
@@ -96,39 +117,43 @@ export const startSessionBridge = async (
   }
 
   let lastSeen = "";
-  const invokeSession =
-    options?.invokeSession ??
-    (() => invoke<VisualAidSession>("read_session_state"));
-  const subscribeSession =
-    options?.subscribeSession ??
-    ((handleSession: (session: VisualAidSession) => void) =>
-      listen<VisualAidSession>(SESSION_UPDATED_EVENT, (event) => {
-        handleSession(event.payload);
+  const invokeWorkspaceState =
+    options?.invokeWorkspaceState ??
+    (() => invoke<VisualAidWorkspaceState>("read_workspace_state"));
+  const subscribeWorkspaceState =
+    options?.subscribeWorkspaceState ??
+    ((handleWorkspaceState: (workspaceState: VisualAidWorkspaceState) => void) =>
+      listen<VisualAidWorkspaceState>(SESSION_UPDATED_EVENT, (event) => {
+        handleWorkspaceState(event.payload);
       }));
   const onError =
     options?.onError ??
     ((error: unknown) => {
       console.error("Failed to sync visual-aid session:", error);
     });
-  const handleSession = (session: VisualAidSession) => {
-    const next = sessionSnapshot(session);
+  const handleWorkspaceState = (workspaceState: VisualAidWorkspaceState) => {
+    const next = workspaceStateSnapshot(workspaceState);
 
     if (next !== lastSeen) {
       lastSeen = next;
-      onSession(session);
+      onWorkspaceState(workspaceState);
     }
   };
 
-  const stopListening = await subscribeSession((session) => {
+  const stopListening = await subscribeWorkspaceState((workspaceState) => {
     try {
-      handleSession(session);
+      handleWorkspaceState(workspaceState);
     } catch (error) {
       onError(error);
     }
   });
 
   try {
-    lastSeen = await syncSession(lastSeen, invokeSession, handleSession);
+    lastSeen = await syncWorkspaceState(
+      lastSeen,
+      invokeWorkspaceState,
+      handleWorkspaceState,
+    );
   } catch (error) {
     stopListening();
     throw error;

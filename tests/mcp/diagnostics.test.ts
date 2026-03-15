@@ -6,7 +6,11 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-const createTransport = (cwd: string, sessionPath: string) =>
+const createTransport = (
+  cwd: string,
+  sessionPath: string,
+  registryPath: string,
+) =>
   new StdioClientTransport({
     command: process.execPath,
     args: [join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"), "mcp/server.ts"],
@@ -15,6 +19,7 @@ const createTransport = (cwd: string, sessionPath: string) =>
       PATH: process.env.PATH ?? "",
       HOME: process.env.HOME ?? "",
       VISUAL_AID_SESSION_PATH: sessionPath,
+      VISUAL_AID_REGISTRY_PATH: registryPath,
       VISUAL_AID_OPEN_COMMAND: "true",
     },
     stderr: "pipe",
@@ -50,14 +55,16 @@ const firstTextContent = (value: unknown) => {
 describe("MCP diagnostics spec", () => {
   let root = "";
   let sessionPath = "";
+  let registryPath = "";
   let client: Client | null = null;
   let transport: StdioClientTransport | null = null;
 
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), "visual-aid-diag-"));
     sessionPath = join(root, "session.json");
+    registryPath = join(root, "registry.json");
     client = createClient();
-    transport = createTransport(process.cwd(), sessionPath);
+    transport = createTransport(process.cwd(), sessionPath, registryPath);
     await client.connect(transport);
   });
 
@@ -101,6 +108,7 @@ describe("MCP diagnostics spec", () => {
     if (first && "text" in first) {
       expect(first.text).toContain('"name": "visual-aid"');
       expect(first.text).toContain(`"path": "${sessionPath.replaceAll("\\", "\\\\")}"`);
+      expect(first.text).toContain(`"count": 0`);
     }
   });
 });

@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { VisualAidSession } from "../../src/bridge";
+import type { VisualAidWorkspaceState } from "../../src/bridge";
 import { bootstrapApp } from "../../src/ui";
 
 const setupRoot = () => {
@@ -51,7 +51,7 @@ describe("Interactive UI spec", () => {
     expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
       "Event Payload",
     );
-    expect(document.querySelector(".payload-markdown h2")?.textContent).toBe(
+    expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
       "Event Content",
     );
 
@@ -81,7 +81,7 @@ describe("Interactive UI spec", () => {
     expect(document.querySelector(".panel--viewer h2")?.textContent).toBe(
       "Stable Payload",
     );
-    expect(document.querySelector(".payload-markdown h2")?.textContent).toBe(
+    expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
       "Stable",
     );
 
@@ -143,7 +143,7 @@ describe("Interactive UI spec", () => {
     expect(document.querySelectorAll(".history-item")[1]?.classList.contains("history-item--active")).toBe(
       true,
     );
-    expect(document.querySelector(".payload-markdown h2")?.textContent).toBe(
+    expect(document.querySelector(".payload-markdown h1")?.textContent).toBe(
       "First",
     );
 
@@ -151,16 +151,27 @@ describe("Interactive UI spec", () => {
   });
 
   it("VUI-BRIDGE-001 host bridge updates replace the DOM in Tauri mode", async () => {
-    const polledSession: VisualAidSession = {
-      openedAt: "2026-03-13T17:32:00.000Z",
-      lastAction: "show",
-      updatedAt: "2026-03-13T17:32:01.000Z",
-      items: [
+    const polledSession: VisualAidWorkspaceState = {
+      activeWorkspaceId: "/tmp/polled",
+      workspaces: [
         {
-          version: 1,
-          format: "html",
-          title: "Polled Payload",
-          content: "<section><em>Polled</em> HTML</section>",
+          id: "/tmp/polled",
+          cwd: "/tmp/polled",
+          label: "polled",
+          sessionPath: "/tmp/polled/.visual-aid/session.json",
+          session: {
+            openedAt: "2026-03-13T17:32:00.000Z",
+            lastAction: "show",
+            updatedAt: "2026-03-13T17:32:01.000Z",
+            items: [
+              {
+                version: 1,
+                format: "html",
+                title: "Polled Payload",
+                content: "<section><em>Polled</em> HTML</section>",
+              },
+            ],
+          },
         },
       ],
     };

@@ -7,6 +7,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { VisualAidSession } from "../../mcp/session.js";
+import type { VisualAidWorkspaceState } from "../../mcp/workspace.js";
 
 const firstTextContent = (value: unknown) => {
   if (!Array.isArray(value) || value.length === 0) {
@@ -29,7 +30,11 @@ const firstTextContent = (value: unknown) => {
   return entry.text;
 };
 
-const createTransport = (cwd: string, sessionPath: string) =>
+const createTransport = (
+  cwd: string,
+  sessionPath: string,
+  registryPath: string,
+) =>
   new StdioClientTransport({
     command: process.execPath,
     args: [join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"), "mcp/server.ts"],
@@ -38,6 +43,7 @@ const createTransport = (cwd: string, sessionPath: string) =>
       PATH: process.env.PATH ?? "",
       HOME: process.env.HOME ?? "",
       VISUAL_AID_SESSION_PATH: sessionPath,
+      VISUAL_AID_REGISTRY_PATH: registryPath,
       VISUAL_AID_OPEN_COMMAND: "true",
     },
     stderr: "pipe",
@@ -52,14 +58,16 @@ const createClient = () =>
 describe("MCP stdio integration spec", () => {
   let root = "";
   let sessionPath = "";
+  let registryPath = "";
   let client: Client | null = null;
   let transport: StdioClientTransport | null = null;
 
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), "visual-aid-mcp-"));
     sessionPath = join(root, "session.json");
+    registryPath = join(root, "registry.json");
     client = createClient();
-    transport = createTransport(process.cwd(), sessionPath);
+    transport = createTransport(process.cwd(), sessionPath, registryPath);
     await client.connect(transport);
   });
 
@@ -101,6 +109,13 @@ describe("MCP stdio integration spec", () => {
     expect(session.lastAction).toBe("show");
     expect(session.items).toHaveLength(1);
     expect(session.items[0]?.format).toBe("markdown");
+
+    const workspaceState = JSON.parse(
+      await readFile(registryPath, "utf8"),
+    ) as VisualAidWorkspaceState;
+
+    expect(workspaceState.workspaces).toHaveLength(1);
+    expect(workspaceState.workspaces[0]?.session.items[0]?.format).toBe("markdown");
   });
 
   it("VAI-CLEAR-001 clear empties the session file through a real MCP call", async () => {

@@ -11,8 +11,16 @@ import {
   resolveSessionPath,
   writeSession,
 } from "./session.js";
+import {
+  applyWorkspaceSession,
+  readWorkspaceState,
+  resolveRegistryPath,
+  writeWorkspaceState,
+} from "./workspace.js";
 
-const sessionPath = resolveSessionPath();
+const cwd = process.cwd();
+const sessionPath = resolveSessionPath(cwd);
+const registryPath = resolveRegistryPath(cwd);
 
 const textResult = (text: string, isError = false) => ({
   content: [{ type: "text" as const, text }],
@@ -21,6 +29,7 @@ const textResult = (text: string, isError = false) => ({
 
 const getDiagnostics = async () => {
   const session = await readSession(sessionPath);
+  const workspaceState = await readWorkspaceState(registryPath);
 
   return {
     server: {
@@ -35,7 +44,21 @@ const getDiagnostics = async () => {
       openedAt: session.openedAt,
       updatedAt: session.updatedAt,
     },
+    workspaces: {
+      path: registryPath,
+      count: workspaceState.workspaces.length,
+      activeWorkspaceId: workspaceState.activeWorkspaceId,
+    },
   };
+};
+
+const persistWorkspaceState = async (session: Awaited<ReturnType<typeof readSession>>) => {
+  const workspaceState = await readWorkspaceState(registryPath);
+
+  await writeWorkspaceState(
+    registryPath,
+    applyWorkspaceSession(workspaceState, cwd, sessionPath, session),
+  );
 };
 
 const server = new McpServer(
@@ -107,8 +130,10 @@ server.registerTool(
     const launched = await maybeLaunchApp();
     const now = new Date().toISOString();
     const session = await readSession(sessionPath);
+    const next = applyOpen(session, now);
 
-    await writeSession(sessionPath, applyOpen(session, now));
+    await writeSession(sessionPath, next);
+    await persistWorkspaceState(next);
 
     return textResult(
       launched
@@ -130,8 +155,10 @@ server.registerTool(
     const launched = await maybeLaunchApp();
     const now = new Date().toISOString();
     const session = await readSession(sessionPath);
+    const next = applyShow(session, payload, now);
 
-    await writeSession(sessionPath, applyShow(session, payload, now));
+    await writeSession(sessionPath, next);
+    await persistWorkspaceState(next);
 
     return textResult(
       `Accepted ${payload.format} payload in ${payload.mode ?? "replace"} mode. ${launched ? `Launch checked via ${launched.source}. ` : ""}Session state recorded at ${sessionPath}.`,
@@ -147,8 +174,10 @@ server.registerTool(
   },
   async () => {
     const session = await readSession(sessionPath);
+    const next = applyClear(session, new Date().toISOString());
 
-    await writeSession(sessionPath, applyClear(session, new Date().toISOString()));
+    await writeSession(sessionPath, next);
+    await persistWorkspaceState(next);
 
     return textResult(`Cleared visual-aid session state at ${sessionPath}.`);
   },
