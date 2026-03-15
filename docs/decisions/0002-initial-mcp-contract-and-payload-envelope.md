@@ -54,11 +54,12 @@ Initial supported `format` values are:
 - `json`
 - `diff`
 - `mermaid`
-- `excalidraw`
 - `html`
 
 The contract later added a dedicated `code` format in
 [0023-source-code-rendering.md](0023-source-code-rendering.md).
+Excalidraw support was removed later in
+[0027-remove-excalidraw-format.md](0027-remove-excalidraw-format.md).
 
 ## Consequences
 

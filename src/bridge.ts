@@ -7,7 +7,6 @@ type VisualAidFormat =
   | "json"
   | "diff"
   | "mermaid"
-  | "excalidraw"
   | "html";
 type VisualAidMode = "replace" | "append";
 

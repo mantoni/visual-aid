@@ -553,37 +553,6 @@ describe("Renderer output spec", () => {
     );
   });
 
-  it("VFR-EXCALIDRAW-001 excalidraw payloads show parsed summary details", () => {
-    const body = renderDocument(
-      renderAppHtml({
-        session: {
-          openedAt: null,
-          lastAction: "show",
-          updatedAt: "2026-03-13T17:43:00.000Z",
-          items: [
-            {
-              version: 1,
-              format: "excalidraw",
-              title: "Sketch",
-              content: JSON.stringify({
-                elements: [{ id: "a" }, { id: "b" }],
-                appState: { viewBackgroundColor: "#fff" },
-              }),
-            },
-          ],
-        },
-        status: "Received Excalidraw payload",
-        selectedIndex: 0,
-      }),
-    );
-
-    expect(body.querySelector(".payload-excalidraw")).not.toBeNull();
-    expect(body.textContent).toContain("2 elements");
-    expect(body.querySelector(".payload-excalidraw .payload-pre code")?.textContent).toContain(
-      "\"elements\"",
-    );
-  });
-
   it("VAR-HISTORY-002 the current payload reflects the selected history item", () => {
     const body = renderDocument(
       renderAppHtml({

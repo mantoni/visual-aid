@@ -207,7 +207,6 @@ h2 {
 .payload-json,
 .payload-diff,
 .payload-mermaid,
-.payload-excalidraw,
 .history-list,
 .empty-state {
   margin: 0 24px 24px;
@@ -219,8 +218,7 @@ h2 {
 .payload-code,
 .payload-json,
 .payload-diff,
-.payload-mermaid,
-.payload-excalidraw {
+.payload-mermaid {
   padding: 20px;
   border-radius: 18px;
   background: rgba(5, 7, 10, 0.56);

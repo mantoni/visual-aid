@@ -24,7 +24,6 @@ Related decisions:
 - JSON payloads expose parsed structure when valid and keep a readable raw fallback when invalid.
 - Diff lines are visually classified by their line prefix and role.
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
-- Excalidraw payloads expose parsed canvas metadata when valid JSON is provided.
 - HTML payloads still render as direct markup.
 
 ## Scenarios
@@ -113,14 +112,7 @@ When the renderer attempts to hydrate the payload view
 Then the UI shows a readable fallback message
 And the Mermaid source is visible for inspection
 
-### VFR-EXCALIDRAW-001 Excalidraw payloads show parsed summary details
-
-Given a valid excalidraw JSON payload
-When the renderer output is generated
-Then the viewer shows an element count summary
-And the raw JSON preview remains visible
-
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-005`, `VFR-MARKDOWN-006`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-005`, `VFR-MARKDOWN-006`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`
 - `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`, `VFR-MARKDOWN-003`, `VFR-MARKDOWN-004`

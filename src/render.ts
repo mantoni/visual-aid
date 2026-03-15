@@ -306,46 +306,6 @@ const renderMarkdown = (content: string) =>
     FORBID_TAGS: ["iframe", "script", "style"],
   })}</div>`;
 
-const renderExcalidraw = (content: string) => {
-  let parsed: unknown = null;
-  let elementCount = 0;
-  let appStateKeys = 0;
-
-  try {
-    parsed = JSON.parse(content) as {
-      elements?: unknown[];
-      appState?: Record<string, unknown>;
-    };
-    if (parsed && typeof parsed === "object") {
-      const value = parsed as {
-        elements?: unknown[];
-        appState?: Record<string, unknown>;
-      };
-      elementCount = Array.isArray(value.elements) ? value.elements.length : 0;
-      appStateKeys =
-        value.appState && typeof value.appState === "object"
-          ? Object.keys(value.appState).length
-          : 0;
-    }
-  } catch {
-    parsed = null;
-  }
-
-  return `
-    <div class="payload-excalidraw">
-      <div class="payload-special__header">
-        <span class="payload-special__badge">Canvas Summary</span>
-        <strong>${parsed ? `${elementCount} elements` : "Unparsed payload"}</strong>
-      </div>
-      <div class="payload-special__stats">
-        <div><span>Elements</span><strong>${elementCount}</strong></div>
-        <div><span>App State Keys</span><strong>${appStateKeys}</strong></div>
-      </div>
-      <pre class="payload-pre"><code>${escapeHtml(content)}</code></pre>
-    </div>
-  `;
-};
-
 const describeJsonValue = (value: unknown) => {
   if (Array.isArray(value)) {
     return `${value.length} item${value.length === 1 ? "" : "s"}`;
@@ -575,10 +535,6 @@ export const renderContent = (payload: VisualAidPayload) => {
 
   if (payload.format === "mermaid") {
     return renderMermaid(payload.content);
-  }
-
-  if (payload.format === "excalidraw") {
-    return renderExcalidraw(payload.content);
   }
 
   if (payload.format === "html") {

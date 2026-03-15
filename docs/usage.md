@@ -51,7 +51,6 @@ The app currently supports:
 - `json`
 - `diff`
 - `mermaid`
-- `excalidraw`
 - `html`
 
 When multiple working directories send payloads through the shared registry, the app keeps them in one window and shows each working directory as a top-level tab.
@@ -63,7 +62,6 @@ Use `visual-aid` when the artifact is easier to inspect visually than in termina
 - nested data in JSON
 - code changes in unified diff
 - diagrams in Mermaid
-- sketches in Excalidraw JSON
 - fragment-oriented UI previews in HTML
 
 ## Example Workflow

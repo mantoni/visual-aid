@@ -35,7 +35,6 @@ The first renderer pass is format-aware without depending on heavyweight externa
 - JSON is rendered as a parsed tree view with a raw fallback for inspection.
 - Unified diff is rendered as structured line groups with add, remove, hunk, and file markers.
 - Mermaid is rendered as a diagram when possible, with the source kept available as a fallback and inspection surface.
-- Excalidraw is rendered as a structured canvas summary with raw JSON preview when possible.
 - HTML is rendered as fragment-oriented content inside a sandboxed isolated payload surface with app-provided base styles.
 - The renderer uses a single main viewer with top-level workspace tabs keyed by working directory plus a reverse-chronological history sidebar for the selected workspace.
 
@@ -77,7 +76,7 @@ The first payload contract is a versioned envelope shared across supported forma
 Required fields:
 
 - `version`: payload schema version, starting at `1`
-- `format`: one of `markdown`, `code`, `json`, `diff`, `mermaid`, `excalidraw`, or `html`
+- `format`: one of `markdown`, `code`, `json`, `diff`, `mermaid`, or `html`
 - `content`: string payload to render
 
 Optional fields:
@@ -99,7 +98,6 @@ The first target payload families are:
 - JSON
 - Unified diff
 - Mermaid
-- Excalidraw
 - HTML
 
 These should be treated as render targets, not as implementation commitments to any specific parsing or storage library yet.

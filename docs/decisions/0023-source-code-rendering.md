@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The project already renders Markdown, diff, JSON, Mermaid, Excalidraw, and HTML payloads, but it still lacks a first-class renderer for plain source code.
+The project already renders Markdown, diff, JSON, Mermaid, and HTML payloads, but it still lacks a first-class renderer for plain source code.
 
 That gap forces agents to either wrap code inside Markdown fences or send raw preformatted text, both of which make code inspection weaker than it should be. At the same time, Markdown fenced code blocks are still rendered as plain escaped text even when a language is declared.
 

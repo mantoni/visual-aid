@@ -6,7 +6,6 @@ Capture the currently intended product backlog in one place so future agent sess
 
 ## Now
 
-- Render Excalidraw payloads as actual drawings instead of falling back to raw JSON-only inspection.
 - Strengthen agent-facing guidance so agents routinely use `visual-aid` when a richer surface helps the user inspect structured output.
 - Add a top-level switcher for JSON payloads so users can toggle between the rich interactive view and plain JSON.
 

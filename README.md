@@ -15,7 +15,6 @@ The visual aid is intended for structured formats such as:
 - JSON
 - Unified diff
 - Mermaid
-- Excalidraw
 - HTML
 
 The set of supported formats can grow over time as new agent workflows emerge, but those formats are added in the product codebase rather than through a plugin model.
@@ -92,6 +91,7 @@ The baseline document set is:
 - [docs/decisions/0024-embedded-mermaid-in-markdown.md](docs/decisions/0024-embedded-mermaid-in-markdown.md): render Mermaid fences inside Markdown as embedded diagrams with source fallback
 - [docs/decisions/0025-embedded-diff-in-markdown.md](docs/decisions/0025-embedded-diff-in-markdown.md): render diff fences inside Markdown with the structured diff viewer
 - [docs/decisions/0026-sanitized-html-in-markdown.md](docs/decisions/0026-sanitized-html-in-markdown.md): render sanitized raw HTML snippets inside Markdown while keeping standalone HTML isolated
+- [docs/decisions/0027-remove-excalidraw-format.md](docs/decisions/0027-remove-excalidraw-format.md): remove Excalidraw as a first-class payload format
 
 ## Documentation Rules
 

@@ -21,7 +21,6 @@ The project should help users understand:
 
 - code changes
 - architecture diagrams
-- sketches and whiteboard-like artifacts
 - rich text explanations
 - other structured technical artifacts that benefit from visual rendering
 

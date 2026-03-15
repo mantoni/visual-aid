@@ -6,7 +6,6 @@ export const visualAidFormatSchema = z.enum([
   "json",
   "diff",
   "mermaid",
-  "excalidraw",
   "html",
 ]);
 

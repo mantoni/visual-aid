@@ -19,7 +19,6 @@ export const formatLabels: Record<VisualAidPayload["format"], string> = {
   json: "JSON",
   diff: "Unified Diff",
   mermaid: "Mermaid",
-  excalidraw: "Excalidraw",
   html: "HTML",
 };
 

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The project already handles structured formats such as Markdown, Mermaid, diffs, Excalidraw, and HTML, but it has no dedicated view for raw JSON artifacts.
+The project already handles structured formats such as Markdown, Mermaid, diffs, and HTML, but it has no dedicated view for raw JSON artifacts.
 
 That leaves a common agent output format stuck in the generic preformatted fallback even though users often need to inspect nested keys, arrays, booleans, and nulls quickly.
 
