@@ -5,21 +5,14 @@
 The default local dogfood path is:
 
 1. Run `npm start`.
-2. Point Codex `config.toml` at the same `.visual-aid/dev-session.json`.
-3. Use the MCP tools against that shared session path.
+2. Point Codex `config.toml` at this checkout's generic MCP server config.
+3. Use the MCP tools from any project.
 
 `npm start` creates or reuses `.visual-aid/dev-session.json`, starts `tauri:dev` with `VISUAL_AID_SESSION_PATH` set, and stays focused on the app process only. Codex should continue to own MCP server startup from `config.toml`.
 
 ## Cross-Workspace Testing
 
-If you want to keep iterating on this checkout but send MCP traffic from another local project, use the target workspace override in both places:
-
-```sh
-npm start -- --workspace-cwd /absolute/path/to/other-project
-npm start -- --print-codex-config --workspace-cwd /absolute/path/to/other-project
-```
-
-That keeps the MCP server and app launch rooted in this checkout while moving the shared session file and workspace identity to `/absolute/path/to/other-project`.
+The printed MCP config is now generic. It points at this checkout's server entrypoint by absolute path, but it does not pin `cwd` or `VISUAL_AID_SESSION_PATH`. That means Codex can reuse the same config across projects, and each caller project gets its own `.visual-aid/session.json` automatically.
 
 ## Codex MCP Config
 
@@ -33,20 +26,9 @@ Expected shape:
 
 ```toml
 [mcp_servers.visual-aid]
-command = "npx"
-args = ["tsx", "mcp/server.ts"]
-cwd = "/absolute/path/to/visual-aid"
-env = { VISUAL_AID_SESSION_PATH = "/absolute/path/to/visual-aid/.visual-aid/dev-session.json", VISUAL_AID_PREFER_DEBUG_APP = "1" }
-```
-
-Cross-workspace example:
-
-```toml
-[mcp_servers.visual-aid]
-command = "npx"
-args = ["tsx", "mcp/server.ts"]
-cwd = "/absolute/path/to/visual-aid"
-env = { VISUAL_AID_SESSION_PATH = "/absolute/path/to/other-project/.visual-aid/session.json", VISUAL_AID_PREFER_DEBUG_APP = "1", VISUAL_AID_WORKSPACE_CWD = "/absolute/path/to/other-project" }
+command = "/absolute/path/to/node"
+args = ["/absolute/path/to/visual-aid/node_modules/tsx/dist/cli.mjs", "/absolute/path/to/visual-aid/mcp/server.ts"]
+env = { VISUAL_AID_PREFER_DEBUG_APP = "1" }
 ```
 
 ## Fish Fallback
@@ -59,9 +41,7 @@ env VISUAL_AID_SESSION_PATH=(pwd)/.visual-aid/dev-session.json npx tsx mcp/serve
 
 ## Quick Test Sequence
 
-1. Call `visual-aid.status` and confirm the reported `sessionPath` ends with `.visual-aid/dev-session.json`.
+1. Call `visual-aid.status` from any project and confirm the reported `sessionPath` ends with that project's `.visual-aid/session.json`.
 2. Call `visual-aid.open` and confirm the app window opens or focuses.
 3. Call `visual-aid.show` with a small markdown payload and confirm it renders in the app.
 4. Call `visual-aid.clear` and confirm the rendered content disappears.
-
-For cross-workspace testing, the same sequence should report the external session path and the app should show that workspace as its own tab label.

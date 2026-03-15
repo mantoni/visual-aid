@@ -23,7 +23,7 @@ What it does not yet have is a single canonical local startup flow that a future
 Specifically:
 
 - `npm start` without overrides creates or reuses `.visual-aid/dev-session.json`
-- `npm start` launches `npm run tauri:dev` with `VISUAL_AID_SESSION_PATH` set to the resolved target session path
+- `npm start` launches `npm run tauri:dev` with `VISUAL_AID_SESSION_PATH` set to the canonical dogfood session path
 - `npm start` may print the exact Codex MCP config block for the current checkout
 - Codex `config.toml` remains responsible for starting `npx tsx mcp/server.ts`
 - `npm start` does not launch a competing local MCP server process

@@ -19,21 +19,21 @@ The source checkout and the target workspace are now treated as separate concern
 
 Specifically:
 
-- `npm start` keeps the repository-local `.visual-aid/dev-session.json` as the default dogfood session when no override is provided
-- `npm start` accepts `--workspace-cwd` to target another workspace while still launching `tauri:dev` from the `visual-aid` checkout
-- `npm start -- --print-codex-config --workspace-cwd <path>` prints a config block that keeps `cwd` on the `visual-aid` checkout while setting `VISUAL_AID_SESSION_PATH` and `VISUAL_AID_WORKSPACE_CWD` for the target workspace
-- the MCP server resolves workspace identity from `VISUAL_AID_WORKSPACE_CWD` when present
-- source-checkout configs may set `VISUAL_AID_PREFER_DEBUG_APP=1` so launch discovery keeps preferring the local debug build even when the session path is not the canonical dogfood path
+- `npm start` keeps the repository-local `.visual-aid/dev-session.json` as the default local app session for source-checkout dogfooding
+- `npm start -- --print-codex-config` prints a generic config block that points at this checkout's MCP server entrypoint by absolute path
+- the generic config intentionally does not pin `cwd` or `VISUAL_AID_SESSION_PATH`, so the caller workspace becomes the active workspace automatically
+- the MCP server resolves workspace identity from the process cwd by default and still honors explicit overrides when needed
+- source-checkout configs may set `VISUAL_AID_PREFER_DEBUG_APP=1` so launch discovery keeps preferring the local debug build
 
 ## Consequences
 
 Positive consequences:
 
 - contributors can test `visual-aid` from another project without copying the server code into that project
-- workspace tabs and registry state reflect the target project instead of the `visual-aid` repo
+- workspace tabs and registry state reflect the caller project instead of the `visual-aid` repo
 - the default repository-local dogfood path stays intact
+- one Codex MCP config can be reused across projects
 
 Costs and constraints:
 
-- the startup and config flow grows an explicit second mode
-- source-checkout integrations now rely on one extra workspace override variable for accurate project identity
+- the setup depends on Codex starting the MCP server in the active project cwd when the config does not specify `cwd`

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define how a `visual-aid` source checkout can serve MCP traffic for another workspace during local testing.
+Define how a `visual-aid` source checkout can serve MCP traffic for another workspace during local testing without per-workspace MCP config changes.
 
 Related decisions:
 
@@ -20,6 +20,7 @@ Related decisions:
 - The source checkout and the target workspace may differ.
 - Workspace identity in the registry follows the target workspace, not the source checkout.
 - Cross-workspace source testing keeps the same shared registry model and single-window workspace tabs.
+- A generic MCP config may point at this checkout's server entrypoint while the caller cwd determines the active workspace.
 
 ## Scenarios
 
@@ -37,7 +38,15 @@ When `visual-aid.show` records a payload
 Then the workspace registry stores that target workspace path as the active workspace
 And the workspace label is derived from the target workspace path
 
+### VXT-WORKSPACE-003 Generic source-checkout config uses the caller cwd as the workspace
+
+Given Codex starts this checkout's MCP server entrypoint from another project cwd
+And no explicit session or workspace override is configured
+When `visual-aid.show` records a payload
+Then that caller cwd becomes the active workspace
+And the session is written under that caller cwd
+
 ## Test Mapping
 
 - `tests/mcp/workspace.test.ts`: `VXT-WORKSPACE-001`
-- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`
+- `tests/mcp/integration.test.ts`: `VXT-WORKSPACE-002`, `VXT-WORKSPACE-003`

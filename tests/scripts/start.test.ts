@@ -9,7 +9,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import { emptySession } from "../../mcp/session.js";
 import {
   renderCodexConfig,
-  resolveManagedSessionPath,
   runStartSupervisor,
   type SpawnLike,
 } from "../../scripts/start.js";
@@ -160,7 +159,6 @@ describe("Dogfooding start workflow spec", () => {
     tempRoots.push(root);
     const stdout = createOutputBuffer();
     const { calls, spawnImpl } = createSpawnStub();
-    const sessionPath = join(root, ".visual-aid", "dev-session.json");
 
     const exitCode = await runStartSupervisor({
       args: ["--print-codex-config"],
@@ -170,57 +168,7 @@ describe("Dogfooding start workflow spec", () => {
     });
 
     expect(exitCode).toBe(0);
-    expect(stdout.text()).toBe(`${renderCodexConfig(root, sessionPath)}\n`);
-    expect(calls).toHaveLength(0);
-  });
-
-  it("VDF-START-006 npm start can target another workspace session file", async () => {
-    const root = await mkdtemp(join(tmpdir(), "visual-aid-start-"));
-    const workspace = await mkdtemp(join(tmpdir(), "visual-aid-target-"));
-    tempRoots.push(root, workspace);
-    const sessionPath = resolveManagedSessionPath(root, workspace);
-    const stdout = createOutputBuffer();
-    const { calls, spawnImpl } = createSpawnStub();
-
-    await runStartSupervisor({
-      args: ["--workspace-cwd", workspace],
-      cwd: root,
-      env: {
-        HOME: "/tmp/home",
-        PATH: "/usr/bin:/bin",
-        npm_execpath: "/tmp/npm-cli.js",
-      },
-      spawnImpl,
-      stdout: stdout.output,
-    });
-
-    const session = JSON.parse(await readFile(sessionPath, "utf8"));
-
-    expect(session).toEqual(emptySession());
-    expect(stdout.text()).toContain(`Created ${sessionPath}`);
-    expect(stdout.text()).toContain(`Target workspace ${workspace}`);
-    expect(calls[0]?.options.env?.VISUAL_AID_SESSION_PATH).toBe(sessionPath);
-  });
-
-  it("VDF-START-007 printed Codex config can target another workspace while keeping the source checkout cwd", async () => {
-    const root = await mkdtemp(join(tmpdir(), "visual-aid-start-"));
-    const workspace = await mkdtemp(join(tmpdir(), "visual-aid-target-"));
-    tempRoots.push(root, workspace);
-    const stdout = createOutputBuffer();
-    const { calls, spawnImpl } = createSpawnStub();
-    const sessionPath = resolveManagedSessionPath(root, workspace);
-
-    const exitCode = await runStartSupervisor({
-      args: ["--print-codex-config", "--workspace-cwd", workspace],
-      cwd: root,
-      spawnImpl,
-      stdout: stdout.output,
-    });
-
-    expect(exitCode).toBe(0);
-    expect(stdout.text()).toBe(
-      `${renderCodexConfig(root, sessionPath, workspace)}\n`,
-    );
+    expect(stdout.text()).toBe(`${renderCodexConfig(root)}\n`);
     expect(calls).toHaveLength(0);
   });
 

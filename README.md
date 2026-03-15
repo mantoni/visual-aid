@@ -96,10 +96,8 @@ The baseline document set is:
 The canonical local dogfood flow is:
 
 1. Run `npm start` to create or reuse `.visual-aid/dev-session.json` and launch the Tauri app in dev mode.
-2. Point Codex `config.toml` at that same session file. Run `npm start -- --print-codex-config` to print the exact MCP config block for the current checkout.
-3. Use `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` through Codex against that shared session.
-
-When you want to test from another local project while keeping this checkout as the source of truth, pass `--workspace-cwd /absolute/path/to/other-project` to both `npm start` and `npm start -- --print-codex-config`.
+2. Run `npm start -- --print-codex-config` and use the printed generic MCP server block in Codex.
+3. Use `visual-aid.status`, `visual-aid.open`, `visual-aid.show`, and `visual-aid.clear` through Codex from any project.
 
 See [docs/dogfooding.md](docs/dogfooding.md) for the concise setup and quick test sequence.
 
@@ -107,7 +105,6 @@ Useful commands:
 
 - `npm start`: canonical local dogfood entrypoint for the app
 - `npm start -- --print-codex-config`: print the exact Codex MCP config block for the current checkout
-- `npm start -- --workspace-cwd /absolute/path/to/other-project`: launch the dev app against another workspace's session file
 - `npm run check`: type-check the project
 - `npm test`: run the automated test suite
 - `npm run verify`: run type checks, tests, and frontend build together

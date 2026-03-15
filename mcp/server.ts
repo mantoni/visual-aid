@@ -1,5 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { maybeLaunchApp } from "./launch.js";
 import { visualAidPayloadSchema } from "./payload.js";
@@ -19,8 +21,8 @@ import {
   writeWorkspaceState,
 } from "./workspace.js";
 
-const serverCwd = process.cwd();
-const workspaceCwd = resolveWorkspaceCwd(serverCwd);
+const workspaceCwd = resolveWorkspaceCwd(process.cwd());
+const sourceCwd = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sessionPath = resolveSessionPath(workspaceCwd);
 const registryPath = resolveRegistryPath(workspaceCwd);
 
@@ -129,7 +131,7 @@ server.registerTool(
       "Launch the visual-aid desktop app or focus an existing instance.",
   },
   async () => {
-    const launched = await maybeLaunchApp(serverCwd);
+    const launched = await maybeLaunchApp(sourceCwd);
     const now = new Date().toISOString();
     const session = await readSession(sessionPath);
     const next = applyOpen(session, now);
@@ -154,7 +156,7 @@ server.registerTool(
     inputSchema: visualAidPayloadSchema,
   },
   async (payload) => {
-    const launched = await maybeLaunchApp(serverCwd);
+    const launched = await maybeLaunchApp(sourceCwd);
     const now = new Date().toISOString();
     const session = await readSession(sessionPath);
     const next = applyShow(session, payload, now);

@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess, type SpawnOptions } from "node:child_process";
 import { access, mkdir, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { emptySession } from "../mcp/session.js";
@@ -56,60 +56,18 @@ const renderTomlInlineTable = (values: Record<string, string>) =>
     .map(([key, value]) => `${key} = ${quoteTomlString(value)}`)
     .join(", ")} }`;
 
-const readOptionValue = (args: readonly string[], flag: string) => {
-  const index = args.indexOf(flag);
-
-  if (index === -1) {
-    return null;
-  }
-
-  const value = args[index + 1];
-
-  if (!value || value.startsWith("--")) {
-    throw new Error(`Missing value for ${flag}.`);
-  }
-
-  return value;
-};
-
-export const resolveTargetWorkspaceCwd = (
-  cwd = process.cwd(),
-  args: readonly string[] = process.argv.slice(2),
-) => {
-  const workspaceCwd = readOptionValue(args, "--workspace-cwd");
-
-  return workspaceCwd ? resolve(cwd, workspaceCwd) : cwd;
-};
-
-export const resolveManagedSessionPath = (
-  serverCwd = process.cwd(),
-  workspaceCwd = serverCwd,
-) =>
-  workspaceCwd === serverCwd
-    ? resolveDogfoodSessionPath(serverCwd)
-    : join(workspaceCwd, ".visual-aid", "session.json");
-
 export const renderCodexConfig = (
   cwd = process.cwd(),
-  sessionPath = resolveDogfoodSessionPath(cwd),
-  workspaceCwd = cwd,
 ) => {
-  const env: Record<string, string> = {
-    VISUAL_AID_SESSION_PATH: sessionPath,
-    VISUAL_AID_PREFER_DEBUG_APP: "1",
-  };
-
-  if (workspaceCwd !== cwd) {
-    env.VISUAL_AID_WORKSPACE_CWD = workspaceCwd;
-  }
+  const tsxPath = join(cwd, "node_modules", "tsx", "dist", "cli.mjs");
+  const serverPath = join(cwd, "mcp", "server.ts");
 
   return [
     [
       "[mcp_servers.visual-aid]",
-      'command = "npx"',
-      'args = ["tsx", "mcp/server.ts"]',
-      `cwd = ${quoteTomlString(cwd)}`,
-      `env = ${renderTomlInlineTable(env)}`,
+      `command = ${quoteTomlString(process.execPath)}`,
+      `args = [${quoteTomlString(tsxPath)}, ${quoteTomlString(serverPath)}]`,
+      `env = ${renderTomlInlineTable({ VISUAL_AID_PREFER_DEBUG_APP: "1" })}`,
     ].join("\n"),
   ].join("\n");
 };
@@ -124,16 +82,14 @@ export const renderHelpText = (
   [
     "Usage:",
     "  npm start",
-    "  npm start -- --workspace-cwd /absolute/path/to/other-project",
     "  npm start -- --print-codex-config",
-    "  npm start -- --print-codex-config --workspace-cwd /absolute/path/to/other-project",
     "  npm start -- --help",
     "",
     "Dogfood flow:",
     `- create or reuse ${sessionPath}`,
     "- launch `npm run tauri:dev` with VISUAL_AID_SESSION_PATH set",
     "- leave MCP server startup to Codex config.toml",
-    "- pass `--workspace-cwd` to target another project's session while keeping this checkout as the server source",
+    "- printed MCP config is generic: Codex can run this checkout's server from any project cwd",
     "",
     "Print the exact Codex MCP config for this checkout:",
     "  npm start -- --print-codex-config",
@@ -202,8 +158,7 @@ export const runStartSupervisor = async ({
   stdout = process.stdout,
 }: StartSupervisorOptions = {}) => {
   const mode = parseStartMode(args);
-  const workspaceCwd = resolveTargetWorkspaceCwd(cwd, args);
-  const sessionPath = resolveManagedSessionPath(cwd, workspaceCwd);
+  const sessionPath = resolveDogfoodSessionPath(cwd);
 
   if (mode === "help") {
     stdout.write(`${renderHelpText(cwd, resolveDogfoodSessionPath(cwd))}\n`);
@@ -211,15 +166,12 @@ export const runStartSupervisor = async ({
   }
 
   if (mode === "print-codex-config") {
-    stdout.write(`${renderCodexConfig(cwd, sessionPath, workspaceCwd)}\n`);
+    stdout.write(`${renderCodexConfig(cwd)}\n`);
     return 0;
   }
 
   const created = await ensureDogfoodSession(sessionPath);
   stdout.write(`${created ? "Created" : "Reusing"} ${sessionPath}\n`);
-  if (workspaceCwd !== cwd) {
-    stdout.write(`Target workspace ${workspaceCwd}\n`);
-  }
   stdout.write("Launching `npm run tauri:dev` with VISUAL_AID_SESSION_PATH set.\n");
   stdout.write(
     "Run `npm start -- --print-codex-config` to print the matching Codex MCP config.\n",

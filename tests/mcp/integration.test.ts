@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, realpath, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -239,5 +239,56 @@ describe("MCP stdio integration spec", () => {
     expect(workspaceState.activeWorkspaceId).toBe(targetWorkspace);
     expect(workspaceState.workspaces[0]?.cwd).toBe(targetWorkspace);
     expect(workspaceState.workspaces[0]?.label).toBe("target-project");
+  });
+
+  it("VXT-WORKSPACE-003 generic source-checkout config uses the caller cwd as the workspace", async () => {
+    const callerWorkspace = await mkdtemp(join(tmpdir(), "visual-aid-caller-"));
+    const resolvedCallerWorkspace = await realpath(callerWorkspace);
+
+    if (transport) {
+      await transport.close();
+    }
+
+    client = createClient();
+    transport = new StdioClientTransport({
+      command: process.execPath,
+      args: [
+        join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"),
+        join(process.cwd(), "mcp", "server.ts"),
+      ],
+      cwd: callerWorkspace,
+      env: {
+        PATH: process.env.PATH ?? "",
+        HOME: process.env.HOME ?? "",
+        VISUAL_AID_REGISTRY_PATH: registryPath,
+        VISUAL_AID_OPEN_COMMAND: "true",
+      },
+      stderr: "pipe",
+    });
+    await client.connect(transport);
+
+    await client.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "markdown",
+        content: "# Generic Config",
+      },
+    });
+
+    const callerSessionPath = join(resolvedCallerWorkspace, ".visual-aid", "session.json");
+    const session = JSON.parse(
+      await readFile(callerSessionPath, "utf8"),
+    ) as VisualAidSession;
+    const workspaceState = JSON.parse(
+      await readFile(registryPath, "utf8"),
+    ) as VisualAidWorkspaceState;
+
+    expect(session.lastAction).toBe("show");
+    expect(workspaceState.activeWorkspaceId).toBe(resolvedCallerWorkspace);
+    expect(workspaceState.workspaces[0]?.cwd).toBe(resolvedCallerWorkspace);
+    expect(workspaceState.workspaces[0]?.sessionPath).toBe(callerSessionPath);
+
+    await rm(callerWorkspace, { recursive: true, force: true });
   });
 });
