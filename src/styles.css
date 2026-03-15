@@ -203,6 +203,7 @@ h2 {
 .payload-pre,
 .payload-html,
 .payload-markdown,
+.payload-code,
 .payload-json,
 .payload-diff,
 .payload-mermaid,
@@ -215,6 +216,7 @@ h2 {
 .payload-pre,
 .payload-html,
 .payload-markdown,
+.payload-code,
 .payload-json,
 .payload-diff,
 .payload-mermaid,
@@ -338,16 +340,17 @@ h2 {
   border-top: 1px solid rgba(242, 238, 230, 0.14);
 }
 
-.payload-markdown__code-block {
+.payload-markdown__code-block,
+.payload-code {
   overflow: hidden;
   border-radius: 14px;
   background: rgba(4, 8, 12, 0.88);
   border: 1px solid rgba(143, 208, 244, 0.12);
 }
 
-.payload-markdown__code-label {
+.payload-markdown__code-label,
+.payload-code__label {
   padding: 10px 14px;
-  border-bottom: 1px solid rgba(143, 208, 244, 0.12);
   color: rgba(242, 238, 230, 0.64);
   font-size: 0.8rem;
   font-weight: 700;
@@ -355,11 +358,41 @@ h2 {
   text-transform: uppercase;
 }
 
-.payload-pre--markdown {
+.payload-markdown__code-label {
+  border-bottom: 1px solid rgba(143, 208, 244, 0.12);
+}
+
+.payload-code {
+  padding: 0;
+}
+
+.payload-code__header {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(143, 208, 244, 0.12);
+}
+
+.payload-code__label,
+.payload-markdown__code-label {
+  padding: 0;
+}
+
+.payload-pre--code {
   margin: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.payload-pre--code code {
+  display: block;
+  min-width: max-content;
 }
 
 .payload-markdown__table-wrap {
@@ -612,6 +645,59 @@ h2 {
 
 .payload-pre--mermaid {
   margin: 12px 0 0;
+}
+
+.hljs {
+  color: #f2eee6;
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: rgba(160, 175, 188, 0.82);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-type {
+  color: #f0b16c;
+}
+
+.hljs-string,
+.hljs-attr,
+.hljs-template-tag,
+.hljs-template-variable {
+  color: #9fe870;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-built_in {
+  color: #8fd0f4;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-title.class_,
+.hljs-title.function_ {
+  color: #f7cd88;
+}
+
+.hljs-variable,
+.hljs-name,
+.hljs-tag,
+.hljs-regexp,
+.hljs-link,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #ff8a7a;
+}
+
+.hljs-subst {
+  color: inherit;
 }
 
 .payload-special__stats span {

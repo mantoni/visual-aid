@@ -42,6 +42,25 @@ describe("Renderer output spec", () => {
     expect(body.querySelector(".format-chip")?.textContent).toBe("Markdown");
   });
 
+  it("VAR-CODE-001 source code payloads render in the code container", () => {
+    const state = createInitialState(false, {
+      version: 1,
+      format: "code",
+      title: "Code Example",
+      content: "export const status = 'ok';",
+      metadata: {
+        language: "typescript",
+      },
+    });
+    const body = renderDocument(renderAppHtml(state));
+
+    expect(body.querySelector(".payload-code")).not.toBeNull();
+    expect(body.querySelector(".payload-code__label")?.textContent).toBe(
+      "typescript",
+    );
+    expect(body.querySelector(".format-chip")?.textContent).toBe("Source Code");
+  });
+
   it("VAR-HTML-001 HTML payloads render as HTML content", () => {
     const state = createInitialState(false, {
       version: 1,
@@ -193,7 +212,7 @@ describe("Renderer output spec", () => {
     expect(body.querySelectorAll(".payload-markdown li")).toHaveLength(2);
   });
 
-  it("VFR-MARKDOWN-002 markdown tables, blockquotes, links, and fenced code render with richer structure", () => {
+  it("VFR-MARKDOWN-002 markdown tables, blockquotes, links, and fenced code render with richer structure and syntax highlighting", () => {
     const body = renderDocument(
       renderAppHtml({
         session: {
@@ -246,6 +265,45 @@ describe("Renderer output spec", () => {
       "ts",
     );
     expect(body.querySelector(".payload-pre--markdown code")?.textContent).toContain(
+      "export const status = 'ok';",
+    );
+    expect(body.querySelector(".payload-pre--markdown .hljs-keyword")?.textContent).toContain(
+      "export",
+    );
+  });
+
+  it("VFR-CODE-001 source code payloads render with syntax highlighting", () => {
+    const body = renderDocument(
+      renderAppHtml({
+        session: {
+          openedAt: null,
+          lastAction: "show",
+          updatedAt: "2026-03-14T10:30:00.000Z",
+          items: [
+            {
+              version: 1,
+              format: "code",
+              title: "Renderer",
+              content: "export const status = 'ok';",
+              metadata: {
+                language: "typescript",
+              },
+            },
+          ],
+        },
+        status: "Received Source Code payload",
+        selectedIndex: 0,
+      }),
+    );
+
+    expect(body.querySelector(".payload-code")).not.toBeNull();
+    expect(body.querySelector(".payload-code__label")?.textContent).toBe(
+      "typescript",
+    );
+    expect(body.querySelector(".payload-code .hljs-keyword")?.textContent).toContain(
+      "export",
+    );
+    expect(body.querySelector(".payload-code .payload-pre--code code")?.textContent).toContain(
       "export const status = 'ok';",
     );
   });

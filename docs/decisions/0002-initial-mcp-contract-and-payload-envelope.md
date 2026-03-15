@@ -57,6 +57,9 @@ Initial supported `format` values are:
 - `excalidraw`
 - `html`
 
+The contract later added a dedicated `code` format in
+[0023-source-code-rendering.md](0023-source-code-rendering.md).
+
 ## Consequences
 
 Positive consequences:

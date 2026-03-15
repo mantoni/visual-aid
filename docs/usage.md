@@ -47,6 +47,7 @@ to force a specific workspace for that tool call.
 The app currently supports:
 
 - `markdown`
+- `code`
 - `json`
 - `diff`
 - `mermaid`
@@ -58,6 +59,7 @@ When multiple working directories send payloads through the shared registry, the
 Use `visual-aid` when the artifact is easier to inspect visually than in terminal text alone, such as:
 
 - plans and long explanations in Markdown
+- standalone source files or snippets
 - nested data in JSON
 - code changes in unified diff
 - diagrams in Mermaid
@@ -120,6 +122,20 @@ Mermaid:
   "format": "mermaid",
   "title": "Flow",
   "content": "graph TD\nA[Agent] --> B[visual-aid]"
+}
+```
+
+Source code:
+
+```json
+{
+  "version": 1,
+  "format": "code",
+  "title": "render.ts",
+  "content": "export const status = 'ok';",
+  "metadata": {
+    "language": "typescript"
+  }
 }
 ```
 

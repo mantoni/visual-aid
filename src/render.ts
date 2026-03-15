@@ -1,5 +1,22 @@
 import type { VisualAidPayload } from "./bridge";
+import hljs from "highlight.js/lib/core";
+import bash from "highlight.js/lib/languages/bash";
+import css from "highlight.js/lib/languages/css";
+import diff from "highlight.js/lib/languages/diff";
+import go from "highlight.js/lib/languages/go";
+import java from "highlight.js/lib/languages/java";
+import javascript from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
+import jsxLanguage from "highlight.js/lib/languages/javascript";
+import markdown from "highlight.js/lib/languages/markdown";
 import MarkdownIt from "markdown-it";
+import python from "highlight.js/lib/languages/python";
+import rust from "highlight.js/lib/languages/rust";
+import sql from "highlight.js/lib/languages/sql";
+import tsxLanguage from "highlight.js/lib/languages/xml";
+import typescript from "highlight.js/lib/languages/typescript";
+import xml from "highlight.js/lib/languages/xml";
+import yaml from "highlight.js/lib/languages/yaml";
 import { hydrateMermaidPayloads } from "./mermaid";
 import {
   formatLabels,
@@ -19,6 +36,7 @@ const escapeHtmlAttribute = (value: string) =>
     .replaceAll("'", "&#39;");
 
 type MarkdownToken = {
+  content: string;
   info: string;
   attrSet(name: string, value: string): void;
 };
@@ -26,14 +44,6 @@ type MarkdownToken = {
 type MarkdownRendererLike = {
   renderToken(tokens: MarkdownToken[], idx: number, options: unknown): string;
 };
-
-type MarkdownRenderRule = (
-  tokens: MarkdownToken[],
-  idx: number,
-  options: unknown,
-  env: unknown,
-  self: MarkdownRendererLike,
-) => string;
 
 const sortObjectKeys = (value: unknown): unknown => {
   if (Array.isArray(value)) {
@@ -51,36 +61,105 @@ const sortObjectKeys = (value: unknown): unknown => {
   return value;
 };
 
+const codeLanguages = {
+  bash,
+  css,
+  diff,
+  go,
+  java,
+  javascript,
+  json,
+  jsx: jsxLanguage,
+  markdown,
+  python,
+  rust,
+  sql,
+  tsx: tsxLanguage,
+  typescript,
+  xml,
+  yaml,
+};
+
+Object.entries(codeLanguages).forEach(([name, language]) => {
+  hljs.registerLanguage(name, language);
+});
+
+const normalizeLanguage = (value: string | null | undefined) => {
+  const normalized = value?.trim().toLowerCase() ?? "";
+  if (normalized.length === 0) {
+    return null;
+  }
+
+  const aliases: Record<string, string> = {
+    html: "xml",
+    js: "javascript",
+    shell: "bash",
+    sh: "bash",
+    ts: "typescript",
+    yml: "yaml",
+  };
+
+  return aliases[normalized] ?? normalized;
+};
+
+const highlightCode = (content: string, languageHint?: string | null) => {
+  const normalizedLanguage = normalizeLanguage(languageHint);
+
+  if (normalizedLanguage && hljs.getLanguage(normalizedLanguage)) {
+    return {
+      html: hljs.highlight(content, {
+        ignoreIllegals: true,
+        language: normalizedLanguage,
+      }).value,
+      language: normalizedLanguage,
+    };
+  }
+
+  if (!normalizedLanguage) {
+    const result = hljs.highlightAuto(content);
+
+    if (result.language) {
+      return {
+        html: result.value,
+        language: result.language,
+      };
+    }
+  }
+
+  return {
+    html: escapeHtml(content),
+    language: normalizedLanguage,
+  };
+};
+
+const renderHighlightedCodeBlock = (
+  content: string,
+  languageHint?: string | null,
+  preClassName = "payload-pre--code",
+) => {
+  const { html } = highlightCode(content, languageHint);
+
+  return `<pre class="payload-pre ${preClassName}"><code class="hljs">${html}</code></pre>`;
+};
+
 const markdownRenderer = new MarkdownIt({
   html: false,
   linkify: true,
 });
 
-const existingMarkdownFence = markdownRenderer.renderer.rules.fence
-  ?.bind(markdownRenderer.renderer.rules) as MarkdownRenderRule | undefined;
-
-const defaultMarkdownFence: MarkdownRenderRule =
-  existingMarkdownFence ??
-  ((
-    tokens: MarkdownToken[],
-    idx: number,
-    options: unknown,
-    _env: unknown,
-    self: MarkdownRendererLike,
-  ) => self.renderToken(tokens, idx, options));
-
 markdownRenderer.renderer.rules.fence = (
   tokens: MarkdownToken[],
   idx: number,
-  options: unknown,
-  env: unknown,
-  self: MarkdownRendererLike,
+  _options: unknown,
+  _env: unknown,
+  _self: MarkdownRendererLike,
 ) => {
   const token = tokens[idx];
   const language = token?.info.trim().split(/\s+/, 1)[0] ?? "";
-  const rendered = defaultMarkdownFence(tokens, idx, options, env, self).replace(
-    "<pre><code",
-    '<pre class="payload-pre payload-pre--markdown"><code',
+  const rendered = renderHighlightedCodeBlock(
+    token?.content ?? "",
+    language,
+    "payload-pre--markdown payload-pre--code",
   );
 
   if (!language) {
@@ -116,6 +195,27 @@ markdownRenderer.renderer.rules.link_open = (
 
 const renderMarkdown = (content: string) =>
   `<div class="payload-markdown">${markdownRenderer.render(content)}</div>`;
+
+const codeLanguageFromPayload = (payload: VisualAidPayload) =>
+  typeof payload.metadata?.language === "string"
+    ? payload.metadata.language
+    : null;
+
+const renderCode = (payload: VisualAidPayload) => {
+  const explicitLanguage = codeLanguageFromPayload(payload);
+  const { language } = highlightCode(payload.content, explicitLanguage);
+  const label = explicitLanguage ?? language;
+
+  return `
+    <div class="payload-code">
+      <div class="payload-code__header">
+        <span class="payload-special__badge">Source Code</span>
+        ${label ? `<span class="payload-code__label">${escapeHtml(label)}</span>` : ""}
+      </div>
+      ${renderHighlightedCodeBlock(payload.content, explicitLanguage)}
+    </div>
+  `;
+};
 
 const classifyDiffLine = (line: string) => {
   if (line.startsWith("@@")) {
@@ -432,6 +532,10 @@ const renderHtml = (content: string) => {
 export const renderContent = (payload: VisualAidPayload) => {
   if (payload.format === "markdown") {
     return renderMarkdown(payload.content);
+  }
+
+  if (payload.format === "code") {
+    return renderCode(payload);
   }
 
   if (payload.format === "diff") {

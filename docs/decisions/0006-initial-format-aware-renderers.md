@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The project currently supports multiple payload formats, but a single preformatted fallback is too weak to provide meaningful visual aid across markdown, JSON, diff, mermaid, excalidraw, and HTML.
+The project initially supported multiple payload formats, but a single preformatted fallback was too weak to provide meaningful visual aid across markdown, JSON, diff, mermaid, excalidraw, and HTML.
 
 At the same time, introducing full rendering libraries for every format this early would add complexity faster than the project can validate.
 
@@ -41,3 +41,4 @@ Costs and constraints:
 The Mermaid-specific source-viewer portion of this decision is superseded by [0009-rendered-mermaid-diagrams.md](0009-rendered-mermaid-diagrams.md).
 The HTML-specific direct-container portion of this decision is superseded by [0011-isolated-html-fragments.md](0011-isolated-html-fragments.md).
 The Markdown-specific minimal-parser portion of this decision is superseded by [0015-richer-markdown-rendering.md](0015-richer-markdown-rendering.md).
+The source-code-specific renderer extension is defined in [0023-source-code-rendering.md](0023-source-code-rendering.md).

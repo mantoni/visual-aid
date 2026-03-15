@@ -11,6 +11,7 @@ Agents should be able to launch the app and send it structured payloads over MCP
 The visual aid is intended for structured formats such as:
 
 - Markdown
+- Source code
 - JSON
 - Unified diff
 - Mermaid
@@ -71,7 +72,7 @@ The baseline document set is:
 - [docs/decisions/0003-initial-scaffold-stack-and-layout.md](docs/decisions/0003-initial-scaffold-stack-and-layout.md): initial implementation stack and repository layout
 - [docs/decisions/0004-initial-file-based-session-bridge.md](docs/decisions/0004-initial-file-based-session-bridge.md): initial live bridge between MCP and the desktop app
 - [docs/decisions/0005-documentation-integrated-testing.md](docs/decisions/0005-documentation-integrated-testing.md): testing model tied to behavior specs
-- [docs/decisions/0006-initial-format-aware-renderers.md](docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for markdown, diff, mermaid, excalidraw, and HTML
+- [docs/decisions/0006-initial-format-aware-renderers.md](docs/decisions/0006-initial-format-aware-renderers.md): first-pass renderer strategy for the initial format set
 - [docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md](docs/decisions/0007-npm-start-canonical-dogfood-entrypoint.md): define `npm start` as the canonical local dogfood entrypoint
 - [docs/decisions/0008-session-history-and-item-replacement.md](docs/decisions/0008-session-history-and-item-replacement.md): define selectable history and `id`-aware append behavior
 - [docs/decisions/0009-rendered-mermaid-diagrams.md](docs/decisions/0009-rendered-mermaid-diagrams.md): render Mermaid diagrams by default while preserving source fallback
@@ -87,6 +88,7 @@ The baseline document set is:
 - [docs/decisions/0019-process-cwd-workspace-resolution.md](docs/decisions/0019-process-cwd-workspace-resolution.md): historical process-cwd-only workspace resolution
 - [docs/decisions/0020-normalized-workspace-registry.md](docs/decisions/0020-normalized-workspace-registry.md): keep workspace discovery in the registry while leaving session content in per-workspace session files
 - [docs/decisions/0022-tool-cwd-workspace-resolution.md](docs/decisions/0022-tool-cwd-workspace-resolution.md): prefer tool `cwd`, then explicit overrides, then `process.cwd()` for workspace identity
+- [docs/decisions/0023-source-code-rendering.md](docs/decisions/0023-source-code-rendering.md): add syntax-highlighted source-code payloads and highlighted Markdown fenced code blocks
 
 ## Documentation Rules
 

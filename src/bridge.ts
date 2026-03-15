@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 
 type VisualAidFormat =
   | "markdown"
+  | "code"
   | "json"
   | "diff"
   | "mermaid"

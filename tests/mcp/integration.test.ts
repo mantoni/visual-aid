@@ -167,6 +167,32 @@ describe("MCP stdio integration spec", () => {
     expect(session.items[0]?.format).toBe("json");
   });
 
+  it("VAI-SHOW-003 show accepts source code payloads through a real MCP call", async () => {
+    await client!.callTool({
+      name: "visual-aid.show",
+      arguments: {
+        version: 1,
+        format: "code",
+        content: "export const status = 'ok';",
+        metadata: {
+          language: "typescript",
+        },
+        mode: "replace",
+      },
+    });
+
+    const session = JSON.parse(
+      await readFile(sessionPath, "utf8"),
+    ) as VisualAidSession;
+
+    expect(session.lastAction).toBe("show");
+    expect(session.items).toHaveLength(1);
+    expect(session.items[0]?.format).toBe("code");
+    expect(session.items[0]?.metadata).toEqual({
+      language: "typescript",
+    });
+  });
+
   it("VAS-SHOW-003 append mode updates an existing item when the payload id matches", async () => {
     await client!.callTool({
       name: "visual-aid.show",

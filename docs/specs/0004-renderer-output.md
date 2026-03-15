@@ -40,6 +40,13 @@ When the renderer output is generated
 Then the current payload content appears inside `.payload-markdown`
 And the format chip reads `Markdown`
 
+### VAR-CODE-001 Source code payloads render in the code container
+
+Given a renderer state with a source code payload
+When the renderer output is generated
+Then the current payload content appears inside `.payload-code`
+And the format chip reads `Source Code`
+
 ### VAR-HTML-001 HTML payloads render as isolated fragments
 
 Given a renderer state with an HTML payload
@@ -70,4 +77,4 @@ And the metadata keys appear in a stable sorted order
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-HISTORY-002`, `VAR-META-001`
+- `tests/ui/render.test.ts`: `VAR-EMPTY-001`, `VAR-MARKDOWN-001`, `VAR-CODE-001`, `VAR-HTML-001`, `VAR-HISTORY-001`, `VAR-HISTORY-002`, `VAR-META-001`

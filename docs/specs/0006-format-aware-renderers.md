@@ -8,6 +8,7 @@ Related decisions:
 
 - [0002-initial-mcp-contract-and-payload-envelope.md](../decisions/0002-initial-mcp-contract-and-payload-envelope.md)
 - [0006-initial-format-aware-renderers.md](../decisions/0006-initial-format-aware-renderers.md)
+- [0023-source-code-rendering.md](../decisions/0023-source-code-rendering.md)
 
 ## Preconditions
 
@@ -18,7 +19,8 @@ Related decisions:
 ## Invariants
 
 - Markdown uses semantic document structure instead of a raw pre block when possible.
-- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, and fenced code blocks while escaping raw HTML.
+- Markdown preserves richer document structure such as ordered lists, blockquotes, tables, links, and syntax-highlighted fenced code blocks while escaping raw HTML.
+- Source code payloads render in a dedicated syntax-highlighted code viewer with an optional language label.
 - JSON payloads expose parsed structure when valid and keep a readable raw fallback when invalid.
 - Diff lines are visually classified by their line prefix and role.
 - Mermaid payloads attempt to render as diagrams while keeping their source available.
@@ -39,7 +41,14 @@ And bullet items are rendered inside a list
 Given a markdown payload with a blockquote, ordered list, table, link, and fenced code block
 When the renderer output is generated
 Then the output includes semantic blockquote, ordered-list, table, and anchor elements
-And fenced code is rendered in a dedicated code block with its language label visible when supplied
+And fenced code is rendered in a dedicated syntax-highlighted code block with its language label visible when supplied
+
+### VFR-CODE-001 Source code payloads render with syntax highlighting
+
+Given a source code payload with a declared language
+When the renderer output is generated
+Then the payload is rendered in a dedicated code viewer
+And the source code is syntax highlighted with the language label visible
 
 ### VFR-DIFF-001 Diff lines are classified by line type
 
@@ -85,5 +94,5 @@ And the raw JSON preview remains visible
 
 ## Test Mapping
 
-- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
+- `tests/ui/render.test.ts`: `VFR-MARKDOWN-001`, `VFR-MARKDOWN-002`, `VFR-CODE-001`, `VFR-DIFF-001`, `VFR-JSON-001`, `VFR-JSON-002`, `VFR-EXCALIDRAW-001`
 - `tests/ui/mermaid.test.ts`: `VFR-MERMAID-001`, `VFR-MERMAID-002`

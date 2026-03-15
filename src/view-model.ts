@@ -15,6 +15,7 @@ export type VisualAidState = {
 
 export const formatLabels: Record<VisualAidPayload["format"], string> = {
   markdown: "Markdown",
+  code: "Source Code",
   json: "JSON",
   diff: "Unified Diff",
   mermaid: "Mermaid",
